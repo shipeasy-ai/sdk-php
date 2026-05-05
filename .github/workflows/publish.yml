@@ -1,0 +1,55 @@
+name: Publish
+
+# HARD RULE: never publish manually. Bump the `version` in composer.json,
+# push to main, and this workflow tags the release. Packagist auto-fetches
+# from the upstream GitHub repo via webhook (one-time setup at packagist.org).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # to push tags
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          coverage: none
+
+      - run: composer install --prefer-dist --no-progress
+
+      - run: vendor/bin/phpunit
+
+      - name: Read package version
+        id: ver
+        run: |
+          VER=$(php -r 'echo json_decode(file_get_contents("composer.json"))->version ?? "";')
+          if [ -z "$VER" ]; then
+            echo "::error::composer.json must declare a top-level \"version\" field for autopublish"
+            exit 1
+          fi
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+
+      - name: Tag if new
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v${{ steps.ver.outputs.version }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists, nothing to do."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "$TAG"
