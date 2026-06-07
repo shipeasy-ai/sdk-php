@@ -13,7 +13,8 @@ namespace Shipeasy;
  * window bounds volume. PHP has no threads, so the beacon uses a socket
  * write-and-close (connect, write request, close without reading the response).
  */
-final class Telemetry
+// Not `final`: tests subclass this to capture the dispatched URL.
+class Telemetry
 {
     public const DEFAULT_TELEMETRY_URL = 'https://t.shipeasy.ai';
 
