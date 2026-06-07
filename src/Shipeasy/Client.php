@@ -15,11 +15,26 @@ final class Client
     private ?string $flagsEtag = null;
     private ?string $expsEtag = null;
     private bool $initialized = false;
+    private Telemetry $telemetry;
 
-    public function __construct(string $apiKey, ?string $baseUrl = null)
-    {
+    public function __construct(
+        string $apiKey,
+        ?string $baseUrl = null,
+        string $env = 'prod',
+        bool $disableTelemetry = false,
+        ?string $telemetryUrl = null
+    ) {
         $this->apiKey = $apiKey;
         $this->baseUrl = rtrim($baseUrl ?? self::DEFAULT_BASE_URL, '/');
+        // Per-evaluation usage telemetry. ON by default; pass
+        // disableTelemetry: true to opt out. See Telemetry.php.
+        $this->telemetry = new Telemetry(
+            $telemetryUrl ?? Telemetry::DEFAULT_TELEMETRY_URL,
+            $apiKey,
+            'server',
+            $env,
+            $disableTelemetry
+        );
     }
 
     /**
@@ -41,16 +56,19 @@ final class Client
 
     public function getFlag(string $name, array $user): bool
     {
+        $this->telemetry->emit('gate', $name);
         return Eval_::evalGate($this->flagsBlob['gates'][$name] ?? null, $user);
     }
 
     public function getConfig(string $name): mixed
     {
+        $this->telemetry->emit('config', $name);
         return $this->flagsBlob['configs'][$name]['value'] ?? null;
     }
 
     public function getExperiment(string $name, array $user, mixed $defaultParams): ExperimentResult
     {
+        $this->telemetry->emit('experiment', $name);
         $exp = $this->expsBlob['experiments'][$name] ?? null;
         $r = Eval_::evalExperiment($exp, $this->flagsBlob, $this->expsBlob, $user);
         if ($r->params === null) {
