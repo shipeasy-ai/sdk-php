@@ -61,7 +61,14 @@ final class Eval_
             if (!self::matchRule($rule, $user)) return false;
         }
         $uid = self::userId($user);
-        if ($uid === null) return false;
+        if ($uid === null) {
+            // No unit id (an unidentified request before any anon id is minted):
+            // a fully-rolled gate is on for everyone, so it can be answered
+            // without bucketing; a fractional rollout needs a stable unit, so
+            // deny until one exists. Rules above still apply, so targeting wins.
+            // See experiment-platform/18-identity-bucketing.md.
+            return ((int) ($gate['rolloutPct'] ?? 0)) >= 10000;
+        }
         $salt = $gate['salt'] ?? '';
         $rolloutPct = (int) ($gate['rolloutPct'] ?? 0);
         return Murmur3::hash32("$salt:$uid") % 10000 < $rolloutPct;

@@ -57,7 +57,23 @@ final class Client
     public function getFlag(string $name, array $user): bool
     {
         $this->telemetry->emit('gate', $name);
-        return Eval_::evalGate($this->flagsBlob['gates'][$name] ?? null, $user);
+        return Eval_::evalGate($this->flagsBlob['gates'][$name] ?? null, self::withAnonId($user));
+    }
+
+    /**
+     * Default anonymous_id to the request's __se_anon_id (resolved by
+     * Identity::ensure()) when the caller passed no explicit unit. A
+     * caller-supplied user_id/anonymous_id always wins; a no-op if ensure()
+     * never ran.
+     */
+    private static function withAnonId(array $user): array
+    {
+        $hasUnit = (isset($user['user_id']) && $user['user_id'] !== '')
+            || (isset($user['anonymous_id']) && $user['anonymous_id'] !== '');
+        if (!$hasUnit && ($anon = Identity::current()) !== null) {
+            $user['anonymous_id'] = $anon;
+        }
+        return $user;
     }
 
     public function getConfig(string $name): mixed
@@ -70,7 +86,7 @@ final class Client
     {
         $this->telemetry->emit('experiment', $name);
         $exp = $this->expsBlob['experiments'][$name] ?? null;
-        $r = Eval_::evalExperiment($exp, $this->flagsBlob, $this->expsBlob, $user);
+        $r = Eval_::evalExperiment($exp, $this->flagsBlob, $this->expsBlob, self::withAnonId($user));
         if ($r->params === null) {
             return new ExperimentResult($r->inExperiment, $r->group, $defaultParams);
         }
