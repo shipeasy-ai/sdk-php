@@ -25,6 +25,10 @@ final class Client
     /** @var array<string, array{group: string, params: mixed}> */
     private array $experimentOverrides = [];
 
+    /** @var array<int, callable> change listeners, keyed by registration id */
+    private array $changeListeners = [];
+    private int $nextListenerId = 0;
+
     public function __construct(
         string $apiKey,
         ?string $baseUrl = null,
@@ -57,6 +61,45 @@ final class Client
         $c = new self('', null, 'prod', true);
         $c->localMode = true;
         $c->initialized = true;
+        return $c;
+    }
+
+    /**
+     * Build an offline client backed by a JSON snapshot file. The file holds
+     * `{ "flags": <body of /sdk/flags>, "experiments": <body of /sdk/experiments> }`.
+     * The returned client never touches the network: init()/initOnce()/track()
+     * are no-ops and telemetry is off, but evaluations run the real eval against
+     * the snapshot (overrides apply on top). Useful for edge/air-gapped hosts
+     * that ship a baked blob, or for reproducible CI.
+     */
+    public static function fromFile(string $path): self
+    {
+        $raw = @file_get_contents($path);
+        if ($raw === false) {
+            throw new \RuntimeException("fromFile: cannot read $path");
+        }
+        $data = json_decode($raw, true);
+        if (!is_array($data)) {
+            throw new \RuntimeException("fromFile: invalid JSON in $path");
+        }
+        $flags = is_array($data['flags'] ?? null) ? $data['flags'] : [];
+        $experiments = is_array($data['experiments'] ?? null) ? $data['experiments'] : [];
+        return self::fromSnapshot($flags, $experiments);
+    }
+
+    /**
+     * Build an offline client from already-decoded blobs. $flags is the body of
+     * /sdk/flags (with `gates`/`configs`) and $experiments is the body of
+     * /sdk/experiments (with `experiments`/`universes`). No network, telemetry
+     * off, marked initialized; evaluations run against the snapshot.
+     */
+    public static function fromSnapshot(array $flags, array $experiments): self
+    {
+        $c = new self('', null, 'prod', true);
+        $c->localMode = true;
+        $c->initialized = true;
+        $c->flagsBlob = $flags;
+        $c->expsBlob = $experiments;
         return $c;
     }
 
@@ -110,13 +153,100 @@ final class Client
         $this->experimentOverrides = [];
     }
 
-    public function getFlag(string $name, array $user): bool
+    /**
+     * Register a callback fired whenever the client refreshes its data with a
+     * NEW server response (a 200 from a subsequent initOnce()/refresh(), never a
+     * 304 and never in localMode). Returns an unsubscribe callable; call it to
+     * remove the listener.
+     *
+     * NOTE: PHP is request-scoped and this SDK runs no background poll thread,
+     * so under classic PHP-FPM the client is rebuilt per request and a listener
+     * will not fire on its own. Change listeners are mainly relevant to
+     * long-running runtimes (Swoole, RoadRunner, queue/CLI workers) that keep a
+     * client alive across requests and call refresh() on a schedule.
+     */
+    public function onChange(callable $fn): callable
     {
-        if (array_key_exists($name, $this->flagOverrides)) {
-            return $this->flagOverrides[$name];
+        $id = $this->nextListenerId++;
+        $this->changeListeners[$id] = $fn;
+        return function () use ($id): void {
+            unset($this->changeListeners[$id]);
+        };
+    }
+
+    /**
+     * Re-fetch the blobs and fire change listeners if new data (a 200, not a
+     * 304) was applied. No-op in localMode. Long-running hosts call this on a
+     * schedule; PHP-FPM hosts typically just rely on per-request init().
+     */
+    public function refresh(): void
+    {
+        if ($this->localMode) return;
+        $this->fetchAll();
+    }
+
+    /** Notify listeners that fetched data changed. Never throws. */
+    private function fireChange(): void
+    {
+        foreach ($this->changeListeners as $fn) {
+            try {
+                $fn();
+            } catch (\Throwable) {
+                // A listener must never break a refresh.
+            }
         }
+    }
+
+    /**
+     * Evaluate a flag, returning $default ONLY when the flag cannot be
+     * evaluated — i.e. the client is not initialized (CLIENT_NOT_READY) or the
+     * gate is not in the blob (FLAG_NOT_FOUND). A flag that evaluates to false
+     * (off/no-match) returns false, not the default.
+     */
+    public function getFlag(string $name, array $user, bool $default = false): bool
+    {
+        $d = $this->getFlagDetail($name, $user);
+        if ($d->reason === FlagDetail::CLIENT_NOT_READY || $d->reason === FlagDetail::FLAG_NOT_FOUND) {
+            return $default;
+        }
+        return $d->value;
+    }
+
+    /**
+     * Evaluate a flag and report why it resolved that way. The reason is one of
+     * the FlagDetail constants. The "gate" telemetry beacon fires exactly once
+     * per call (steps 2–5), never for a local override. The reason is computed
+     * at this boundary without changing the canonical Eval_::evalGate.
+     */
+    public function getFlagDetail(string $name, array $user): FlagDetail
+    {
+        // 1. Override — short-circuit before telemetry, like getFlag's old path.
+        if (array_key_exists($name, $this->flagOverrides)) {
+            return new FlagDetail($this->flagOverrides[$name], FlagDetail::OVERRIDE);
+        }
+
         $this->telemetry->emit('gate', $name);
-        return Eval_::evalGate($this->flagsBlob['gates'][$name] ?? null, self::withAnonId($user));
+
+        // 2. Not initialized — the blob was never fetched.
+        if (!$this->initialized) {
+            return new FlagDetail(false, FlagDetail::CLIENT_NOT_READY);
+        }
+
+        // 3. Gate not present in the blob.
+        $gate = $this->flagsBlob['gates'][$name] ?? null;
+        if ($gate === null) {
+            return new FlagDetail(false, FlagDetail::FLAG_NOT_FOUND);
+        }
+
+        // 4. Gate present but disabled (mirrors evalGate's `enabled` read).
+        $enabled = ($gate['enabled'] ?? null) === true || ($gate['enabled'] ?? null) === 1;
+        if (!$enabled) {
+            return new FlagDetail(false, FlagDetail::OFF);
+        }
+
+        // 5. Run the canonical eval; reason follows the result.
+        $value = Eval_::evalGate($gate, self::withAnonId($user));
+        return new FlagDetail($value, $value ? FlagDetail::RULE_MATCH : FlagDetail::DEFAULT);
     }
 
     /**
@@ -135,13 +265,20 @@ final class Client
         return $user;
     }
 
-    public function getConfig(string $name): mixed
+    /**
+     * Read a dynamic config value, returning $default when the config key is
+     * absent (not in the blob, or the client is not initialized).
+     */
+    public function getConfig(string $name, mixed $default = null): mixed
     {
         if (array_key_exists($name, $this->configOverrides)) {
             return $this->configOverrides[$name];
         }
         $this->telemetry->emit('config', $name);
-        return $this->flagsBlob['configs'][$name]['value'] ?? null;
+        if (!isset($this->flagsBlob['configs'][$name]) || !array_key_exists('value', $this->flagsBlob['configs'][$name])) {
+            return $default;
+        }
+        return $this->flagsBlob['configs'][$name]['value'];
     }
 
     public function getExperiment(string $name, array $user, mixed $defaultParams): ExperimentResult
@@ -175,10 +312,15 @@ final class Client
 
     private function fetchAll(): void
     {
+        $newFlags = null;
+        $newExps = null;
+        $changed = false;
+
         [$flagsStatus, $flagsHeaders, $flagsBody] = $this->httpGet('/sdk/flags', $this->flagsEtag);
         if ($flagsStatus === 200) {
             if (!empty($flagsHeaders['etag'])) $this->flagsEtag = $flagsHeaders['etag'];
-            $this->flagsBlob = json_decode($flagsBody, true);
+            $newFlags = json_decode($flagsBody, true);
+            $changed = true;
         } elseif ($flagsStatus !== 304) {
             throw new \RuntimeException("/sdk/flags: $flagsStatus");
         }
@@ -186,10 +328,30 @@ final class Client
         [$expsStatus, $expsHeaders, $expsBody] = $this->httpGet('/sdk/experiments', $this->expsEtag);
         if ($expsStatus === 200) {
             if (!empty($expsHeaders['etag'])) $this->expsEtag = $expsHeaders['etag'];
-            $this->expsBlob = json_decode($expsBody, true);
+            $newExps = json_decode($expsBody, true);
+            $changed = true;
         } elseif ($expsStatus !== 304) {
             throw new \RuntimeException("/sdk/experiments: $expsStatus");
         }
+
+        if ($changed) {
+            $this->applyData($newFlags, $newExps);
+        }
+    }
+
+    /**
+     * Install freshly-fetched blobs and notify change listeners. A null arg
+     * means "that blob was not refreshed" (e.g. a 304) — keep the existing one.
+     * Called from fetchAll() on any 200; tests drive change-listener firing
+     * through this seam without real network.
+     *
+     * @internal Not part of the public contract — used by fetchAll() and tests.
+     */
+    public function applyData(?array $flags, ?array $exps): void
+    {
+        if ($flags !== null) $this->flagsBlob = $flags;
+        if ($exps !== null) $this->expsBlob = $exps;
+        $this->fireChange();
     }
 
     private function httpGet(string $path, ?string $etag): array

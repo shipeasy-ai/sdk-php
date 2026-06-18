@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+- **Default values on `getFlag()`/`getConfig()`.** Both now take an optional
+  default. `getFlag($name, $user, $default = false)` returns the default ONLY
+  when the flag cannot be evaluated (client not initialized or gate not in the
+  blob) — never when it merely evaluates to false. `getConfig($name, $default = null)`
+  returns the default when the config key is absent. Both signatures are
+  backward-compatible.
+- **Flag evaluation detail.** Added `FlagDetail` (readonly `value`/`reason`) with
+  reason constants (`OVERRIDE`, `CLIENT_NOT_READY`, `FLAG_NOT_FOUND`, `OFF`,
+  `RULE_MATCH`, `DEFAULT`) and `getFlagDetail($name, $user)`. The reason is
+  computed at the boundary without changing the canonical eval; the usage beacon
+  fires exactly once per call and never for an override. `getFlag()` now delegates
+  to `getFlagDetail()`.
+- **Change listeners.** Added `onChange(callable): callable` (returns an
+  unsubscribe) plus `refresh()`. Listeners fire only when a refresh applies new
+  data (a 200, not a 304), never in local/snapshot mode, each wrapped in
+  try/catch. Mainly relevant to long-running runtimes (Swoole/RoadRunner) — under
+  PHP-FPM the client is rebuilt per request (see README "Change listeners").
+- **Offline file data source.** Added `Client::fromFile($path)` and
+  `Client::fromSnapshot($flags, $experiments)` — a no-network client backed by a
+  baked blob; evaluations run the real eval against the snapshot and overrides
+  apply on top.
+
 - **Local-override test utility.** Added `Client::forTesting()` — a no-network,
   no-key client whose `init()`/`initOnce()` and `track()` are no-ops and
   telemetry is disabled. New override setters `overrideFlag()`,
