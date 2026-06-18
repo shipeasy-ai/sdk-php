@@ -42,3 +42,42 @@ call it from a middleware or service provider). The cookie is non-`HttpOnly` by
 design so the browser SDK buckets identically; a request with **no** unit still
 resolves a fully-rolled (100%) gate as on. Cookie name + format are a cross-SDK
 contract — see `18-identity-bucketing.md`.
+
+## Testing
+
+In unit tests you want deterministic flag/config/experiment values with **no
+network and no API key**. `Client::forTesting()` builds a client that never
+fetches (`init()`/`initOnce()` are no-ops), never sends telemetry, and whose
+`track()` is a no-op. Seed each entity with the override setters; an override
+always wins over the fetched blob.
+
+```php
+use Shipeasy\Client;
+
+$c = Client::forTesting();   // no key, no network
+
+// Flags
+$c->overrideFlag('new_checkout', true);
+$c->getFlag('new_checkout', ['user_id' => 'u1']);        // true
+
+// Configs
+$c->overrideConfig('billing_copy', ['headline' => 'Hi']);
+$c->getConfig('billing_copy');                            // ['headline' => 'Hi']
+
+// Experiments — returns an inExperiment result with your group + params
+$c->overrideExperiment('checkout_button', 'treatment', ['color' => 'green']);
+$r = $c->getExperiment('checkout_button', ['user_id' => 'u1'], ['color' => 'blue']);
+$r->inExperiment;  // true
+$r->group;         // 'treatment'
+$r->params;        // ['color' => 'green']  (override params beat defaultParams)
+
+// track() is a no-op in test mode — safe to call, sends nothing
+$c->track('u1', 'purchase', ['amount' => 49]);
+
+// Reset between cases
+$c->clearOverrides();
+```
+
+The override setters (`overrideFlag`, `overrideConfig`, `overrideExperiment`,
+`clearOverrides`) also work on a normal `new Client(...)` instance — an
+overridden key short-circuits before any network read.

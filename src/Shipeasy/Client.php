@@ -15,7 +15,15 @@ final class Client
     private ?string $flagsEtag = null;
     private ?string $expsEtag = null;
     private bool $initialized = false;
+    private bool $localMode = false;
     private Telemetry $telemetry;
+
+    /** @var array<string, bool> */
+    private array $flagOverrides = [];
+    /** @var array<string, mixed> */
+    private array $configOverrides = [];
+    /** @var array<string, array{group: string, params: mixed}> */
+    private array $experimentOverrides = [];
 
     public function __construct(
         string $apiKey,
@@ -38,12 +46,28 @@ final class Client
     }
 
     /**
+     * Build a no-network client for tests. Telemetry is disabled, no API key is
+     * required, the client is marked initialized so init()/initOnce() never
+     * fetch, and track() is a no-op. Seed evaluations with overrideFlag(),
+     * overrideConfig(), and overrideExperiment(). Mirrors the cross-SDK test
+     * utility contract (Statsig-style local overrides).
+     */
+    public static function forTesting(): self
+    {
+        $c = new self('', null, 'prod', true);
+        $c->localMode = true;
+        $c->initialized = true;
+        return $c;
+    }
+
+    /**
      * PHP-FPM style: fetch once per request, no background timer. Long-running
      * runtimes (Swoole, RoadRunner, CLI workers) should call this from a
      * scheduled task instead — PHP has no thread-based polling primitive.
      */
     public function initOnce(): void
     {
+        if ($this->localMode) return; // test mode never fetches
         if ($this->initialized) return;
         $this->fetchAll();
         $this->initialized = true;
@@ -54,8 +78,43 @@ final class Client
 
     public function destroy(): void { /* no-op */ }
 
+    /**
+     * Force getFlag($name) to return $value, regardless of the fetched blob.
+     * Usable on any client; primarily for tests. Clear with clearOverrides().
+     */
+    public function overrideFlag(string $name, bool $value): void
+    {
+        $this->flagOverrides[$name] = $value;
+    }
+
+    /** Force getConfig($name) to return $value. */
+    public function overrideConfig(string $name, mixed $value): void
+    {
+        $this->configOverrides[$name] = $value;
+    }
+
+    /**
+     * Force getExperiment($name) to return an inExperiment result with the given
+     * group and params (params take precedence over the call's defaultParams).
+     */
+    public function overrideExperiment(string $name, string $group, mixed $params): void
+    {
+        $this->experimentOverrides[$name] = ['group' => $group, 'params' => $params];
+    }
+
+    /** Drop all flag/config/experiment overrides. */
+    public function clearOverrides(): void
+    {
+        $this->flagOverrides = [];
+        $this->configOverrides = [];
+        $this->experimentOverrides = [];
+    }
+
     public function getFlag(string $name, array $user): bool
     {
+        if (array_key_exists($name, $this->flagOverrides)) {
+            return $this->flagOverrides[$name];
+        }
         $this->telemetry->emit('gate', $name);
         return Eval_::evalGate($this->flagsBlob['gates'][$name] ?? null, self::withAnonId($user));
     }
@@ -78,12 +137,19 @@ final class Client
 
     public function getConfig(string $name): mixed
     {
+        if (array_key_exists($name, $this->configOverrides)) {
+            return $this->configOverrides[$name];
+        }
         $this->telemetry->emit('config', $name);
         return $this->flagsBlob['configs'][$name]['value'] ?? null;
     }
 
     public function getExperiment(string $name, array $user, mixed $defaultParams): ExperimentResult
     {
+        if (isset($this->experimentOverrides[$name])) {
+            $o = $this->experimentOverrides[$name];
+            return new ExperimentResult(true, $o['group'], $o['params']);
+        }
         $this->telemetry->emit('experiment', $name);
         $exp = $this->expsBlob['experiments'][$name] ?? null;
         $r = Eval_::evalExperiment($exp, $this->flagsBlob, $this->expsBlob, self::withAnonId($user));
@@ -95,6 +161,7 @@ final class Client
 
     public function track(string $userId, string $eventName, array $properties = []): void
     {
+        if ($this->localMode) return; // test mode never sends events
         $event = [
             'type' => 'metric',
             'event_name' => $eventName,

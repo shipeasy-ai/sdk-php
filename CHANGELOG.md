@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- **Local-override test utility.** Added `Client::forTesting()` — a no-network,
+  no-key client whose `init()`/`initOnce()` and `track()` are no-ops and
+  telemetry is disabled. New override setters `overrideFlag()`,
+  `overrideConfig()`, `overrideExperiment()`, and `clearOverrides()` seed
+  deterministic values for `getFlag()`/`getConfig()`/`getExperiment()`; an
+  override always wins over the fetched blob and also works on a normal client.
+  See the README "Testing" section.
+
 ## 0.3.0
 
 - **Anonymous bucketing (`__se_anon_id`).** Added `Shipeasy\Identity` — a
