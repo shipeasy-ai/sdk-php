@@ -25,6 +25,22 @@ final class Eval_
         return $uid === null ? null : (string) $uid;
     }
 
+    /**
+     * Resolve the bucketing unit. With $bucketBy set, bucket on that attribute
+     * (a non-empty string as-is, a number stringified) so a whole org moves
+     * together; otherwise fall back to user_id ?? anonymous_id (matches gates).
+     * See packages/core/src/eval/gate.ts pickIdentifier + doc 20 §4.
+     */
+    private static function pickIdentifier(array $user, ?string $bucketBy): ?string
+    {
+        if ($bucketBy !== null && $bucketBy !== '') {
+            $v = $user[$bucketBy] ?? null;
+            if (is_string($v) && $v !== '') return $v;
+            if (is_int($v) || is_float($v)) return (string) $v;
+        }
+        return self::userId($user);
+    }
+
     private static function matchRule(array $rule, array $user): bool
     {
         $attr = $rule['attr'] ?? null;
@@ -85,7 +101,8 @@ final class Eval_
             if ($gate === null || !self::evalGate($gate, $user)) return $notIn;
         }
 
-        $uid = self::userId($user);
+        $bucketBy = $exp['bucketBy'] ?? null;
+        $uid = self::pickIdentifier($user, is_string($bucketBy) ? $bucketBy : null);
         if ($uid === null) return $notIn;
 
         $universeName = $exp['universe'] ?? null;

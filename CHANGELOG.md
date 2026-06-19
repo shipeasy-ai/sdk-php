@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- **Per-experiment `bucketBy`.** Experiment evaluation now honors an optional
+  `bucketBy` attribute (JSON `bucketBy`, camelCase): when set, the holdout,
+  allocation, and group hashes all bucket on that user attribute (e.g.
+  `company_id`) so a whole org moves onto one variant together. A non-empty
+  string is used as-is, a number is stringified, and an absent/empty value
+  falls back to `user_id ?? anonymous_id` (matching gates). No resolvable unit
+  ⇒ not enrolled. Matches the canonical core implementation.
 - **Default values on `getFlag()`/`getConfig()`.** Both now take an optional
   default. `getFlag($name, $user, $default = false)` returns the default ONLY
   when the flag cannot be evaluated (client not initialized or gate not in the
