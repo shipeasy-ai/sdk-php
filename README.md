@@ -163,3 +163,32 @@ $c->clearOverrides();
 The override setters (`overrideFlag`, `overrideConfig`, `overrideExperiment`,
 `clearOverrides`) also work on a normal `new Client(...)` instance — an
 overridden key short-circuits before any network read.
+
+## OpenFeature
+
+If your app is standardized on the CNCF [OpenFeature](https://openfeature.dev)
+API, plug Shipeasy in as the backing provider. `open-feature/sdk` (`^2.0`) is an
+optional dependency — install it in your app (`composer require open-feature/sdk`).
+
+```php
+use OpenFeature\OpenFeatureAPI;
+use Shipeasy\Client;
+use Shipeasy\OpenFeature\ShipeasyProvider;
+
+$client = new Client($_ENV['SHIPEASY_SERVER_KEY']);
+$client->initOnce();
+
+$api = OpenFeatureAPI::getInstance();
+$api->setProvider(new ShipeasyProvider($client));
+
+$of = $api->getClient();
+$on = $of->getBooleanValue('new_checkout', false, $ctx); // bool
+```
+
+`ShipeasyProvider` is a pure adapter over `Client` — evaluation is unchanged.
+Booleans evaluate gates; strings/integers/floats/objects route to dynamic
+configs (`getConfig`). The evaluation context's targeting key becomes the
+`user_id` and its attributes are carried through for targeting. Reasons map onto
+OpenFeature's `Reason`/`ErrorCode` (`RULE_MATCH→TARGETING_MATCH`,
+`OFF→DISABLED`, `OVERRIDE→STATIC`, missing flag → `FLAG_NOT_FOUND`,
+uninitialized client → `PROVIDER_NOT_READY`, wrong config type → `TYPE_MISMATCH`).

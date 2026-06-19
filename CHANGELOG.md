@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- **OpenFeature provider.** Added `Shipeasy\OpenFeature\ShipeasyProvider`, an
+  implementation of the CNCF OpenFeature PHP provider contract
+  (`OpenFeature\interfaces\provider\Provider`, via `AbstractProvider`) that wraps
+  an existing `Shipeasy\Client`. `getMetadata()->getName()` is `"shipeasy"`.
+  `resolveBooleanValue()` builds a user from the evaluation context (targeting
+  key → `user_id`, attributes → user attrs), evaluates the gate, and maps the
+  reason: `RULE_MATCH→TARGETING_MATCH`, `DEFAULT→DEFAULT`, `OFF→DISABLED`,
+  `OVERRIDE→STATIC`, `FLAG_NOT_FOUND→ERROR`+`FLAG_NOT_FOUND`,
+  `CLIENT_NOT_READY→ERROR`+`PROVIDER_NOT_READY`. `resolveString/Integer/Float/
+  ObjectValue()` route to `getConfig()`: absent → default + `DEFAULT`, type
+  mismatch → default + `TYPE_MISMATCH`, present → value + `TARGETING_MATCH`. Any
+  thrown error falls back to the default with a `GENERAL` resolution error.
+  `open-feature/sdk` (`^2.0`) is an optional dependency — added to `require-dev`
+  and `suggest`; install it in the consuming app.
 - **Private attributes.** Added a `privateAttributes` constructor option (a list
   of attribute names). These are usable for targeting but never persisted in
   analytics (LD/Statsig private attributes). The server evaluates locally, so
