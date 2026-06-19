@@ -2,6 +2,31 @@
 
 ## Unreleased
 
+- **Private attributes.** Added a `privateAttributes` constructor option (a list
+  of attribute names). These are usable for targeting but never persisted in
+  analytics (LD/Statsig private attributes). The server evaluates locally, so
+  private attrs never leave for evaluation at all; the only egress is `/collect`,
+  and the listed keys are stripped from every outbound `track()` payload before
+  it is POSTed. When all properties are private the event is sent without a
+  `properties` field. `stripPrivate()` is exposed for inspection/testing.
+- **Manual exposure (`logExposure()`).** Added
+  `logExposure(string|array $userOrId, string $experimentName)`. The server is
+  stateless and never auto-logs exposures, so call this at the point you present
+  the treatment. It re-evaluates the experiment (a bare `user_id` string is
+  wrapped as `['user_id' => …]`) and, if the user is enrolled, POSTs a single
+  `{type: "exposure", experiment, group, user_id|anonymous_id, ts}` event to
+  `/collect`. No-op otherwise (not enrolled, unknown experiment, or test mode).
+- **Sticky bucketing.** Added a pluggable `StickyBucketStore` interface
+  (`get(string $unit): ?array` / `set(string $unit, string $exp, array $entry)`,
+  entry `['g' => group, 's' => salt8]`) plus a built-in `InMemoryStickyStore`,
+  wired in through a new `stickyStore` constructor option (and the
+  `forTesting()`/`fromSnapshot()`/`fromFile()` factories). When supplied,
+  experiment eval — after the holdout, before allocation — returns a unit's
+  stored group when the stored 8-char salt prefix still matches (skipping the
+  allocation gate, so a shrinking allocation keeps an enrolled unit in); a fresh
+  pick is persisted via `set()`. A salt mismatch or a vanished stored group
+  re-buckets and overwrites. Absent store ⇒ today's deterministic behaviour (no
+  I/O). Mirrors the canonical TypeScript reference SDK and doc 20 §2.
 - **Per-experiment `bucketBy`.** Experiment evaluation now honors an optional
   `bucketBy` attribute (JSON `bucketBy`, camelCase): when set, the holdout,
   allocation, and group hashes all bucket on that user attribute (e.g.

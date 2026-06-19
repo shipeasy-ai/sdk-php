@@ -90,8 +90,24 @@ final class Eval_
         return Murmur3::hash32("$salt:$uid") % 10000 < $rolloutPct;
     }
 
-    public static function evalExperiment(?array $exp, ?array $flags, ?array $exps, array $user): ExperimentResult
-    {
+    /**
+     * Evaluate an experiment for a user.
+     *
+     * When a {@see StickyBucketStore} is supplied (with the experiment $name so
+     * it can be keyed), an enrolled unit whose stored salt prefix still matches
+     * skips the allocation gate and returns the stored group without re-running
+     * the pick — so a shrinking allocation keeps it in. A fresh pick is written
+     * back via the store. A salt mismatch or a vanished stored group falls
+     * through to re-bucket + overwrite. Absent store ⇒ deterministic (no I/O).
+     */
+    public static function evalExperiment(
+        ?array $exp,
+        ?array $flags,
+        ?array $exps,
+        array $user,
+        ?StickyBucketStore $stickyStore = null,
+        ?string $name = null
+    ): ExperimentResult {
         $notIn = new ExperimentResult(false, 'control', null);
         if ($exp === null || ($exp['status'] ?? null) !== 'running') return $notIn;
 
@@ -116,16 +132,38 @@ final class Eval_
         }
 
         $salt = $exp['salt'] ?? '';
+        $groups = $exp['groups'] ?? [];
+        $salt8 = substr((string) $salt, 0, 8);
+
+        // Sticky short-circuit (doc 20 §2): after holdout, before allocation —
+        // an enrolled unit whose stored salt prefix still matches returns the
+        // stored group without re-bucketing (skips the allocation gate).
+        if ($stickyStore !== null && $name !== null) {
+            $entry = $stickyStore->get($uid)[$name] ?? null;
+            if (is_array($entry) && ($entry['s'] ?? null) === $salt8) {
+                $storedGroup = $entry['g'] ?? null;
+                foreach ($groups as $g) {
+                    if ((string) ($g['name'] ?? '') === (string) $storedGroup) {
+                        return new ExperimentResult(true, (string) $storedGroup, $g['params'] ?? null);
+                    }
+                }
+                // Stored group is gone — fall through to re-bucket + overwrite.
+            }
+        }
+
         $allocPct = (int) ($exp['allocationPct'] ?? 0);
         if (Murmur3::hash32("$salt:alloc:$uid") % 10000 >= $allocPct) return $notIn;
 
         $groupHash = Murmur3::hash32("$salt:group:$uid") % 10000;
-        $groups = $exp['groups'] ?? [];
         $cumulative = 0;
         foreach ($groups as $i => $g) {
             $cumulative += (int) ($g['weight'] ?? 0);
             if ($groupHash < $cumulative || $i === count($groups) - 1) {
-                return new ExperimentResult(true, (string) ($g['name'] ?? 'control'), $g['params'] ?? null);
+                $groupName = (string) ($g['name'] ?? 'control');
+                if ($stickyStore !== null && $name !== null) {
+                    $stickyStore->set($uid, $name, ['g' => $groupName, 's' => $salt8]);
+                }
+                return new ExperimentResult(true, $groupName, $g['params'] ?? null);
             }
         }
         return $notIn;

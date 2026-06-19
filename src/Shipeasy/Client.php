@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Shipeasy;
 
-final class Client
+class Client
 {
     private const DEFAULT_BASE_URL = 'https://edge.shipeasy.dev';
 
@@ -18,6 +18,19 @@ final class Client
     private bool $localMode = false;
     private Telemetry $telemetry;
 
+    /**
+     * Attribute names usable for targeting but never persisted in analytics
+     * (LD/Statsig `privateAttributes`). The server evaluates locally, so these
+     * never leave for evaluation at all; the only egress is /collect, and the
+     * listed keys are stripped from every outbound track() payload.
+     *
+     * @var array<int, string>
+     */
+    private array $privateAttributes = [];
+
+    /** Optional sticky-bucketing store; absent ⇒ deterministic eval. */
+    private ?StickyBucketStore $stickyStore = null;
+
     /** @var array<string, bool> */
     private array $flagOverrides = [];
     /** @var array<string, mixed> */
@@ -29,15 +42,28 @@ final class Client
     private array $changeListeners = [];
     private int $nextListenerId = 0;
 
+    /**
+     * @param array<int, string> $privateAttributes Attribute names stripped from
+     *        every outbound track() payload (LD/Statsig private attributes).
+     * @param StickyBucketStore|null $stickyStore Sticky-bucketing store; when
+     *        supplied, getExperiment() locks a unit to its first-assigned
+     *        variant (changing allocation %/weights won't re-bucket an enrolled
+     *        unit — changing the experiment salt is the reshuffle lever). Absent
+     *        ⇒ deterministic (fully backward compatible).
+     */
     public function __construct(
         string $apiKey,
         ?string $baseUrl = null,
         string $env = 'prod',
         bool $disableTelemetry = false,
-        ?string $telemetryUrl = null
+        ?string $telemetryUrl = null,
+        array $privateAttributes = [],
+        ?StickyBucketStore $stickyStore = null
     ) {
         $this->apiKey = $apiKey;
         $this->baseUrl = rtrim($baseUrl ?? self::DEFAULT_BASE_URL, '/');
+        $this->privateAttributes = array_values($privateAttributes);
+        $this->stickyStore = $stickyStore;
         // Per-evaluation usage telemetry. ON by default; pass
         // disableTelemetry: true to opt out. See Telemetry.php.
         $this->telemetry = new Telemetry(
@@ -56,9 +82,9 @@ final class Client
      * overrideConfig(), and overrideExperiment(). Mirrors the cross-SDK test
      * utility contract (Statsig-style local overrides).
      */
-    public static function forTesting(): self
+    public static function forTesting(?StickyBucketStore $stickyStore = null): self
     {
-        $c = new self('', null, 'prod', true);
+        $c = new self('', null, 'prod', true, null, [], $stickyStore);
         $c->localMode = true;
         $c->initialized = true;
         return $c;
@@ -72,7 +98,7 @@ final class Client
      * the snapshot (overrides apply on top). Useful for edge/air-gapped hosts
      * that ship a baked blob, or for reproducible CI.
      */
-    public static function fromFile(string $path): self
+    public static function fromFile(string $path, ?StickyBucketStore $stickyStore = null): self
     {
         $raw = @file_get_contents($path);
         if ($raw === false) {
@@ -84,7 +110,7 @@ final class Client
         }
         $flags = is_array($data['flags'] ?? null) ? $data['flags'] : [];
         $experiments = is_array($data['experiments'] ?? null) ? $data['experiments'] : [];
-        return self::fromSnapshot($flags, $experiments);
+        return self::fromSnapshot($flags, $experiments, $stickyStore);
     }
 
     /**
@@ -93,9 +119,9 @@ final class Client
      * /sdk/experiments (with `experiments`/`universes`). No network, telemetry
      * off, marked initialized; evaluations run against the snapshot.
      */
-    public static function fromSnapshot(array $flags, array $experiments): self
+    public static function fromSnapshot(array $flags, array $experiments, ?StickyBucketStore $stickyStore = null): self
     {
-        $c = new self('', null, 'prod', true);
+        $c = new self('', null, 'prod', true, null, [], $stickyStore);
         $c->localMode = true;
         $c->initialized = true;
         $c->flagsBlob = $flags;
@@ -289,7 +315,14 @@ final class Client
         }
         $this->telemetry->emit('experiment', $name);
         $exp = $this->expsBlob['experiments'][$name] ?? null;
-        $r = Eval_::evalExperiment($exp, $this->flagsBlob, $this->expsBlob, self::withAnonId($user));
+        $r = Eval_::evalExperiment(
+            $exp,
+            $this->flagsBlob,
+            $this->expsBlob,
+            self::withAnonId($user),
+            $this->stickyStore,
+            $name
+        );
         if ($r->params === null) {
             return new ExperimentResult($r->inExperiment, $r->group, $defaultParams);
         }
@@ -299,13 +332,62 @@ final class Client
     public function track(string $userId, string $eventName, array $properties = []): void
     {
         if ($this->localMode) return; // test mode never sends events
+        $safeProps = $this->stripPrivate($properties);
         $event = [
             'type' => 'metric',
             'event_name' => $eventName,
             'user_id' => $userId,
             'ts' => (int) (microtime(true) * 1000),
         ];
-        if (!empty($properties)) $event['properties'] = $properties;
+        if (!empty($safeProps)) $event['properties'] = $safeProps;
+        $body = json_encode(['events' => [$event]], JSON_UNESCAPED_UNICODE);
+        $this->postNonBlocking('/collect', $body);
+    }
+
+    /**
+     * Drop caller-marked private attributes from an outbound props bag. Returns
+     * the props unchanged when no private attributes are configured.
+     *
+     * @param array<string, mixed> $props
+     * @return array<string, mixed>
+     */
+    public function stripPrivate(array $props): array
+    {
+        if ($props === [] || $this->privateAttributes === []) return $props;
+        foreach ($this->privateAttributes as $key) {
+            unset($props[$key]);
+        }
+        return $props;
+    }
+
+    /**
+     * Emit an exposure event for an experiment at the server-side decision point
+     * (parity with the browser's auto-exposure). The server is stateless and
+     * never auto-logs, so call this when you actually present the treatment.
+     * Re-evaluates the experiment for $user (a bare user_id string is wrapped as
+     * ['user_id' => …]); if the user is enrolled, POSTs a single exposure to
+     * /collect. No-op in local/test mode or when the user isn't enrolled.
+     *
+     * @param string|array<string, mixed> $user
+     */
+    public function logExposure(string|array $user, string $experimentName): void
+    {
+        if ($this->localMode) return; // test mode never sends events
+        $u = is_string($user) ? ['user_id' => $user] : $user;
+        $result = $this->getExperiment($experimentName, $u, null);
+        if (!$result->inExperiment) return;
+        $event = [
+            'type' => 'exposure',
+            'experiment' => $experimentName,
+            'group' => $result->group,
+            'ts' => (int) (microtime(true) * 1000),
+        ];
+        if (isset($u['user_id']) && $u['user_id'] !== '') {
+            $event['user_id'] = (string) $u['user_id'];
+        }
+        if (isset($u['anonymous_id']) && $u['anonymous_id'] !== '') {
+            $event['anonymous_id'] = (string) $u['anonymous_id'];
+        }
         $body = json_encode(['events' => [$event]], JSON_UNESCAPED_UNICODE);
         $this->postNonBlocking('/collect', $body);
     }
@@ -388,7 +470,7 @@ final class Client
         return [$status, $parsed, $body];
     }
 
-    private function postNonBlocking(string $path, string $body): void
+    protected function postNonBlocking(string $path, string $body): void
     {
         $ch = curl_init($this->baseUrl . $path);
         curl_setopt_array($ch, [
