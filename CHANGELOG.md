@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.6.0
+
+- **`see()` structured error reporting.** Added the cross-SDK `see()` errors
+  primitive — every handled exception documents its product *consequence*, not
+  just its stack. Instance methods on `Client`:
+  `see($problem): SeeChain`, `seeViolation(string $name): SeeChain`,
+  `controlFlowException(\Throwable $e): ControlFlowChain`. Package-level
+  namespaced functions `Shipeasy\see()`, `Shipeasy\seeViolation()`,
+  `Shipeasy\controlFlowException()` (autoloaded via composer `autoload.files`)
+  route to a default client registered on every `Client` construction (last
+  wins; `Client::setDefault()` / `Shipeasy\set_default_client()` to set it
+  explicitly). A global `see()` before any client exists logs a warning and
+  returns a no-op chain — it never throws.
+  - Grammar (dispatch model): `->causesThe($subject)` and `->extras($arr)` are
+    chainable setters callable in any order; `->to($outcome)` is the terminal
+    that builds the wire event and fire-and-forgets a POST to `/collect`. `to()`
+    is idempotent; a chain that never calls `to()` sends nothing.
+  - `controlFlowException($e)->because($reason)->extras($arr)` marks the
+    throwable expected (recorded in a `WeakMap`-backed registry, since PHP
+    exceptions aren't freely mutable) and reports nothing.
+  - Wire event: `{type:"error", kind, error_type, message, stack?, subject,
+    outcome, extras?, side:"server", env?, sdk_version, ts}`. `kind` is
+    `"caught"` for throwables/non-throwable problems and `"violation"` for a
+    `Violation`. Extras are sanitized (≤20 keys, 200-char string values, null
+    dropped, only string/int/float/bool kept) and the client's private
+    attributes are stripped defensively. A per-process `SeeLimiter` (30s dedup,
+    25-send cap) bounds network chatter. No-op in `localMode`.
+  - Added `Client::VERSION` (`'0.6.0'`) as the single runtime source for the
+    `sdk_version` field (composer.json exposes no runtime constant), and stored
+    the client `env` so it can be included on the event.
+
 ## Unreleased
 
 - **OpenFeature provider.** Added `Shipeasy\OpenFeature\ShipeasyProvider`, an

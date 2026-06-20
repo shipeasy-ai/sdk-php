@@ -8,8 +8,16 @@ class Client
 {
     private const DEFAULT_BASE_URL = 'https://edge.shipeasy.dev';
 
+    /**
+     * The SDK's own version string, sent as `sdk_version` on see() error events.
+     * This is the single runtime source of truth — keep it in sync with the
+     * `version` field in composer.json (composer exposes no runtime constant).
+     */
+    public const VERSION = '0.6.0';
+
     private string $apiKey;
     private string $baseUrl;
+    private string $env;
     private ?array $flagsBlob = null;
     private ?array $expsBlob = null;
     private ?string $flagsEtag = null;
@@ -42,6 +50,16 @@ class Client
     private array $changeListeners = [];
     private int $nextListenerId = 0;
 
+    /** Per-process spam guard for see() reports. */
+    private SeeLimiter $seeLimiter;
+
+    /**
+     * Default client backing the package-level Shipeasy\see()/seeViolation()/
+     * controlFlowException() functions. Last-constructed wins — the server-SDK
+     * analog of TS's shipeasy({key}) configure call.
+     */
+    private static ?Client $default = null;
+
     /**
      * @param array<int, string> $privateAttributes Attribute names stripped from
      *        every outbound track() payload (LD/Statsig private attributes).
@@ -62,6 +80,7 @@ class Client
     ) {
         $this->apiKey = $apiKey;
         $this->baseUrl = rtrim($baseUrl ?? self::DEFAULT_BASE_URL, '/');
+        $this->env = $env;
         $this->privateAttributes = array_values($privateAttributes);
         $this->stickyStore = $stickyStore;
         // Per-evaluation usage telemetry. ON by default; pass
@@ -73,6 +92,26 @@ class Client
             $env,
             $disableTelemetry
         );
+        $this->seeLimiter = new SeeLimiter();
+        // Register as the default client backing the package-level see() funcs
+        // (last constructed wins — the server-SDK analog of TS's shipeasy({key})).
+        self::setDefault($this);
+    }
+
+    /**
+     * Register the client backing the package-level Shipeasy\see() functions.
+     * Called automatically from the constructor (last wins); also callable
+     * explicitly. Mirrors the Python set_default_client / TS shipeasy({key}).
+     */
+    public static function setDefault(Client $client): void
+    {
+        self::$default = $client;
+    }
+
+    /** The current default client, or null if none has been constructed. */
+    public static function getDefault(): ?Client
+    {
+        return self::$default;
     }
 
     /**
@@ -358,6 +397,67 @@ class Client
             unset($props[$key]);
         }
         return $props;
+    }
+
+    // ---- see() structured error reporting ----
+
+    /**
+     * Report a caught throwable (or a thrown non-throwable problem). Fire-and-
+     * forget; never blocks or throws into the request path. Terminate with
+     * ->to($outcome):
+     *
+     *     $client->see($e)->causesThe("checkout")->to("use cached prices");
+     */
+    public function see(mixed $problem): SeeChain
+    {
+        return new SeeChain($problem, $this->dispatchSee(...));
+    }
+
+    /**
+     * Report a non-exception problem. The name is a stable fingerprint key —
+     * put variable data in ->extras(), never the name.
+     */
+    public function seeViolation(string $name): SeeChain
+    {
+        return new SeeChain(new Violation($name), $this->dispatchSee(...));
+    }
+
+    /** Mark a throwable as expected control flow — reports nothing. */
+    public function controlFlowException(\Throwable $err): ControlFlowChain
+    {
+        return new ControlFlowChain($err);
+    }
+
+    /**
+     * Build the wire event and fire-and-forget POST it to /collect. No-op in
+     * local/test mode. Spam-guarded. Never raises into caller code.
+     *
+     * @param array<string, mixed>|null $extras
+     */
+    private function dispatchSee(mixed $problem, string $subject, string $outcome, ?array $extras): void
+    {
+        if ($this->localMode) {
+            return; // test mode never sends events
+        }
+        try {
+            $safeExtras = $extras !== null ? $this->stripPrivate($extras) : null;
+            $ev = See::buildEvent(
+                $problem,
+                $subject,
+                $outcome,
+                $safeExtras,
+                'server',
+                self::VERSION,
+                $this->env
+            );
+            if (!$this->seeLimiter->shouldSend($ev)) {
+                return;
+            }
+            $body = json_encode(['events' => [$ev]], JSON_UNESCAPED_UNICODE);
+            $this->postNonBlocking('/collect', $body);
+        } catch (\Throwable) {
+            // Reporting must never raise into caller code.
+        }
     }
 
     /**
