@@ -7,6 +7,9 @@ namespace Shipeasy;
 class Client
 {
     private const DEFAULT_BASE_URL = 'https://edge.shipeasy.dev';
+    // CDN origin serving the static loader scripts (/sdk/bootstrap.js,
+    // /sdk/i18n/loader.js) — distinct from the edge API the blobs are fetched from.
+    private const DEFAULT_CDN_BASE = 'https://cdn.shipeasy.ai';
 
     /**
      * The SDK's own version string, sent as `sdk_version` on see() error events.
@@ -366,6 +369,117 @@ class Client
             return new ExperimentResult($r->inExperiment, $r->group, $defaultParams);
         }
         return $r;
+    }
+
+    /**
+     * Batch-evaluate every loaded gate, config and experiment for $user into a
+     * bootstrap payload (`['flags' => ..., 'configs' => ..., 'experiments' =>
+     * ..., 'killswitches' => ...]`) keyed to match the browser SDK's
+     * window.__SE_BOOTSTRAP shape. Local overrides win. Killswitches are folded
+     * into per-gate evaluation, so the standalone `killswitches` map is empty
+     * for this SDK. No telemetry (a batch evaluate is not a per-flag exposure).
+     */
+    public function evaluate(array $user): array
+    {
+        $user = self::withAnonId($user);
+
+        $flags = [];
+        foreach (($this->flagsBlob['gates'] ?? []) as $name => $gate) {
+            $flags[$name] = array_key_exists($name, $this->flagOverrides)
+                ? $this->flagOverrides[$name]
+                : Eval_::evalGate($gate, $user);
+        }
+
+        $configs = [];
+        foreach (($this->flagsBlob['configs'] ?? []) as $name => $entry) {
+            $configs[$name] = array_key_exists($name, $this->configOverrides)
+                ? $this->configOverrides[$name]
+                : ($entry['value'] ?? null);
+        }
+
+        $experiments = [];
+        foreach (($this->expsBlob['experiments'] ?? []) as $name => $exp) {
+            if (isset($this->experimentOverrides[$name])) {
+                $o = $this->experimentOverrides[$name];
+                $experiments[$name] = [
+                    'inExperiment' => true,
+                    'group' => $o['group'],
+                    'params' => $o['params'],
+                ];
+                continue;
+            }
+            $r = Eval_::evalExperiment(
+                $exp,
+                $this->flagsBlob,
+                $this->expsBlob,
+                $user,
+                $this->stickyStore,
+                $name
+            );
+            $experiments[$name] = [
+                'inExperiment' => $r->inExperiment,
+                'group' => $r->group,
+                'params' => $r->params,
+            ];
+        }
+
+        return [
+            'flags' => (object) $flags,
+            'configs' => (object) $configs,
+            'experiments' => (object) $experiments,
+            'killswitches' => (object) [],
+        ];
+    }
+
+    /**
+     * Return the cross-platform SSR bootstrap <script> tag for a request:
+     * se-bootstrap.js reads its data-* attributes and hydrates
+     * window.__SE_BOOTSTRAP (and writes the anon cookie). No key is embedded.
+     *
+     * $opts: ['anonId' => string, 'i18nProfile' => 'en:prod', 'baseUrl' => '...'].
+     */
+    public function bootstrapScriptTag(array $user, array $opts = []): string
+    {
+        $payload = $this->evaluate($user);
+        $base = self::cdnBase($opts['baseUrl'] ?? null);
+        $profile = $opts['i18nProfile'] ?? 'en:prod';
+        $attrs = [
+            'data-se-bootstrap',
+            self::attr('data-flags', json_encode($payload['flags'])),
+            self::attr('data-configs', json_encode($payload['configs'])),
+            self::attr('data-experiments', json_encode($payload['experiments'])),
+            self::attr('data-killswitches', json_encode($payload['killswitches'])),
+            self::attr('data-i18n-profile', $profile),
+            self::attr('data-api-url', $base),
+        ];
+        if (!empty($opts['anonId'])) {
+            $attrs[] = self::attr('data-anon-id', $opts['anonId']);
+        }
+        $src = htmlspecialchars($base . '/sdk/bootstrap.js', ENT_QUOTES);
+        return '<script src="' . $src . '" ' . implode(' ', $attrs) . '></script>';
+    }
+
+    /**
+     * Return the i18n loader <script> tag. The loader fetches translations for
+     * the profile using the PUBLIC client key (safe to embed in HTML).
+     */
+    public function i18nScriptTag(string $clientKey, string $profile = 'en:prod', array $opts = []): string
+    {
+        $base = self::cdnBase($opts['baseUrl'] ?? null);
+        $src = htmlspecialchars($base . '/sdk/i18n/loader.js', ENT_QUOTES);
+        return '<script src="' . $src . '" '
+            . self::attr('data-key', $clientKey) . ' '
+            . self::attr('data-profile', $profile) . '></script>';
+    }
+
+    private static function cdnBase(?string $override): string
+    {
+        return rtrim($override ?: self::DEFAULT_CDN_BASE, '/');
+    }
+
+    private static function attr(string $name, string $value): string
+    {
+        return $name . '="' . htmlspecialchars($value, ENT_QUOTES) . '"';
     }
 
     public function track(string $userId, string $eventName, array $properties = []): void
