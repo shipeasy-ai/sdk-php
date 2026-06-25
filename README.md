@@ -6,19 +6,57 @@ Server SDK for [Shipeasy](https://shipeasy.dev). Compatible with PHP 8.1+, inclu
 composer require shipeasy/shipeasy
 ```
 
+Configure **once** at startup, then bind a user per request with `new Client($user)`:
+
 ```php
+use function Shipeasy\configure;
 use Shipeasy\Client;
 
-$c = new Client(getenv('SHIPEASY_SERVER_KEY'));
-$c->init();
+// once, at startup (server key). The optional second arg is an `attributes`
+// transform from your own user object to the Shipeasy attribute map; omit it
+// when your user array already IS the attribute map.
+configure(getenv('SHIPEASY_SERVER_KEY'), fn ($u) => [
+    'user_id' => $u->id,
+    'plan'    => $u->plan,
+]);
 
-$enabled = $c->getFlag('new_checkout', ['user_id' => 'u_123']);
-$cfg = $c->getConfig('billing_copy');
-$r = $c->getExperiment('checkout_button', ['user_id' => 'u_123'], ['color' => 'blue']);
-$c->track('u_123', 'purchase', ['amount' => 49]);
+// per request — no key, no user argument on each call:
+$client  = new Client($currentUser);
+$enabled = $client->getFlag('new_checkout');
+$cfg     = $client->getConfig('billing_copy');
+$r       = $client->getExperiment('checkout_button', ['color' => 'blue']);
+$panic   = $client->getKillswitch('payments_panic');
 ```
 
-For long-running runtimes (Swoole, RoadRunner, queue workers) call `$c->init()` from a periodic task — PHP has no thread-based polling primitive.
+`new Client($user)` is **cheap**: it runs the configured `attributes` transform
+once, merges the request's `__se_anon_id`, and delegates evaluation to the single
+configured engine — it opens no connection and starts no poll. Constructing a
+`Client` before `configure()` throws.
+
+### The engine (advanced / full control)
+
+`configure()` builds and owns one `Shipeasy\Engine` — the heavyweight object that
+holds the API key, blob cache, fetch, `track()`, `see()` and the test/offline
+factories. Construct it directly when you need that surface (e.g. `track()`, a
+custom poll loop, or `forTesting()`):
+
+```php
+use Shipeasy\Engine;
+
+$engine = new Engine(getenv('SHIPEASY_SERVER_KEY'));
+$engine->init();
+
+$enabled = $engine->getFlag('new_checkout', ['user_id' => 'u_123']);
+$engine->track('u_123', 'purchase', ['amount' => 49]);
+```
+
+> **Breaking change in 0.8.0:** the heavyweight class formerly named `Client` is
+> now **`Engine`**. `Client` is the new lightweight, user-bound handle above.
+> Rename `new Client($key)` → `new Engine($key)` (and `Client::forTesting()` →
+> `Engine::forTesting()`, etc.).
+
+For long-running runtimes (Swoole, RoadRunner, queue workers) call `$engine->init()`
+from a periodic task — PHP has no thread-based polling primitive.
 
 ## Server-side rendering (SSR)
 
@@ -117,10 +155,10 @@ telemetry is off.
 
 ```php
 // From a JSON file: { "flags": <body of /sdk/flags>, "experiments": <body of /sdk/experiments> }
-$c = Client::fromFile('/etc/shipeasy/snapshot.json');
+$c = Engine::fromFile('/etc/shipeasy/snapshot.json');
 
 // Or from already-decoded blobs:
-$c = Client::fromSnapshot($flagsBody, $experimentsBody);
+$c = Engine::fromSnapshot($flagsBody, $experimentsBody);
 
 $c->getFlag('new_checkout', ['user_id' => 'u1']);   // evaluated, no network
 ```
@@ -151,15 +189,15 @@ contract — see `18-identity-bucketing.md`.
 ## Testing
 
 In unit tests you want deterministic flag/config/experiment values with **no
-network and no API key**. `Client::forTesting()` builds a client that never
+network and no API key**. `Engine::forTesting()` builds a client that never
 fetches (`init()`/`initOnce()` are no-ops), never sends telemetry, and whose
 `track()` is a no-op. Seed each entity with the override setters; an override
 always wins over the fetched blob.
 
 ```php
-use Shipeasy\Client;
+use Shipeasy\Engine;
 
-$c = Client::forTesting();   // no key, no network
+$c = Engine::forTesting();   // no key, no network
 
 // Flags
 $c->overrideFlag('new_checkout', true);
@@ -184,7 +222,7 @@ $c->clearOverrides();
 ```
 
 The override setters (`overrideFlag`, `overrideConfig`, `overrideExperiment`,
-`clearOverrides`) also work on a normal `new Client(...)` instance — an
+`clearOverrides`) also work on a normal `new Engine(...)` instance — an
 overridden key short-circuits before any network read.
 
 ## OpenFeature
@@ -195,10 +233,10 @@ optional dependency — install it in your app (`composer require open-feature/s
 
 ```php
 use OpenFeature\OpenFeatureAPI;
-use Shipeasy\Client;
+use Shipeasy\Engine;
 use Shipeasy\OpenFeature\ShipeasyProvider;
 
-$client = new Client($_ENV['SHIPEASY_SERVER_KEY']);
+$client = new Engine($_ENV['SHIPEASY_SERVER_KEY']);
 $client->initOnce();
 
 $api = OpenFeatureAPI::getInstance();
@@ -208,7 +246,7 @@ $of = $api->getClient();
 $on = $of->getBooleanValue('new_checkout', false, $ctx); // bool
 ```
 
-`ShipeasyProvider` is a pure adapter over `Client` — evaluation is unchanged.
+`ShipeasyProvider` is a pure adapter over `Engine` — evaluation is unchanged.
 Booleans evaluate gates; strings/integers/floats/objects route to dynamic
 configs (`getConfig`). The evaluation context's targeting key becomes the
 `user_id` and its attributes are carried through for targeting. Reasons map onto

@@ -10,7 +10,7 @@ namespace Shipeasy;
  *
  * Mirrors `@shipeasy/sdk` (packages/ts-sdk/src/see/core.ts) and the Python
  * reference (packages/server-sdks/sdk-python/shipeasy/_see.py). The public
- * surface is Client::see()/seeViolation()/controlFlowException() plus the
+ * surface is Engine::see()/seeViolation()/controlFlowException() plus the
  * Shipeasy\see()/seeViolation()/controlFlowException() namespaced functions —
  * this class is internal plumbing.
  */

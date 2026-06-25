@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Shipeasy\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Shipeasy\Client;
+use Shipeasy\Engine;
 use Shipeasy\ControlFlowChain;
 use Shipeasy\ExpectedRegistry;
 use Shipeasy\See;
@@ -17,7 +17,7 @@ use function Shipeasy\controlFlowException;
 /**
  * Coverage for see() — structured error reporting (the cross-SDK errors
  * primitive). Mirrors the Python tests/test_see.py. The real path is exercised
- * by subclassing Client and capturing /collect POST bodies, the same pattern as
+ * by subclassing Engine and capturing /collect POST bodies, the same pattern as
  * StickyAndExposureTest.
  */
 final class SeeTest extends TestCase
@@ -25,7 +25,7 @@ final class SeeTest extends TestCase
     /** A non-local client that captures /collect POSTs instead of sending them. */
     private function capturingClient(array $privateAttributes = []): object
     {
-        return new class ('k', null, 'prod', true, null, $privateAttributes) extends Client {
+        return new class ('k', null, 'prod', true, null, $privateAttributes) extends Engine {
             /** @var array<int, array{path: string, body: array}> */
             public array $posts = [];
             protected function postNonBlocking(string $path, string $body): void
@@ -63,7 +63,7 @@ final class SeeTest extends TestCase
         $this->assertSame('checkout', $ev['subject']);
         $this->assertSame('use cached prices', $ev['outcome']);
         $this->assertSame('server', $ev['side']);
-        $this->assertSame(Client::VERSION, $ev['sdk_version']);
+        $this->assertSame(Engine::VERSION, $ev['sdk_version']);
         $this->assertSame('prod', $ev['env']);
         $this->assertArrayHasKey('stack', $ev);
         $this->assertArrayHasKey('ts', $ev);
@@ -158,7 +158,7 @@ final class SeeTest extends TestCase
 
     public function testLocalModeIsNoOp(): void
     {
-        $c = Client::forTesting();
+        $c = Engine::forTesting();
         // forTesting can't capture posts, but it must simply not throw / not send.
         $c->see(new \RuntimeException('x'))->causesThe('checkout')->to('use cached prices');
         $this->assertTrue(true);
@@ -181,7 +181,7 @@ final class SeeTest extends TestCase
         // Build a capturing client, then register it as the default explicitly so
         // the package-level see() routes through our capture seam.
         $c = $this->capturingClient();
-        Client::setDefault($c);
+        Engine::setDefault($c);
         see(new \RuntimeException('global'))->causesThe('dashboard')->to('show cached data');
         $ev = $this->events($c)[0];
         $this->assertSame('dashboard', $ev['subject']);
@@ -191,7 +191,7 @@ final class SeeTest extends TestCase
     public function testGlobalViolationRoutesThroughDefault(): void
     {
         $c = $this->capturingClient();
-        Client::setDefault($c);
+        Engine::setDefault($c);
         seeViolation('global violation')->causesThe('feed')->to('be trimmed');
         $ev = $this->events($c)[0];
         $this->assertSame('violation', $ev['kind']);

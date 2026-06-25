@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Shipeasy\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Shipeasy\Client;
+use Shipeasy\Engine;
 use Shipeasy\InMemoryStickyStore;
 use Shipeasy\StickyBucketStore;
 
@@ -22,7 +22,7 @@ final class StickyAndExposureTest extends TestCase
         array $privateAttributes = [],
         ?StickyBucketStore $stickyStore = null
     ): object {
-        return new class ('k', null, 'prod', true, null, $privateAttributes, $stickyStore) extends Client {
+        return new class ('k', null, 'prod', true, null, $privateAttributes, $stickyStore) extends Engine {
             /** @var array<int, array{path: string, body: array}> */
             public array $posts = [];
             protected function postNonBlocking(string $path, string $body): void
@@ -57,14 +57,14 @@ final class StickyAndExposureTest extends TestCase
 
     public function testStripPrivateRemovesListedKeys(): void
     {
-        $c = new Client('k', null, 'prod', true, null, ['email', 'ssn']);
+        $c = new Engine('k', null, 'prod', true, null, ['email', 'ssn']);
         $out = $c->stripPrivate(['email' => 'a@b.c', 'ssn' => '123', 'plan' => 'pro']);
         $this->assertSame(['plan' => 'pro'], $out);
     }
 
     public function testStripPrivateNoopWithoutConfig(): void
     {
-        $c = new Client('k', null, 'prod', true);
+        $c = new Engine('k', null, 'prod', true);
         $props = ['email' => 'a@b.c', 'plan' => 'pro'];
         $this->assertSame($props, $c->stripPrivate($props));
     }
@@ -140,7 +140,7 @@ final class StickyAndExposureTest extends TestCase
 
     public function testLogExposureNoOpInLocalMode(): void
     {
-        $c = Client::forTesting();
+        $c = Engine::forTesting();
         // forTesting can't capture posts, but it must simply not throw / not send.
         $c->logExposure('user-42', 'whatever');
         $this->assertTrue(true);
@@ -159,7 +159,7 @@ final class StickyAndExposureTest extends TestCase
     public function testFreshPickPersistsAssignment(): void
     {
         $store = new InMemoryStickyStore();
-        $c = Client::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob(), $store);
+        $c = Engine::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob(), $store);
 
         $r = $c->getExperiment('checkout_test', ['user_id' => 'u1'], null);
         $this->assertTrue($r->inExperiment);
@@ -176,7 +176,7 @@ final class StickyAndExposureTest extends TestCase
         $store = new InMemoryStickyStore(['u1' => ['checkout_test' => ['g' => 'treatment', 's' => $salt8]]]);
 
         // Allocation now 0 — a deterministic eval would drop u1. Sticky keeps it.
-        $c = Client::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob('expsalt12345', 0), $store);
+        $c = Engine::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob('expsalt12345', 0), $store);
 
         $r = $c->getExperiment('checkout_test', ['user_id' => 'u1'], null);
         $this->assertTrue($r->inExperiment);
@@ -189,7 +189,7 @@ final class StickyAndExposureTest extends TestCase
         // Stored salt prefix no longer matches → the stored group is ignored and
         // the unit is re-bucketed + overwritten with the new salt prefix.
         $store = new InMemoryStickyStore(['u1' => ['checkout_test' => ['g' => 'treatment', 's' => 'OLDSALT0']]]);
-        $c = Client::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob('newsalt99999'), $store);
+        $c = Engine::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob('newsalt99999'), $store);
 
         $r = $c->getExperiment('checkout_test', ['user_id' => 'u1'], null);
         $this->assertTrue($r->inExperiment);
@@ -205,7 +205,7 @@ final class StickyAndExposureTest extends TestCase
         // → fall through to a fresh pick + overwrite (a real group is returned).
         $salt8 = substr('expsalt12345', 0, 8);
         $store = new InMemoryStickyStore(['u1' => ['checkout_test' => ['g' => 'ghost', 's' => $salt8]]]);
-        $c = Client::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob(), $store);
+        $c = Engine::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob(), $store);
 
         $r = $c->getExperiment('checkout_test', ['user_id' => 'u1'], null);
         $this->assertTrue($r->inExperiment);
@@ -216,7 +216,7 @@ final class StickyAndExposureTest extends TestCase
     public function testStickyIsStableAcrossCalls(): void
     {
         $store = new InMemoryStickyStore();
-        $c = Client::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob(), $store);
+        $c = Engine::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob(), $store);
 
         $first = $c->getExperiment('checkout_test', ['user_id' => 'u1'], null)->group;
         for ($i = 0; $i < 5; $i++) {
@@ -227,7 +227,7 @@ final class StickyAndExposureTest extends TestCase
     public function testNoStoreIsDeterministicAndDoesNotPersist(): void
     {
         // Absent store ⇒ no behaviour change, no side effects.
-        $c = Client::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob());
+        $c = Engine::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob());
         $r = $c->getExperiment('checkout_test', ['user_id' => 'u1'], null);
         $this->assertTrue($r->inExperiment);
         $this->assertContains($r->group, ['control', 'treatment']);

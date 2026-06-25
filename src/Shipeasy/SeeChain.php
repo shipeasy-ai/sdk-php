@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Shipeasy;
 
 /**
- * Fluent chain returned by Client::see()/seeViolation(). Accumulates the
+ * Fluent chain returned by Engine::see()/seeViolation(). Accumulates the
  * consequence (subject) + extras; ->to($outcome) is the terminal that builds the
  * event and fire-and-forgets the report.
  *

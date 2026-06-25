@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Shipeasy\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Shipeasy\Client;
+use Shipeasy\Engine;
 use Shipeasy\FlagDetail;
 
 final class ParityFeaturesTest extends TestCase
 {
     /** A snapshot client with one enabled (100%), one disabled, one config. */
-    private function snapshotClient(): Client
+    private function snapshotClient(): Engine
     {
-        return Client::fromSnapshot(
+        return Engine::fromSnapshot(
             [
                 'gates' => [
                     'fully_on' => ['enabled' => true, 'rules' => [], 'rolloutPct' => 10000, 'salt' => 's1'],
@@ -58,7 +58,7 @@ final class ParityFeaturesTest extends TestCase
     public function testGetFlagDefaultOnNotReady(): void
     {
         // A normal client that has never initialized → CLIENT_NOT_READY → default.
-        $c = new Client('k', null, 'prod', true);
+        $c = new Engine('k', null, 'prod', true);
         $this->assertTrue($c->getFlag('any', ['user_id' => 'u1'], true));
         $this->assertFalse($c->getFlag('any', ['user_id' => 'u1'], false));
         // Backwards-compatible default is false.
@@ -93,7 +93,7 @@ final class ParityFeaturesTest extends TestCase
 
     public function testReasonClientNotReady(): void
     {
-        $c = new Client('k', null, 'prod', true); // never initialized
+        $c = new Engine('k', null, 'prod', true); // never initialized
         $d = $c->getFlagDetail('any', ['user_id' => 'u1']);
         $this->assertFalse($d->value);
         $this->assertSame(FlagDetail::CLIENT_NOT_READY, $d->reason);
@@ -138,7 +138,7 @@ final class ParityFeaturesTest extends TestCase
 
     public function testOnChangeFiresOnApply(): void
     {
-        $c = Client::forTesting();
+        $c = Engine::forTesting();
         $hits = 0;
         $c->onChange(function () use (&$hits): void { $hits++; });
 
@@ -152,7 +152,7 @@ final class ParityFeaturesTest extends TestCase
 
     public function testOnChangeUnsubscribe(): void
     {
-        $c = Client::forTesting();
+        $c = Engine::forTesting();
         $hits = 0;
         $unsub = $c->onChange(function () use (&$hits): void { $hits++; });
 
@@ -166,7 +166,7 @@ final class ParityFeaturesTest extends TestCase
 
     public function testListenerExceptionDoesNotBreakOthers(): void
     {
-        $c = Client::forTesting();
+        $c = Engine::forTesting();
         $hits = 0;
         $c->onChange(function (): void { throw new \RuntimeException('boom'); });
         $c->onChange(function () use (&$hits): void { $hits++; });
@@ -177,7 +177,7 @@ final class ParityFeaturesTest extends TestCase
 
     public function testRefreshIsNoOpInLocalMode(): void
     {
-        $c = Client::forTesting();
+        $c = Engine::forTesting();
         $hits = 0;
         $c->onChange(function () use (&$hits): void { $hits++; });
         $c->refresh(); // localMode → no fetch, no fire, no network
@@ -215,7 +215,7 @@ final class ParityFeaturesTest extends TestCase
         ]));
 
         try {
-            $c = Client::fromFile($path);
+            $c = Engine::fromFile($path);
             $this->assertTrue($c->getFlag('beta', ['user_id' => 'u1']));
             $this->assertSame('hello', $c->getConfig('copy'));
         } finally {
@@ -226,6 +226,6 @@ final class ParityFeaturesTest extends TestCase
     public function testFromFileThrowsOnMissing(): void
     {
         $this->expectException(\RuntimeException::class);
-        Client::fromFile('/no/such/file/at/all.json');
+        Engine::fromFile('/no/such/file/at/all.json');
     }
 }

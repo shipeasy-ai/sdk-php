@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Shipeasy\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Shipeasy\Client;
+use Shipeasy\Engine;
 use Shipeasy\OpenFeature\ShipeasyProvider;
 
 /**
@@ -14,7 +14,7 @@ use Shipeasy\OpenFeature\ShipeasyProvider;
  * skipped so the suite stays green and the gap is reported as UNVERIFIED.
  *
  * Flags/configs are seeded through the SDK's own offline test facility
- * (Client::fromSnapshot) — no network, no API key.
+ * (Engine::fromSnapshot) — no network, no API key.
  */
 final class OpenFeatureProviderTest extends TestCase
 {
@@ -34,7 +34,7 @@ final class OpenFeatureProviderTest extends TestCase
      * Configs:
      *   greeting (string), max_items (int), ratio (float), theme (object)
      */
-    private function seededClient(): Client
+    private function seededClient(): Engine
     {
         $flags = [
             'gates' => [
@@ -51,7 +51,7 @@ final class OpenFeatureProviderTest extends TestCase
             ],
         ];
 
-        return Client::fromSnapshot($flags, []);
+        return Engine::fromSnapshot($flags, []);
     }
 
     private function ctx(string $targetingKey): \OpenFeature\interfaces\flags\EvaluationContext
@@ -104,7 +104,7 @@ final class OpenFeatureProviderTest extends TestCase
     {
         // forTesting() with no seed + a flag that IS seeded would be RULE_MATCH,
         // but an UNINITIALIZED client reports CLIENT_NOT_READY → PROVIDER_NOT_READY.
-        $client = new Client('k', null, 'prod', true); // not initialized, no override
+        $client = new Engine('k', null, 'prod', true); // not initialized, no override
         $p = new ShipeasyProvider($client);
         $r = $p->resolveBooleanValue('whatever', false, $this->ctx('u1'));
 

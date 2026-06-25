@@ -11,26 +11,26 @@ use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
-use Shipeasy\Client;
+use Shipeasy\Engine;
 use Shipeasy\FlagDetail;
 
 /**
  * OpenFeature **server** provider for Shipeasy.
  *
  * Lets a PHP app standardized on the CNCF OpenFeature API plug Shipeasy in as
- * the backing provider. Pure adapter over {@see Client} — no change to
+ * the backing provider. Pure adapter over {@see Engine} — no change to
  * evaluation:
  *
  * ```php
  * use OpenFeature\OpenFeatureAPI;
- * use Shipeasy\Client;
+ * use Shipeasy\Engine;
  * use Shipeasy\OpenFeature\ShipeasyProvider;
  *
- * $client = new Client($_ENV['SHIPEASY_SERVER_KEY']);
- * $client->initOnce();
+ * $engine = new Engine($_ENV['SHIPEASY_SERVER_KEY']);
+ * $engine->initOnce();
  *
  * $api = OpenFeatureAPI::getInstance();
- * $api->setProvider(new ShipeasyProvider($client));
+ * $api->setProvider(new ShipeasyProvider($engine));
  *
  * $of = $api->getClient();
  * $on = $of->getBooleanValue('new_checkout', false, $ctx);
@@ -54,7 +54,7 @@ final class ShipeasyProvider extends AbstractProvider
     /** OpenFeature reason that has no constant on this SDK version. */
     private const REASON_STATIC = 'STATIC';
 
-    public function __construct(private readonly Client $client)
+    public function __construct(private readonly Engine $client)
     {
     }
 

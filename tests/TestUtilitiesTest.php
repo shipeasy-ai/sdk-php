@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Shipeasy\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Shipeasy\Client;
+use Shipeasy\Engine;
 use Shipeasy\ExperimentResult;
 
 final class TestUtilitiesTest extends TestCase
@@ -15,7 +15,7 @@ final class TestUtilitiesTest extends TestCase
     // (no RuntimeException from a failed fetch).
     public function testForTestingNeedsNoNetworkOrKey(): void
     {
-        $c = Client::forTesting();
+        $c = Engine::forTesting();
         $c->init();      // no-op, must not fetch/throw
         $c->initOnce();  // no-op, must not fetch/throw
 
@@ -30,7 +30,7 @@ final class TestUtilitiesTest extends TestCase
 
     public function testOverrideFlagWins(): void
     {
-        $c = Client::forTesting();
+        $c = Engine::forTesting();
         $c->overrideFlag('new_checkout', true);
         $this->assertTrue($c->getFlag('new_checkout', ['user_id' => 'u1']));
 
@@ -40,14 +40,14 @@ final class TestUtilitiesTest extends TestCase
 
     public function testOverrideConfigWins(): void
     {
-        $c = Client::forTesting();
+        $c = Engine::forTesting();
         $c->overrideConfig('billing_copy', ['headline' => 'Hi']);
         $this->assertSame(['headline' => 'Hi'], $c->getConfig('billing_copy'));
     }
 
     public function testOverrideExperimentWins(): void
     {
-        $c = Client::forTesting();
+        $c = Engine::forTesting();
         $c->overrideExperiment('checkout_button', 'treatment', ['color' => 'green']);
 
         $r = $c->getExperiment('checkout_button', ['user_id' => 'u1'], ['color' => 'blue']);
@@ -58,7 +58,7 @@ final class TestUtilitiesTest extends TestCase
 
     public function testClearOverridesResets(): void
     {
-        $c = Client::forTesting();
+        $c = Engine::forTesting();
         $c->overrideFlag('f', true);
         $c->overrideConfig('cfg', 'x');
         $c->overrideExperiment('exp', 'treatment', ['k' => 1]);
@@ -74,7 +74,7 @@ final class TestUtilitiesTest extends TestCase
 
     public function testTrackIsNoOpWithoutError(): void
     {
-        $c = Client::forTesting();
+        $c = Engine::forTesting();
         $c->track('u1', 'purchase', ['amount' => 49]);
         $this->addToAssertionCount(1); // reached here = no network/exception
     }
@@ -83,7 +83,7 @@ final class TestUtilitiesTest extends TestCase
     // before any telemetry/blob read — so no network occurs for overridden keys.
     public function testOverridesWorkOnNormalClient(): void
     {
-        $c = new Client('test-key', null, 'prod', true);
+        $c = new Engine('test-key', null, 'prod', true);
         $c->overrideFlag('f', true);
         $c->overrideConfig('cfg', 42);
         $c->overrideExperiment('exp', 'control', ['v' => 1]);

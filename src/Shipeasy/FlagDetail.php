@@ -6,7 +6,7 @@ namespace Shipeasy;
 
 /**
  * The outcome of a flag evaluation plus the reason it resolved that way.
- * Returned by Client::getFlagDetail(). The `reason` is one of the class
+ * Returned by Engine::getFlagDetail(). The `reason` is one of the class
  * constants below — it explains whether the value came from an override, a
  * matched rule/rollout, an off/missing gate, or an uninitialized client.
  */

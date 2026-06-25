@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.8.0
+
+- **BREAKING — `Client` → `Engine` rename + new user-bound `Client`.** The
+  heavyweight class that owns the API key, blob cache, fetch, `track()`,
+  `see()` and the test/offline factories is now `Shipeasy\Engine` (was
+  `Shipeasy\Client`). Rename every `new Client($key)` → `new Engine($key)` and
+  `Client::forTesting()`/`Client::fromFile()`/`Client::fromSnapshot()` →
+  `Engine::…`. `Engine`'s public surface is otherwise unchanged
+  (`overrideFlag`/`overrideConfig`/`overrideExperiment`/`clearOverrides`,
+  `onChange`/`refresh`, `track`, `logExposure`, `evaluate`/`bootstrapScriptTag`/
+  `i18nScriptTag`, `see`/`seeViolation`/`controlFlowException`, sticky-bucketing
+  + `privateAttributes`). The `see()` default-client wiring now hooks off
+  `Engine` construction / `configure()`.
+- **New ergonomic front door: `configure()` + user-bound `Shipeasy\Client`.**
+  - `Shipeasy\configure(string $apiKey, ?callable $attributes = null, array $opts = [])`
+    (also `Engine::configure(...)`) builds the **one** global engine
+    (first-config-wins), stores an optional `attributes` transform, and fires the
+    one-shot fetch so evaluations resolve against real rules without an explicit
+    `init()`. `$opts` accepts `baseUrl`/`env`/`disableTelemetry`/`telemetryUrl`/
+    `privateAttributes`/`stickyStore`.
+  - The new lightweight `Shipeasy\Client` is built with `new Client($user)`
+    (array OR object). Its constructor runs the configured `attributes` transform
+    once (identity by default — the array IS the attribute map), merges the
+    request's `__se_anon_id`, and stores the resulting attribute map. It exposes
+    `getFlag($name, $default = false)`, `getFlagDetail($name)`,
+    `getConfig($name, $default = null)`, `getExperiment($name, $defaultParams)`
+    and `getKillswitch($name, $switchKey = null)` — **no user argument** — each
+    forwarding to the global engine with the bound map. It opens no connection
+    and starts no poll. Constructing a `Client` before `configure()` throws
+    `\RuntimeException`.
+- **New `Engine::getKillswitch($name, $switchKey = null)`** reads a kill switch's
+  `killed` state (or a named per-key `switches[$switchKey]` override) from the
+  flags blob; the bound `Client` forwards to it.
+
 ## 0.7.0
 
 - **SSR bootstrap script-tag helpers.** New `Client::evaluate(user)`

@@ -46,7 +46,7 @@ final class Identity
 
     /**
      * The anon id resolved for this request, or null if ensure() hasn't run.
-     * Client::getFlag/getExperiment fall back to this as the default
+     * Engine::getFlag/getExperiment fall back to this as the default
      * anonymous_id, so evaluations need no per-call wiring.
      */
     public static function current(): ?string

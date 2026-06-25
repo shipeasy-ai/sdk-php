@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Shipeasy\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Shipeasy\Client;
+use Shipeasy\Engine;
 
 final class BootstrapTest extends TestCase
 {
-    private function client(): Client
+    private function client(): Engine
     {
-        return Client::fromSnapshot(
+        return Engine::fromSnapshot(
             [
                 'gates' => [
                     'new_ui' => ['enabled' => true, 'salt' => 's', 'rolloutPct' => 10000],
