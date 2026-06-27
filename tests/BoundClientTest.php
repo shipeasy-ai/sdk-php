@@ -118,4 +118,90 @@ final class BoundClientTest extends TestCase
         $this->assertSame($first, $second);
         $this->assertSame($first, Engine::getDefault());
     }
+
+    /**
+     * A non-local engine that captures /collect POSTs instead of sending them,
+     * seeded with one running 100%-allocation experiment. Registered as the
+     * global default so `new Client(...)` binds to it.
+     */
+    private function capturingEngine(): object
+    {
+        $engine = new class ('k', null, 'prod', true) extends Engine {
+            /** @var array<int, array{path: string, body: array}> */
+            public array $posts = [];
+            protected function postNonBlocking(string $path, string $body): void
+            {
+                $this->posts[] = ['path' => $path, 'body' => json_decode($body, true)];
+            }
+        };
+        $engine->applyData(
+            ['gates' => [], 'configs' => []],
+            [
+                'universes' => ['u1' => ['holdout_range' => null]],
+                'experiments' => [
+                    'checkout_test' => [
+                        'universe' => 'u1',
+                        'status' => 'running',
+                        'salt' => 'expsalt12345',
+                        'allocationPct' => 10000,
+                        'targetingGate' => null,
+                        'groups' => [
+                            ['name' => 'control', 'weight' => 5000, 'params' => ['c' => 1]],
+                            ['name' => 'treatment', 'weight' => 5000, 'params' => ['c' => 2]],
+                        ],
+                    ],
+                ],
+            ],
+        );
+        return $engine;
+    }
+
+    /** The bound Client.track derives the user id from user_id and reaches the engine. */
+    public function testBoundClientTrackUsesUserId(): void
+    {
+        $engine = $this->capturingEngine();
+        Engine::setDefault($engine);
+        configure('server-key');
+
+        (new Client(['user_id' => 'u1', 'plan' => 'pro']))
+            ->track('purchase', ['amount' => 42]);
+
+        $this->assertCount(1, $engine->posts);
+        $this->assertSame('/collect', $engine->posts[0]['path']);
+        $event = $engine->posts[0]['body']['events'][0];
+        $this->assertSame('metric', $event['type']);
+        $this->assertSame('purchase', $event['event_name']);
+        $this->assertSame('u1', $event['user_id']);
+        $this->assertSame(['amount' => 42], $event['properties']);
+    }
+
+    /** When no user_id is bound, track falls back to anonymous_id. */
+    public function testBoundClientTrackFallsBackToAnonymousId(): void
+    {
+        $engine = $this->capturingEngine();
+        Engine::setDefault($engine);
+        configure('server-key');
+
+        (new Client(['anonymous_id' => 'anon-9']))->track('ping');
+
+        $event = $engine->posts[0]['body']['events'][0];
+        $this->assertSame('anon-9', $event['user_id']);
+    }
+
+    /** The bound Client.logExposure forwards the bound map and emits an exposure. */
+    public function testBoundClientLogExposure(): void
+    {
+        $engine = $this->capturingEngine();
+        Engine::setDefault($engine);
+        configure('server-key');
+
+        (new Client(['user_id' => 'user-42']))->logExposure('checkout_test');
+
+        $this->assertCount(1, $engine->posts);
+        $event = $engine->posts[0]['body']['events'][0];
+        $this->assertSame('exposure', $event['type']);
+        $this->assertSame('checkout_test', $event['experiment']);
+        $this->assertSame('user-42', $event['user_id']);
+        $this->assertContains($event['group'], ['control', 'treatment']);
+    }
 }

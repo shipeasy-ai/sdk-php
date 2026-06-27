@@ -1,13 +1,14 @@
-Read an experiment assignment, then track the conversion via the engine.
+Read an experiment assignment, then track the conversion on the same bound `Client`.
 
 ```php
 use function Shipeasy\configure;
 use Shipeasy\Client;
 
-$engine = configure(getenv('SHIPEASY_SERVER_KEY'));
+configure(getenv('SHIPEASY_SERVER_KEY'));
 
-$r = (new Client($currentUser))->getExperiment('{{RESOURCE_NAME}}', ['color' => 'blue']);
+$client = new Client($currentUser);
+$r = $client->getExperiment('{{RESOURCE_NAME}}', ['color' => 'blue']);
 $color = $r->inExperiment ? $r->params['color'] : 'blue';
 
-$engine->track('u_123', '{{SUCCESS_EVENT}}', ['amount' => 49]);
+$client->track('{{SUCCESS_EVENT}}', ['amount' => 49]);
 ```

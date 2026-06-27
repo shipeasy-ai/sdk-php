@@ -41,21 +41,43 @@ $r->params;         // mixed
 
 ## Tracking conversions
 
-Conversion events go through the **engine** (`track()` is not on the bound
-`Client`). Call it when the success action happens:
+You already have a bound `Client` for `getExperiment` — record the conversion on
+that **same** `Client`. No user argument: the unit is derived from the bound
+attribute map (`user_id`, else `anonymous_id`). Call it when the success action
+happens:
+
+```php
+$client = new Client($currentUser);
+$r = $client->getExperiment('checkout_button', ['color' => 'blue']);
+
+// …present the variant, then on conversion:
+$client->track('{{SUCCESS_EVENT}}', ['amount' => 49]);
+```
+
+- arg 1: the event name (your experiment's success metric, e.g. `{{SUCCESS_EVENT}}`)
+- arg 2: optional properties (`privateAttributes` are stripped — see [Advanced](advanced.md))
+
+`track()` is fire-and-forget and a no-op in test/offline mode.
+
+### Low-level `Engine` form
+
+For advanced use you can drop down to the engine and pass the user id explicitly:
 
 ```php
 $engine->track('u_123', '{{SUCCESS_EVENT}}', ['amount' => 49]);
 ```
 
-- arg 1: the user id (string)
-- arg 2: the event name (your experiment's success metric, e.g. `{{SUCCESS_EVENT}}`)
-- arg 3: optional properties (`privateAttributes` are stripped — see [Advanced](advanced.md))
-
-`track()` is fire-and-forget and a no-op in test/offline mode.
-
 ## Manual exposure
 
 The PHP server is stateless and never auto-logs exposures. To get exposure
-parity with the browser, call `logExposure()` at the point you actually present
-the treatment — see [Advanced](advanced.md).
+parity with the browser, call `logExposure()` on the bound `Client` at the point
+you actually present the treatment:
+
+```php
+$client = new Client($currentUser);
+$r = $client->getExperiment('checkout_button', ['color' => 'blue']);
+$client->logExposure('checkout_button');   // emits one exposure if enrolled
+```
+
+The low-level `Engine::logExposure($user, $experiment)` form remains for advanced
+use — see [Advanced](advanced.md).

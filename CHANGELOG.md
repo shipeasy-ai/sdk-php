@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.0
+
+- **Add `track()`/`logExposure()` to the bound `Client`.** Experiments are now
+  end-to-end Client-only — the user-bound `Shipeasy\Client` (from `configure()`
+  + `new Client($user)`) gains `track(string $event, array $props = [])` and
+  `logExposure(string $experiment)`, with **no user argument**. `track()` derives
+  the unit from the bound attribute map (`user_id`, else `anonymous_id`) and
+  `logExposure()` forwards the bound map. Both delegate to the engine; the
+  low-level `Engine::track($userId, $event, $props)` /
+  `Engine::logExposure($user, $experiment)` forms remain for advanced use.
+
 ## 0.8.0
 
 - **BREAKING — `Client` → `Engine` rename + new user-bound `Client`.** The

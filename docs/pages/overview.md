@@ -28,6 +28,8 @@ $enabled = $client->getFlag('new_checkout');
 $cfg     = $client->getConfig('billing_copy');
 $r       = $client->getExperiment('checkout_button', ['color' => 'blue']);
 $panic   = $client->getKillswitch('payments_panic');
+$client->track('checkout_completed', ['amount' => 49]);   // record a conversion
+$client->logExposure('checkout_button');                   // emit an exposure
 ```
 
 `new Client($user)` is **cheap**: it runs the configured `attributes` transform
@@ -45,8 +47,10 @@ There are two objects:
   `configure()` builds and owns exactly one. Construct it directly for full
   control (custom poll loop, `track()`, tests).
 - **`Shipeasy\Client`** — the lightweight, user-bound handle. It forwards
-  `getFlag`/`getFlagDetail`/`getConfig`/`getExperiment`/`getKillswitch` to the
-  global engine with the user's bound attributes baked in.
+  `getFlag`/`getFlagDetail`/`getConfig`/`getExperiment`/`getKillswitch`/`track`/
+  `logExposure` to the global engine with the user's bound attributes baked in —
+  so an experiment is end-to-end Client-only (`track`/`logExposure` take **no**
+  user argument; the unit is derived from the bound attributes).
 
 > **Breaking change in 0.8.0:** the heavyweight class formerly named `Client`
 > is now **`Engine`**. `Client` is the new lightweight, user-bound handle.

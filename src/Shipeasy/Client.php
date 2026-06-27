@@ -96,4 +96,28 @@ final class Client
     {
         return $this->engine->getKillswitch($name, $switchKey);
     }
+
+    /**
+     * Record a conversion / custom event for the bound user. No user argument —
+     * the unit is derived from the bound attribute map (user_id, else
+     * anonymous_id). Delegates to {@see Engine::track()}. The low-level
+     * Engine::track($userId, $event, $props) remains for advanced use.
+     *
+     * @param array<string, mixed> $props
+     */
+    public function track(string $event, array $props = []): void
+    {
+        $id = (string) ($this->attributes['user_id'] ?? $this->attributes['anonymous_id'] ?? '');
+        $this->engine->track($id, $event, $props);
+    }
+
+    /**
+     * Emit a server-side exposure for $experiment for the bound user (parity with
+     * the browser's auto-exposure). Delegates to {@see Engine::logExposure()}
+     * with the bound attribute map; a no-op when the user isn't enrolled.
+     */
+    public function logExposure(string $experiment): void
+    {
+        $this->engine->logExposure($this->attributes, $experiment);
+    }
 }
