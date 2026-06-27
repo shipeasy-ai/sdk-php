@@ -1,14 +1,22 @@
-Read an experiment assignment, then track the conversion on the same bound `Client`.
+Read an experiment assignment, then track the conversion on the same bound
+`Client`. Assumes `configure()` ran at startup — see Installation.
 
 ```php
-use function Shipeasy\configure;
 use Shipeasy\Client;
 
-configure(getenv('SHIPEASY_SERVER_KEY'));
-
+// construct once per callsite (cheap; binds the user)
 $client = new Client($currentUser);
-$r = $client->getExperiment('{{RESOURCE_NAME}}', ['color' => 'blue']);
+
+$r = $client->getExperiment(
+    '{{RESOURCE_NAME}}',     // experiment name
+    ['color' => 'blue'],     // $defaultParams — params returned when the user isn't enrolled
+);
 $color = $r->inExperiment ? $r->params['color'] : 'blue';
 
-$client->track('{{SUCCESS_EVENT}}', ['amount' => 49]);
+// track() is on the bound Client (NOT the Engine): the unit comes from the
+// bound user — no userId argument.
+$client->track(
+    '{{SUCCESS_EVENT}}',     // event name
+    ['amount' => 49],        // optional $props — event properties (default [])
+);
 ```

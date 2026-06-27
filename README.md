@@ -6,6 +6,8 @@ Server SDK for [Shipeasy](https://shipeasy.dev). Compatible with PHP 8.1+, inclu
 composer require shipeasy/shipeasy
 ```
 
+📖 [Installation & configuration](docs/pages/installation.md) (frameworks + `configure()`) · [full docs](docs/)
+
 Configure **once** at startup, then bind a user per request with `new Client($user)`:
 
 ```php

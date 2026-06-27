@@ -1,10 +1,14 @@
-Configure once, then read a flag with a user-bound `Client`.
+Read a flag with a user-bound `Client`. Assumes `configure()` ran at startup —
+see Installation.
 
 ```php
-use function Shipeasy\configure;
 use Shipeasy\Client;
 
-configure(getenv('SHIPEASY_SERVER_KEY'));
+// construct once per callsite (cheap; binds the user)
+$client = new Client($currentUser);
 
-$enabled = (new Client($currentUser))->getFlag('{{RESOURCE_NAME}}');
+$enabled = $client->getFlag(
+    '{{RESOURCE_NAME}}',   // gate name
+    false,                 // optional $default — returned ONLY when unevaluable
+);                         //   (client not ready / flag not in blob), NOT when the gate is off
 ```
