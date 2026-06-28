@@ -1,0 +1,13 @@
+/vendor
+/.env
+/.env.backup
+/.phpunit.result.cache
+/composer.lock
+
+# storage caches (keep the dirs, ignore the contents)
+/storage/*.key
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+/bootstrap/cache/*
