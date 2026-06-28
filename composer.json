@@ -3,7 +3,7 @@
     "description": "Shipeasy server SDK for PHP \u2014 flags, configs, experiments, metrics.",
     "type": "library",
     "license": "MIT",
-    "version": "0.10.0",
+    "version": "0.11.0",
     "require": {
         "php": ">=8.1",
         "ext-json": "*",
@@ -15,6 +15,13 @@
     },
     "suggest": {
         "open-feature/sdk": "Use Shipeasy as an OpenFeature provider via Shipeasy\\OpenFeature\\ShipeasyProvider (install open-feature/sdk ^2.0)."
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Shipeasy\\Laravel\\ShipeasyServiceProvider"
+            ]
+        }
     },
     "autoload": {
         "psr-4": {

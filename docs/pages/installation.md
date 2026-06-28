@@ -122,17 +122,98 @@ explicit init step. PHP is request-scoped and has **no background poll thread**:
 Call `configure()` exactly **once** per process/request bootstrap. The frameworks
 below differ only in *where* that single call lives.
 
-### Laravel — service provider
+### Laravel — `php artisan shipeasy:install`
 
-Run `configure()` from a service provider's `boot()`, reading the server key from
-Laravel's config/env. Bind the authenticated user per request in controllers.
+The package ships a Laravel service provider (auto-discovered — no manual
+registration). Install in four steps:
 
 ```bash
+# 1. Require the package — auto-discovery registers ShipeasyServiceProvider.
 composer require shipeasy/shipeasy
+
+# 2. Publish config/shipeasy.php and seed the .env keys. Add --i18n to also
+#    seed SHIPEASY_CLIENT_KEY and surface the @shipeasyI18n directive.
+php artisan shipeasy:install
 ```
 
+```dotenv
+# 3. Set your keys in .env (minted at https://app.shipeasy.ai → Settings → SDK keys):
+SHIPEASY_SERVER_KEY=...          # server-side secret — NEVER sent to the browser
+SHIPEASY_CLIENT_KEY=...          # public client key — only used by @shipeasyI18n (with --i18n)
+```
+
+Once `SHIPEASY_SERVER_KEY` is set the provider calls `Shipeasy\configure()` for
+you on boot (reading `config/shipeasy.php`) — you never call `configure()`
+yourself. Then bind the authenticated user per request in a controller:
+
 ```php
-// app/Providers/ShipeasyServiceProvider.php
+use Shipeasy\Client;
+
+public function checkout(\Illuminate\Http\Request $request)
+{
+    $client = new Client($request->user());   // construct once per request
+    if ($client->getFlag('new_checkout')) {
+        // …
+    }
+}
+```
+
+```blade
+{{-- 4. Place the layout helpers in your Blade <head>
+       (e.g. resources/views/layouts/app.blade.php): --}}
+<head>
+    @shipeasyBootstrap($user)   {{-- SSR flags/experiments bootstrap tag --}}
+    @shipeasyI18n               {{-- i18n loader tag (with --i18n; reads config) --}}
+    {{-- … --}}
+</head>
+```
+
+`@shipeasyBootstrap($user)` echoes `Shipeasy\bootstrapScriptTag($user)` and
+`@shipeasyI18n` echoes `Shipeasy\i18nScriptTag(config('shipeasy.client_key'),
+config('shipeasy.i18n_profile'))`. Following the Laravel convention, the install
+command does **not** edit your layout — it tells you where to place the
+directives.
+
+#### Mapping your user model
+
+To map your user model to the Shipeasy attribute map, set `attributes` in
+`config/shipeasy.php` to an **invokable** class name (resolved from the
+container); leave it `null` for the identity default:
+
+```php
+// config/shipeasy.php
+'attributes' => \App\Shipeasy\ShipeasyAttributes::class,
+
+// app/Shipeasy/ShipeasyAttributes.php
+final class ShipeasyAttributes
+{
+    public function __invoke($user): array
+    {
+        return ['user_id' => (string) $user->id, 'plan' => $user->plan];
+    }
+}
+```
+
+Bind `__se_anon_id` for logged-out traffic by calling `Shipeasy\Identity::ensure()`
+from a middleware — see [Advanced](advanced.md).
+
+#### Manual fallback (no auto-discovery)
+
+If you have disabled package auto-discovery, register the provider by hand in
+`bootstrap/providers.php` (Laravel 11+) or `config/app.php`:
+
+```php
+// bootstrap/providers.php
+return [
+    // …
+    Shipeasy\Laravel\ShipeasyServiceProvider::class,
+];
+```
+
+Or skip the package provider entirely and call `configure()` from your own
+provider's `boot()`:
+
+```php
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
@@ -149,24 +230,6 @@ class ShipeasyServiceProvider extends ServiceProvider
     }
 }
 ```
-
-Register it in `bootstrap/providers.php` (Laravel 11+) or `config/app.php`.
-Then in a controller:
-
-```php
-use Shipeasy\Client;
-
-public function checkout(\Illuminate\Http\Request $request)
-{
-    $client = new Client($request->user());   // construct once per request
-    if ($client->getFlag('new_checkout')) {
-        // …
-    }
-}
-```
-
-Bind `__se_anon_id` for logged-out traffic by calling `Shipeasy\Identity::ensure()`
-from a middleware — see [Advanced](advanced.md).
 
 ### Symfony — services bootstrap
 

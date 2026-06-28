@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.11.0
+
+Laravel integration — the Laravel-native equivalent of the Ruby SDK's Rails
+generator. Auto-discovered, config-driven, zero hand-wiring.
+
+### Added
+
+- **`Shipeasy\Laravel\ShipeasyServiceProvider`** — auto-discovered via
+  `extra.laravel.providers`. Merges + publishes `config/shipeasy.php`, registers
+  the `shipeasy:install` command, auto-calls `Shipeasy\configure()` on boot when
+  `config('shipeasy.server_key')` is set (resolving the optional invokable
+  `attributes` transform from the container), and registers the
+  `@shipeasyBootstrap($user)` / `@shipeasyI18n` Blade directives for the layout
+  `<head>`.
+- **`php artisan shipeasy:install {--i18n} {--force}`** — publishes the config and
+  seeds `SHIPEASY_SERVER_KEY=` (and, with `--i18n`, `SHIPEASY_CLIENT_KEY=`) into
+  `.env` / `.env.example`, then prints where to place the Blade directives. Honors
+  the Laravel convention of shipping directives the user places (no layout
+  codegen).
+- **`Shipeasy\Laravel\Installer`** — framework-free, unit-tested core
+  (`ensureEnvKeys()` idempotent dotenv append, `nextSteps()`).
+- **`config/shipeasy.php`** — `server_key`, `client_key`, `env`, `attributes`,
+  `i18n_profile`.
+
+These Laravel classes depend on Illuminate base classes provided by the host app
+at runtime; PSR-4 autoload is lazy, so they never load in a non-Laravel context
+and add **no** runtime dependency (`composer.json` `require` unchanged).
+
 ## 0.10.0
 
 The uniform SDK DX standard (experiment-platform doc 23). The documented surface

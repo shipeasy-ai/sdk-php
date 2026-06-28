@@ -47,6 +47,16 @@ Reference: <https://shipeasy-ai.github.io/sdk-php/pages/configuration.md> ·
 <https://shipeasy-ai.github.io/sdk-php/pages/flags.md> ·
 <https://shipeasy-ai.github.io/sdk-php/pages/killswitches.md>
 
+### Laravel
+
+Don't hand-write a provider — the package auto-discovers `ShipeasyServiceProvider`.
+Run `php artisan shipeasy:install` (add `--i18n` for the client key), publish
+`config/shipeasy.php`, set `SHIPEASY_SERVER_KEY` in `.env`, and the provider calls
+`configure()` for you on boot. Map your user model via the `attributes` config
+(an invokable class name). Place the `@shipeasyBootstrap($user)` and `@shipeasyI18n`
+Blade directives in your layout `<head>`. Reference:
+<https://shipeasy-ai.github.io/sdk-php/pages/installation.md>
+
 ## Experiments + track (Client-only, end to end)
 
 ```php
