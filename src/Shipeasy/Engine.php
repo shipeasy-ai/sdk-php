@@ -25,7 +25,7 @@ class Engine
      * This is the single runtime source of truth — keep it in sync with the
      * `version` field in composer.json (composer exposes no runtime constant).
      */
-    public const VERSION = '0.9.0';
+    public const VERSION = '0.10.0';
 
     private string $apiKey;
     private string $baseUrl;
@@ -191,6 +191,82 @@ class Engine
         }
 
         return $engine;
+    }
+
+    /**
+     * REPLACE the process-wide engine + attributes transform. Unlike
+     * {@see configure()} (first-config-wins), the configureFor* siblings replace
+     * so a test suite can reconfigure between cases.
+     *
+     * @param array<string, mixed> $opts seeds: attributes, flags, configs,
+     *        experiments (see {@see configureForTesting()}).
+     */
+    private static function installGlobal(Engine $engine, array $opts): Engine
+    {
+        foreach (($opts['flags'] ?? []) as $name => $value) {
+            $engine->overrideFlag((string) $name, (bool) $value);
+        }
+        foreach (($opts['configs'] ?? []) as $name => $value) {
+            $engine->overrideConfig((string) $name, $value);
+        }
+        foreach (($opts['experiments'] ?? []) as $name => $spec) {
+            // spec is [group, params].
+            [$group, $params] = $spec;
+            $engine->overrideExperiment((string) $name, $group, $params);
+        }
+        self::$default = $engine;
+        self::$attributesTransform = $opts['attributes'] ?? null;
+        return $engine;
+    }
+
+    /**
+     * Configure Shipeasy in **test mode** — a drop-in sibling of {@see configure()}
+     * with no network, ever (no api key needed). Seed the values your code under
+     * test should see, then read them through the ordinary `new Client($user)`:
+     *
+     * ```php
+     * Engine::configureForTesting(['flags' => ['new_checkout' => true]]);
+     * (new Client(['user_id' => 'u_1']))->getFlag('new_checkout'); // true
+     * ```
+     *
+     * Replaces any previously-configured engine. Seeds: `attributes` (transform),
+     * `flags` (`name => bool`), `configs` (`name => value`), `experiments`
+     * (`name => [group, params]`).
+     *
+     * @param array<string, mixed> $opts
+     */
+    public static function configureForTesting(array $opts = []): self
+    {
+        return self::installGlobal(self::forTesting($opts['stickyStore'] ?? null), $opts);
+    }
+
+    /**
+     * Configure Shipeasy **offline** — evaluate the REAL rules from an in-memory
+     * snapshot or a JSON file, with no network. Provide exactly one source:
+     * `path` (a JSON file `{"flags":...,"experiments":...}`) or `snapshot`
+     * (`['flags' => [...], 'experiments' => [...]]`). Optional `flags`/`configs`/
+     * `experiments` overrides layer on top. Replaces any previously-configured
+     * engine.
+     *
+     * @param array<string, mixed> $opts
+     */
+    public static function configureForOffline(array $opts = []): self
+    {
+        if (isset($opts['path'])) {
+            $engine = self::fromFile((string) $opts['path'], $opts['stickyStore'] ?? null);
+        } elseif (isset($opts['snapshot']) && is_array($opts['snapshot'])) {
+            $snap = $opts['snapshot'];
+            $engine = self::fromSnapshot(
+                is_array($snap['flags'] ?? null) ? $snap['flags'] : [],
+                is_array($snap['experiments'] ?? null) ? $snap['experiments'] : [],
+                $opts['stickyStore'] ?? null,
+            );
+        } else {
+            throw new \InvalidArgumentException(
+                'configureForOffline requires either a "path" or a "snapshot" option'
+            );
+        }
+        return self::installGlobal($engine, $opts);
     }
 
     /**

@@ -4,12 +4,12 @@ A **kill switch** is a global panic boolean shipped in the same blob as gates an
 configs. Unlike a flag it is not user-scoped — it returns the current switch
 state (optionally a named per-key override).
 
-## Bound `Client` form
+## Read a kill switch
 
 ```php
 use Shipeasy\Client;
 
-$client = new Client($currentUser);
+$client = new Client($currentUser);   // construct once per callsite
 
 $panic = $client->getKillswitch('payments_panic');     // bool
 if ($panic) {
@@ -17,21 +17,24 @@ if ($panic) {
 }
 ```
 
+Assumes `Shipeasy\configure()` ran at startup — see [Installation](installation.md).
+
 ## Named per-key override switch
 
 A kill switch can carry named per-key override switches (the dashboard
-"switches" feature). Pass the switch key as the second argument:
+"switches" feature). Pass the switch key as the **second** argument — the
+`$switchKey` — to read that named override:
 
 ```php
-$client->getKillswitch('payments_panic', 'eu_region');   // that named override
+$client = new Client($currentUser);                      // construct once per callsite
+$region = 'eu_region';
+$panic  = $client->getKillswitch('payments_panic', $region);   // $switchKey = 'eu_region'
 ```
 
-## Low-level `Engine` form
+When the named `$switchKey` has no configured override, the call falls back to
+the kill switch's top-level `killed` value.
 
-```php
-$panic = $engine->getKillswitch('payments_panic');
-$panic = $engine->getKillswitch('payments_panic', 'eu_region');
-```
+## Default behaviour
 
-Returns a boolean; defaults to `false` when the kill switch (or the named
-switch key) is not present.
+Returns a boolean; defaults to `false` when the kill switch is not present in the
+fetched blob.

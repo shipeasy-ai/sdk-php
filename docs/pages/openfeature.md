@@ -13,22 +13,25 @@ composer require open-feature/sdk
 
 ## Wiring
 
+Call `Shipeasy\configure()` first, then construct `new ShipeasyProvider()` with
+**no argument** — the global form resolves the SDK that `configure()` set up:
+
 ```php
 use OpenFeature\OpenFeatureAPI;
-use Shipeasy\Engine;
 use Shipeasy\OpenFeature\ShipeasyProvider;
+use function Shipeasy\configure;
 
-$engine = new Engine($_ENV['SHIPEASY_SERVER_KEY']);
-$engine->initOnce();
+configure($_ENV['SHIPEASY_SERVER_KEY']);   // once, at startup
 
 $api = OpenFeatureAPI::getInstance();
-$api->setProvider(new ShipeasyProvider($engine));   // pure adapter over Engine
+$api->setProvider(new ShipeasyProvider());   // no-arg global form
 
 $of = $api->getClient();
 $on = $of->getBooleanValue('new_checkout', false, $ctx);   // bool
 ```
 
-`ShipeasyProvider::__construct(Engine $client)` — pass the Shipeasy `Engine`.
+Constructing `new ShipeasyProvider()` before `configure()` throws
+`RuntimeException`.
 
 ## Type routing
 
@@ -44,6 +47,7 @@ Shipeasy reasons map onto OpenFeature's `Reason` / `ErrorCode`:
 | Shipeasy | OpenFeature |
 | --- | --- |
 | `RULE_MATCH` | `TARGETING_MATCH` |
+| `DEFAULT` | `DEFAULT` |
 | `OFF` | `DISABLED` |
 | `OVERRIDE` | `STATIC` |
 | missing flag | `FLAG_NOT_FOUND` |

@@ -1,7 +1,8 @@
 # Experiments
 
 An **experiment** assigns the user to a group and returns that group's
-parameters. Use it to read the variant, then `track()` the conversion event.
+parameters. Use it to read the variant, then `track()` the conversion event —
+both on the **same** bound `Client`.
 
 ## Reading the assignment
 
@@ -13,15 +14,16 @@ public string $group;          // the assigned group name (e.g. 'control')
 public mixed  $params;         // the group's params (your defaultParams if not enrolled)
 ```
 
-### Bound `Client` form
-
 `defaultParams` is **required** — it is returned when the user is not enrolled:
 
 ```php
 use Shipeasy\Client;
 
-$client = new Client($currentUser);
-$r = $client->getExperiment('checkout_button', ['color' => 'blue']);
+$client = new Client($currentUser);   // construct once per callsite
+$r      = $client->getExperiment(
+    'checkout_button',         // experiment name
+    ['color' => 'blue'],       // $defaultParams — returned when the user isn't enrolled
+);
 
 if ($r->inExperiment) {
     $color = $r->params['color'];   // the assigned variant
@@ -30,42 +32,30 @@ if ($r->inExperiment) {
 }
 ```
 
-### Low-level `Engine` form
-
-```php
-$r = $engine->getExperiment('checkout_button', ['user_id' => 'u_123'], ['color' => 'blue']);
-$r->inExperiment;   // bool
-$r->group;          // string
-$r->params;         // mixed
-```
+Assumes `Shipeasy\configure()` ran at startup — see [Installation](installation.md).
 
 ## Tracking conversions
 
-You already have a bound `Client` for `getExperiment` — record the conversion on
-that **same** `Client`. No user argument: the unit is derived from the bound
-attribute map (`user_id`, else `anonymous_id`). Call it when the success action
-happens:
+Record the conversion on the **same** `Client` you read the assignment from. No
+user argument: the unit is derived from the bound attribute map (`user_id`, else
+`anonymous_id`). Call it when the success action happens:
 
 ```php
-$client = new Client($currentUser);
-$r = $client->getExperiment('checkout_button', ['color' => 'blue']);
+$client = new Client($currentUser);   // construct once per callsite
+$r      = $client->getExperiment('checkout_button', ['color' => 'blue']);
 
 // …present the variant, then on conversion:
-$client->track('{{SUCCESS_EVENT}}', ['amount' => 49]);
+$client->track(
+    'checkout_completed',   // the event name (your experiment's success metric)
+    ['amount' => 49],       // optional $props — event properties (default [])
+);
 ```
 
-- arg 1: the event name (your experiment's success metric, e.g. `{{SUCCESS_EVENT}}`)
-- arg 2: optional properties (`privateAttributes` are stripped — see [Advanced](advanced.md))
+- arg 1: the event name (your experiment's success metric).
+- arg 2: optional properties (`privateAttributes` are stripped — see [Advanced](advanced.md)).
 
-`track()` is fire-and-forget and a no-op in test/offline mode.
-
-### Low-level `Engine` form
-
-For advanced use you can drop down to the engine and pass the user id explicitly:
-
-```php
-$engine->track('u_123', '{{SUCCESS_EVENT}}', ['amount' => 49]);
-```
+`track()` is fire-and-forget and a no-op in test/offline mode. See the
+[metrics/track](../snippets/metrics/track.md) snippet for the standalone form.
 
 ## Manual exposure
 
@@ -74,10 +64,9 @@ parity with the browser, call `logExposure()` on the bound `Client` at the point
 you actually present the treatment:
 
 ```php
-$client = new Client($currentUser);
-$r = $client->getExperiment('checkout_button', ['color' => 'blue']);
+$client = new Client($currentUser);   // construct once per callsite
+$r      = $client->getExperiment('checkout_button', ['color' => 'blue']);
 $client->logExposure('checkout_button');   // emits one exposure if enrolled
 ```
 
-The low-level `Engine::logExposure($user, $experiment)` form remains for advanced
-use — see [Advanced](advanced.md).
+See [Advanced](advanced.md) for more on manual exposure.

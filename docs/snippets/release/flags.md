@@ -1,5 +1,5 @@
-Read a flag with a user-bound `Client`. Assumes `configure()` ran at startup —
-see Installation.
+Read a flag with a user-bound `Client`. Assumes `Shipeasy\configure()` ran at
+startup — see Installation.
 
 ```php
 use Shipeasy\Client;
@@ -8,7 +8,7 @@ use Shipeasy\Client;
 $client = new Client($currentUser);
 
 $enabled = $client->getFlag(
-    '{{RESOURCE_NAME}}',   // gate name
-    false,                 // optional $default — returned ONLY when unevaluable
-);                         //   (client not ready / flag not in blob), NOT when the gate is off
+    '{{FLAG_KEY}}',   // gate name
+    false,            // optional $default — returned ONLY when unevaluable
+);                    //   (SDK not ready / flag not in blob), NOT when the gate is off
 ```

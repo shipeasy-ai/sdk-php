@@ -3,17 +3,20 @@
 ## Manual exposure
 
 The PHP server is stateless and **never auto-logs** experiment exposures. To get
-exposure parity with the browser, call `logExposure()` at the point you actually
-present the treatment:
+exposure parity with the browser, call `logExposure()` on the bound `Client` at
+the point you actually present the treatment:
 
 ```php
-$engine->logExposure('u_123', 'checkout_button');
-// or with an attribute map:
-$engine->logExposure(['user_id' => 'u_123', 'plan' => 'pro'], 'checkout_button');
+use Shipeasy\Client;
+
+$client = new Client($currentUser);   // construct once per callsite
+$r      = $client->getExperiment('checkout_button', ['color' => 'blue']);
+
+$client->logExposure('checkout_button');   // emits one exposure if enrolled
 ```
 
-It re-evaluates the experiment for the user; if enrolled, it POSTs a single
-`exposure` event to `/collect`. No-op in local/test mode or when the user isn't
+It re-evaluates the experiment for the bound user; if enrolled, it POSTs a single
+`exposure` event to `/collect`. No-op in test/offline mode or when the user isn't
 enrolled.
 
 ## Private attributes
@@ -23,23 +26,32 @@ payloads** (`track()` / exposures). The server evaluates locally, so targeting
 still works — only the transmitted properties are scrubbed.
 
 ```php
-$engine = configure(getenv('SHIPEASY_SERVER_KEY'), null, [
+use function Shipeasy\configure;
+
+configure($_ENV['SHIPEASY_SERVER_KEY'], null, [
     'privateAttributes' => ['email', 'phone'],
 ]);
 ```
-
-`$engine->stripPrivate($props)` applies the same filter to an arbitrary property
-array.
 
 ## bucketBy (custom bucketing unit)
 
 The bucketing unit is **server-configured per experiment** — set `bucketBy` on
 the experiment in the dashboard and the SDK reads it from the blob, bucketing on
 that attribute (e.g. `company_id`) instead of the user id. Make sure that
-attribute is present in the user map you pass:
+attribute is present on the user you bind, via the `attributes` transform or the
+user object itself:
 
 ```php
-$engine->getExperiment('pricing_test', ['user_id' => 'u1', 'company_id' => 'co_42'], $default);
+use function Shipeasy\configure;
+use Shipeasy\Client;
+
+configure($_ENV['SHIPEASY_SERVER_KEY'], fn ($u) => [
+    'user_id'    => $u->id,
+    'company_id' => $u->companyId,   // present so bucketBy: company_id works
+]);
+
+$client = new Client($currentUser);   // construct once per callsite
+$r      = $client->getExperiment('pricing_test', $default);
 ```
 
 ## Sticky bucketing
@@ -55,10 +67,12 @@ interface StickyBucketStore {
 }
 ```
 
-Wire it through `configure()` (or the `Engine` constructor / factories):
+Wire it through `configure()`:
 
 ```php
-$engine = configure(getenv('SHIPEASY_SERVER_KEY'), null, [
+use function Shipeasy\configure;
+
+configure($_ENV['SHIPEASY_SERVER_KEY'], null, [
     'stickyStore' => new MyRedisStickyStore(),
 ]);
 ```
@@ -74,10 +88,10 @@ in your bootstrap (before any output) — it reads or mints the shared
 `__se_anon_id` first-party cookie used by every Shipeasy SDK:
 
 ```php
-use Shipeasy\Identity;
+use Shipeasy\{Client, Identity};
 
 Identity::ensure();                 // read or mint __se_anon_id (+ Set-Cookie)
-$client = new Client([]);
+$client = new Client([]);           // construct once per callsite
 $client->getFlag('new_checkout');   // buckets on the cookie automatically
 ```
 
@@ -89,43 +103,45 @@ non-`HttpOnly` by design so the browser SDK buckets identically; a request with
 
 ## Offline snapshots
 
-Build an engine from a baked blob instead of the network (air-gapped/edge hosts,
-reproducible CI). The **real** eval runs against the snapshot (overrides apply on
-top); `init()`/`initOnce()`/`track()` are no-ops and telemetry is off.
+Evaluate the **real** rules against a baked blob instead of the network
+(air-gapped / edge hosts, reproducible CI) with `Shipeasy\configureForOffline()`.
+See [Testing](testing.md) for the full snapshot JSON shape.
 
 ```php
-use Shipeasy\Engine;
+use function Shipeasy\configureForOffline;
+use Shipeasy\Client;
 
 // From a JSON file: { "flags": <body of /sdk/flags>, "experiments": <body of /sdk/experiments> }
-$c = Engine::fromFile('/etc/shipeasy/snapshot.json');
+configureForOffline(['path' => '/etc/shipeasy/snapshot.json']);
 
 // Or from already-decoded blobs:
-$c = Engine::fromSnapshot($flagsBody, $experimentsBody);
+configureForOffline(['snapshot' => ['flags' => $flagsBody, 'experiments' => $expBody]]);
 
-$c->getFlag('new_checkout', ['user_id' => 'u1']);   // evaluated, no network
+(new Client(['user_id' => 'u1']))->getFlag('new_checkout');   // evaluated, no network
 ```
 
 ## Change listeners
 
-`onChange()` registers a callback fired whenever the engine refreshes with a
+`Shipeasy\onChange()` registers a callback fired whenever the SDK refreshes with a
 **new** server response (a 200, never a 304), returning an unsubscribe callable:
 
 ```php
-$unsub = $engine->onChange(function () {
+use function Shipeasy\onChange;
+
+$unsub = onChange(function () {
     // re-read flags here; the blob just changed
 });
 $unsub();   // stop listening
 ```
 
 > **PHP runtime caveat.** This SDK runs no background poll thread. Under classic
-> **PHP-FPM the engine is rebuilt per request**, so a listener will not fire on
-> its own — change listeners are mainly relevant to **long-running runtimes**
-> (Swoole, RoadRunner, queue/CLI workers) that keep an engine alive and call
-> `refresh()` on a schedule. Each listener is wrapped in `try/catch`, so a
-> throwing listener never breaks a refresh; listeners never fire in
-> `forTesting()` / snapshot mode.
+> **PHP-FPM the SDK is rebuilt per request**, so a listener will not fire on its
+> own — change listeners are mainly relevant to **long-running runtimes**
+> (Swoole, RoadRunner, queue/CLI workers) that keep the SDK alive and refresh the
+> blob on a schedule. Each listener is wrapped in `try/catch`, so a throwing
+> listener never breaks a refresh; listeners never fire in test/snapshot mode.
 
 ## SSR bootstrap
 
-See [i18n](i18n.md) for `bootstrapScriptTag()` / `i18nScriptTag()` and the raw
-`evaluate($user)` payload (`['flags', 'configs', 'experiments', 'killswitches']`).
+See [i18n](i18n.md) for `Shipeasy\bootstrapScriptTag()` / `Shipeasy\i18nScriptTag()`
+and wiring the browser SDK from the server-rendered `<head>`.

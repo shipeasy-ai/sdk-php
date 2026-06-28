@@ -1,68 +1,104 @@
 # Testing
 
 In unit tests you want deterministic flag/config/experiment values with **no
-network and no API key**. `Engine::forTesting()` builds an engine that never
-fetches (`init()`/`initOnce()` are no-ops), never sends telemetry, and whose
-`track()` is a no-op. Seed each entity with the override setters — an override
-always wins over the fetched blob.
+network and no API key**. Configure test mode once, then read through the bound
+`Client` exactly as in production.
+
+`Shipeasy\configureForTesting()` is a drop-in sibling of `configure()` that never
+fetches, never sends telemetry, and whose `track()` is a no-op. Unlike
+`configure()`, the `configureFor*` siblings **replace** any prior config, so you
+can reconfigure between cases.
 
 ```php
-use Shipeasy\Engine;
+use function Shipeasy\configureForTesting;
+use function Shipeasy\overrideFlag;
+use function Shipeasy\clearOverrides;
+use Shipeasy\Client;
 
-$c = Engine::forTesting();   // no key, no network
+// Seed values up front (no key, no network). Seed shapes:
+//   flags       => ['name' => bool]
+//   configs     => ['name' => value]
+//   experiments => ['name' => [group, params]]
+//   attributes  => optional (yourUser) => attributeMap transform
+configureForTesting([
+    'flags'       => ['new_checkout' => true],
+    'configs'     => ['billing_copy' => ['headline' => 'Hi']],
+    'experiments' => ['checkout_button' => ['treatment', ['color' => 'green']]],
+]);
 
-// Flags
-$c->overrideFlag('new_checkout', true);
-$c->getFlag('new_checkout', ['user_id' => 'u1']);        // true
+$client = new Client(['user_id' => 'u1']);   // construct once per callsite
+$client->getFlag('new_checkout');            // true
+$client->getConfig('billing_copy');          // ['headline' => 'Hi']
 
-// Configs
-$c->overrideConfig('billing_copy', ['headline' => 'Hi']);
-$c->getConfig('billing_copy');                            // ['headline' => 'Hi']
-
-// Experiments — returns an inExperiment result with your group + params
-$c->overrideExperiment('checkout_button', 'treatment', ['color' => 'green']);
-$r = $c->getExperiment('checkout_button', ['user_id' => 'u1'], ['color' => 'blue']);
+$r = $client->getExperiment('checkout_button', ['color' => 'blue']);
 $r->inExperiment;   // true
 $r->group;          // 'treatment'
-$r->params;         // ['color' => 'green']  (override params beat defaultParams)
+$r->params;         // ['color' => 'green']  (seeded params beat defaultParams)
 
 // track() is a no-op in test mode — safe to call, sends nothing
-$c->track('u1', 'purchase', ['amount' => 49]);
-
-// Reset between cases
-$c->clearOverrides();
+$client->track('purchase', ['amount' => 49]);
 ```
 
-## Override setters
+## On-the-spot overrides
 
-| Method | Effect |
+The package-level override helpers layer on top of whatever
+`configureForTesting()` / `configureForOffline()` set up — an override always
+wins until `clearOverrides()`:
+
+| Function | Effect |
 | --- | --- |
-| `overrideFlag($name, bool $value)` | Force a gate's boolean value. |
-| `overrideConfig($name, mixed $value)` | Force a dynamic config's value. |
-| `overrideExperiment($name, string $group, mixed $params)` | Force an experiment assignment. |
-| `clearOverrides()` | Drop all overrides. |
-
-The override setters also work on a normal `new Engine(...)` instance — an
-overridden key short-circuits before any network read. (`getFlagDetail()` reports
-`FlagDetail::OVERRIDE` for an overridden value.)
-
-## Binding the test engine to `Client`
-
-`Engine::forTesting()` registers itself as the default engine (last-wins), so the
-user-bound `Client` resolves against your overrides:
+| `Shipeasy\overrideFlag($name, bool $value)` | Force a gate's boolean value. |
+| `Shipeasy\overrideConfig($name, mixed $value)` | Force a dynamic config's value. |
+| `Shipeasy\overrideExperiment($name, string $group, mixed $params)` | Force an experiment assignment. |
+| `Shipeasy\clearOverrides()` | Drop all on-the-spot overrides. |
 
 ```php
-$c = Engine::forTesting();
-$c->overrideFlag('new_checkout', true);
+overrideFlag('new_checkout', true);
+(new Client(['user_id' => 'u1']))->getFlag('new_checkout');   // true
 
-(new \Shipeasy\Client(['user_id' => 'u1']))->getFlag('new_checkout');   // true
+clearOverrides();   // reset between cases
 ```
 
-Use `Engine::resetForTesting()` to clear the registered default between suites.
+Under `configureForTesting()` there is no blob beneath, so `clearOverrides()`
+reverts everything to empty-blob defaults. (`getFlagDetail()` reports
+`FlagDetail::OVERRIDE` for an overridden value.)
 
-## Offline snapshots
+## Offline snapshots — `configureForOffline()`
 
-For air-gapped / reproducible CI you can build an engine from a baked blob — see
-[Advanced](advanced.md): `Engine::fromFile()` / `Engine::fromSnapshot()`. The
-**real** eval runs against the snapshot (overrides apply on top), with no
-network and telemetry off.
+For air-gapped / reproducible CI you can evaluate the **real** rules against a
+baked blob — either an in-memory `snapshot` or a JSON `path` — with no network.
+Optional `flags`/`configs`/`experiments` overrides layer on top.
+
+```php
+use function Shipeasy\configureForOffline;
+use Shipeasy\Client;
+
+configureForOffline(['path' => '/etc/shipeasy/snapshot.json']);
+
+(new Client(['user_id' => 'u1']))->getFlag('new_checkout');   // evaluated, no network
+```
+
+A complete, valid snapshot JSON for `configureForOffline(['path' => ...])`:
+
+```json
+{
+  "flags": {
+    "gates": {
+      "new_checkout": { "enabled": true, "rules": [], "rolloutPct": 10000, "salt": "s" }
+    },
+    "configs": {
+      "billing_copy": { "headline": "Welcome" }
+    },
+    "killswitches": {}
+  },
+  "experiments": {
+    "experiments": {},
+    "universes": {}
+  }
+}
+```
+
+A gate entry is `{"enabled":true,"rules":[],"rolloutPct":10000,"salt":"s"}`.
+`rolloutPct` is in **basis points** — `10000` = 100%, `5000` = 50%. The real
+evaluator runs against this snapshot (overrides apply on top); no network, no
+telemetry.

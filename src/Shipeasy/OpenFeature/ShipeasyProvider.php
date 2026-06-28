@@ -54,8 +54,31 @@ final class ShipeasyProvider extends AbstractProvider
     /** OpenFeature reason that has no constant on this SDK version. */
     private const REASON_STATIC = 'STATIC';
 
-    public function __construct(private readonly Engine $client)
+    private readonly Engine $client;
+
+    /**
+     * Construct the provider. The **global form** (no argument) resolves the
+     * engine built by `Shipeasy\configure(...)`, so the docs wire OpenFeature
+     * without naming the Engine:
+     *
+     * ```php
+     * Shipeasy\configure($_ENV['SHIPEASY_SERVER_KEY']);
+     * OpenFeatureAPI::getInstance()->setProvider(new ShipeasyProvider());
+     * ```
+     *
+     * Passing an explicit Engine stays supported for advanced/back-compat use.
+     * Throws if no engine is passed and configure() has not run.
+     */
+    public function __construct(?Engine $client = null)
     {
+        $resolved = $client ?? Engine::getDefault();
+        if ($resolved === null) {
+            throw new \RuntimeException(
+                '[shipeasy] new ShipeasyProvider() resolves the configured global engine — '
+                . 'call Shipeasy\\configure() first, or pass an Engine explicitly.'
+            );
+        }
+        $this->client = $resolved;
     }
 
     /**

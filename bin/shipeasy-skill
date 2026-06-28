@@ -1,0 +1,78 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * shipeasy-skill — install the bundled Shipeasy agent skill into a project.
+ *
+ * Composer has no safe post-install hook for this, so shipping the skill is an
+ * explicit opt-in command (registered as a composer "bin", so it lands at
+ * vendor/bin/shipeasy-skill in a consuming app):
+ *
+ *     vendor/bin/shipeasy-skill install                 # -> .claude/skills/shipeasy-php/SKILL.md
+ *     vendor/bin/shipeasy-skill install --dir path/     # custom destination (file or dir)
+ *     vendor/bin/shipeasy-skill install --force         # overwrite an existing file
+ *     vendor/bin/shipeasy-skill print                   # write the skill to stdout
+ *
+ * The skill (docs/skill/SKILL.md) ships with the package; it is read relative to
+ * this script's real location.
+ */
+
+const DEFAULT_DEST = '.claude/skills/shipeasy-php/SKILL.md';
+
+function skill_text(): string
+{
+    foreach ([__DIR__ . '/../docs/skill/SKILL.md'] as $p) {
+        if (is_file($p)) {
+            return (string) file_get_contents($p);
+        }
+    }
+    fwrite(STDERR, "shipeasy-skill: bundled SKILL.md not found in the package.\n");
+    exit(1);
+}
+
+function install_skill(string $dir, bool $force): int
+{
+    $dest = $dir;
+    if (is_dir($dest) || pathinfo($dest, PATHINFO_EXTENSION) === '') {
+        $dest = rtrim($dest, '/') . '/SKILL.md';
+    }
+    if (file_exists($dest) && !$force) {
+        fwrite(STDERR, "shipeasy-skill: refusing to overwrite $dest — pass --force\n");
+        return 1;
+    }
+    $parent = dirname($dest);
+    if (!is_dir($parent) && !mkdir($parent, 0o755, true) && !is_dir($parent)) {
+        fwrite(STDERR, "shipeasy-skill: cannot create $parent\n");
+        return 1;
+    }
+    file_put_contents($dest, skill_text());
+    fwrite(STDOUT, "shipeasy-skill: installed the Shipeasy agent skill → $dest\n");
+    return 0;
+}
+
+$argv = $_SERVER['argv'];
+$cmd = $argv[1] ?? null;
+
+if ($cmd === 'print') {
+    fwrite(STDOUT, skill_text());
+    exit(0);
+}
+if ($cmd === 'install') {
+    $dir = DEFAULT_DEST;
+    $force = false;
+    for ($i = 2; $i < count($argv); $i++) {
+        if ($argv[$i] === '--force') {
+            $force = true;
+        } elseif ($argv[$i] === '--dir') {
+            $dir = $argv[++$i] ?? DEFAULT_DEST;
+        }
+    }
+    exit(install_skill($dir, $force));
+}
+
+fwrite(STDOUT, "shipeasy-skill — install the Shipeasy agent skill.\n\n"
+    . "  shipeasy-skill install [--dir <path>] [--force]\n"
+    . "  shipeasy-skill print\n");
+exit($cmd === null || $cmd === '--help' || $cmd === '-h' ? 0 : 1);

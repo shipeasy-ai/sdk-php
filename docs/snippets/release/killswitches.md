@@ -1,5 +1,5 @@
-Read a kill switch (global panic boolean). Assumes `configure()` ran at startup
-— see Installation.
+Read a kill switch (global panic boolean). Assumes `Shipeasy\configure()` ran at
+startup — see Installation.
 
 ```php
 use Shipeasy\Client;
@@ -8,7 +8,7 @@ use Shipeasy\Client;
 $client = new Client($currentUser);
 
 $panic = $client->getKillswitch(
-    '{{RESOURCE_NAME}}',   // kill switch name
-    null,                  // optional $switchKey — read a named per-key override (null = top-level value)
-);
+    '{{KILLSWITCH_KEY}}',   // kill switch name
+    null,                   // optional $switchKey — read a named per-key override
+);                          //   (null = top-level value; unconfigured key falls back to it too)
 ```

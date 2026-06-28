@@ -1,5 +1,5 @@
 Read a dynamic config value (with a fallback for the absent case). Assumes
-`configure()` ran at startup — see Installation.
+`Shipeasy\configure()` ran at startup — see Installation.
 
 ```php
 use Shipeasy\Client;
@@ -8,7 +8,7 @@ use Shipeasy\Client;
 $client = new Client($currentUser);
 
 $value = $client->getConfig(
-    '{{RESOURCE_NAME}}',              // config name
+    '{{CONFIG_KEY}}',                // config name
     ['headline' => 'Welcome'],       // optional $default — returned when the config key is absent
 );
 ```

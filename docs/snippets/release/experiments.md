@@ -1,5 +1,5 @@
 Read an experiment assignment, then track the conversion on the same bound
-`Client`. Assumes `configure()` ran at startup — see Installation.
+`Client`. Assumes `Shipeasy\configure()` ran at startup — see Installation.
 
 ```php
 use Shipeasy\Client;
@@ -8,15 +8,15 @@ use Shipeasy\Client;
 $client = new Client($currentUser);
 
 $r = $client->getExperiment(
-    '{{RESOURCE_NAME}}',     // experiment name
+    '{{EXPERIMENT_KEY}}',    // experiment name
     ['color' => 'blue'],     // $defaultParams — params returned when the user isn't enrolled
 );
 $color = $r->inExperiment ? $r->params['color'] : 'blue';
 
-// track() is on the bound Client (NOT the Engine): the unit comes from the
-// bound user — no userId argument.
+// track() is on the same bound Client — the unit comes from the bound user, so
+// there is no userId argument.
 $client->track(
-    '{{SUCCESS_EVENT}}',     // event name
+    '{{SUCCESS_EVENT}}',     // event name (the experiment's success metric)
     ['amount' => 49],        // optional $props — event properties (default [])
 );
 ```

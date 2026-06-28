@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.10.0
+
+The uniform SDK DX standard (experiment-platform doc 23). The documented surface
+is now exactly `Shipeasy\configure()` (+ the test/offline siblings) and the bound
+`new Shipeasy\Client($user)`; the `Engine` stays public but undocumented.
+
+### Added
+
+- **`Shipeasy\configureForTesting([...])`** — no api key, zero network; seeds
+  `flags`/`configs`/`experiments` overrides and registers the global engine so the
+  bound `new Client($user)` reads them. **Replaces** prior config (unlike
+  `configure`'s first-config-wins) so a test suite can reconfigure between cases.
+- **`Shipeasy\configureForOffline([...])`** — evaluates the **real** rules from an
+  in-memory `snapshot` or a JSON `path`, with overrides layered on top; also
+  replaces prior config.
+- **Package-level functions** so the docs never name the `Engine`:
+  `Shipeasy\overrideFlag` / `overrideConfig` / `overrideExperiment` /
+  `clearOverrides`, `onChange`, `bootstrapScriptTag`, `i18nScriptTag` — delegating
+  to the configured global engine.
+- **`ShipeasyProvider` global form** — `new ShipeasyProvider()` (no argument)
+  resolves the engine built by `configure()`; passing an explicit `Engine` stays
+  supported.
+- **`bin/shipeasy-skill`** — the opt-in installer (`vendor/bin/shipeasy-skill
+  install` / `print`) that copies the bundled agent skill into a consumer's
+  project.
+
+### Changed
+
+- `README.md` is now **generated** from `docs/` by `scripts/gen-readme.php`
+  (CI enforces it); the docs were rewritten Engine-free around `configure()` +
+  `Client`, with new `metrics/track` + `ops/see` snippet groups and specific
+  placeholders.
+
 ## 0.9.0
 
 - **Add `track()`/`logExposure()` to the bound `Client`.** Experiments are now

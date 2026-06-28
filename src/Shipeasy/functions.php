@@ -46,6 +46,115 @@ function configure(string $apiKey, ?callable $attributes = null, array $opts = [
 }
 
 /**
+ * Configure Shipeasy in **test mode** — a drop-in sibling of {@see configure()}
+ * with no network, ever (no api key needed). Seed `flags` (`name => bool`),
+ * `configs` (`name => value`), `experiments` (`name => [group, params]`), and an
+ * optional `attributes` transform, then read through `new Client($user)`.
+ * REPLACES any prior config so tests can reconfigure between cases.
+ *
+ * @param array<string, mixed> $opts
+ */
+function configureForTesting(array $opts = []): Engine
+{
+    return Engine::configureForTesting($opts);
+}
+
+/**
+ * Configure Shipeasy **offline** — evaluate the REAL rules from an in-memory
+ * `snapshot` (`['flags' => ..., 'experiments' => ...]`) or a JSON `path`, with no
+ * network. Optional `flags`/`configs`/`experiments` overrides layer on top.
+ * REPLACES any prior config.
+ *
+ * @param array<string, mixed> $opts
+ */
+function configureForOffline(array $opts = []): Engine
+{
+    return Engine::configureForOffline($opts);
+}
+
+/** @internal Resolve the configured global engine or throw a clear error. */
+function _requireGlobal(string $fn): Engine
+{
+    $engine = Engine::getDefault();
+    if ($engine === null) {
+        throw new \RuntimeException(
+            "[shipeasy] $fn() called before Shipeasy\\configure() (or a configureFor* sibling)"
+        );
+    }
+    return $engine;
+}
+
+/**
+ * Force `getFlag($name)` -> $value on the spot, for the current configuration —
+ * a quick in-test override layered on top of whatever configureForTesting /
+ * configureForOffline (or configure) set up. Wins over the blob until
+ * {@see clearOverrides()}.
+ */
+function overrideFlag(string $name, bool $value): void
+{
+    _requireGlobal('overrideFlag')->overrideFlag($name, $value);
+}
+
+/** Force `getConfig($name)` -> $value on the spot (see {@see overrideFlag()}). */
+function overrideConfig(string $name, mixed $value): void
+{
+    _requireGlobal('overrideConfig')->overrideConfig($name, $value);
+}
+
+/**
+ * Force `getExperiment($name)` to report enrolment in $group with $params on the
+ * spot (see {@see overrideFlag()}).
+ */
+function overrideExperiment(string $name, string $group, mixed $params): void
+{
+    _requireGlobal('overrideExperiment')->overrideExperiment($name, $group, $params);
+}
+
+/**
+ * Drop every on-the-spot flag/config/experiment override — INCLUDING the seed
+ * from configureForTesting (test mode has no blob beneath, so everything reverts
+ * to empty-blob defaults). Under configureForOffline the snapshot remains.
+ */
+function clearOverrides(): void
+{
+    _requireGlobal('clearOverrides')->clearOverrides();
+}
+
+/**
+ * Register a change listener on the configured global engine. Returns an
+ * unsubscribe callable. (PHP is request-scoped and has no background poll, so
+ * this fires only if a long-running runtime calls the engine's refresh on a
+ * schedule.)
+ */
+function onChange(callable $fn): callable
+{
+    return _requireGlobal('onChange')->onChange($fn);
+}
+
+/**
+ * Return the cross-platform SSR bootstrap `<script>` tag for a request (no key
+ * embedded), via the configured global engine — call {@see configure()} first.
+ *
+ * @param array<string, mixed> $user
+ * @param array<string, mixed> $opts
+ */
+function bootstrapScriptTag(array $user, array $opts = []): string
+{
+    return _requireGlobal('bootstrapScriptTag')->bootstrapScriptTag($user, $opts);
+}
+
+/**
+ * Return the i18n loader `<script>` tag (public client key) for SSR, via the
+ * configured global engine — call {@see configure()} first.
+ *
+ * @param array<string, mixed> $opts
+ */
+function i18nScriptTag(string $clientKey, string $profile = 'en:prod', array $opts = []): string
+{
+    return _requireGlobal('i18nScriptTag')->i18nScriptTag($clientKey, $profile, $opts);
+}
+
+/**
  * Register the engine backing the package-level see() functions and the
  * user-bound Client. Called automatically when an Engine is constructed (last
  * wins); configure() uses first-config-wins.
