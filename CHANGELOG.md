@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.12.0
+
+- **Optional Admin API client** — a new opt-in `Shipeasy\Admin\AdminClient` for
+  *administering* resources (create gates, start experiments, manage configs/
+  killswitches/universes/metrics/events, …) from server code. It is a raw client
+  **generated from the Shipeasy OpenAPI spec** (1:1 with the REST API — id-based,
+  basis-points, snake_case; no name→id or percent→bp ergonomics, which stay in
+  the CLI/MCP).
+  - Off by default: the generated client needs `guzzlehttp/guzzle`, declared in
+    composer `suggest` (NOT `require`), so the base SDK never forces it. Opt in
+    with `composer require guzzlehttp/guzzle`.
+  - `new AdminClient($apiKey, $projectId)` wires bearer auth + `X-Project-Id`
+    scoping (base URL defaults to `https://shipeasy.ai`); resource groups are
+    reached as `$admin->gates()`, `$admin->experiments()`, … (gates, configs,
+    killswitches, experiments, universes, metrics, events, alertRules, attributes,
+    projects, ops, i18n).
+  - Regenerate after a contract change: refresh `admin/openapi.json` then run
+    `bash scripts/gen_admin.sh` (only `src/Shipeasy/Admin/Generated/` is rewritten;
+    the `AdminClient` shim is preserved). Generator pinned via `openapitools.json`.
+
 ## 0.11.0
 
 Laravel integration — the Laravel-native equivalent of the Ruby SDK's Rails

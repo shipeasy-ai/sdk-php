@@ -23,13 +23,14 @@ $DOCS = $ROOT . '/docs';
 $pageOrder = [
     'overview', 'installation', 'configuration', 'flags', 'configs',
     'killswitches', 'experiments', 'i18n', 'error-reporting', 'testing',
-    'openfeature', 'advanced',
+    'openfeature', 'advanced', 'admin-api',
 ];
 $pageTitle = [
     'overview' => 'Overview', 'installation' => 'Installation', 'configuration' => 'Configuration',
     'flags' => 'Feature flags', 'configs' => 'Dynamic configs', 'killswitches' => 'Kill switches',
     'experiments' => 'Experiments', 'i18n' => 'Internationalization', 'error-reporting' => 'Error reporting',
     'testing' => 'Testing', 'openfeature' => 'OpenFeature', 'advanced' => 'Advanced',
+    'admin-api' => 'Admin API client',
 ];
 $pageBlurb = [
     'overview' => 'The `configure()` + `new Client($user)` model.',
@@ -44,6 +45,7 @@ $pageBlurb = [
     'testing' => '`configureForTesting` / `configureForOffline`, overrides.',
     'openfeature' => '`ShipeasyProvider` (OpenFeature provider).',
     'advanced' => 'Anon-id middleware, private attributes, sticky bucketing, SSR.',
+    'admin-api' => 'Optional `Shipeasy\Admin\AdminClient` for administering resources (generated from the OpenAPI spec).',
 ];
 
 function read_doc(string $rel): string

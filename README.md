@@ -74,6 +74,7 @@ Constructing `new Client($user)` before `configure()` throws.
 | [Testing](https://github.com/shipeasy-ai/sdk-php/blob/main/docs/pages/testing.md) | `configureForTesting` / `configureForOffline`, overrides. |
 | [OpenFeature](https://github.com/shipeasy-ai/sdk-php/blob/main/docs/pages/openfeature.md) | `ShipeasyProvider` (OpenFeature provider). |
 | [Advanced](https://github.com/shipeasy-ai/sdk-php/blob/main/docs/pages/advanced.md) | Anon-id middleware, private attributes, sticky bucketing, SSR. |
+| [Admin API client](https://github.com/shipeasy-ai/sdk-php/blob/main/docs/pages/admin-api.md) | Optional `Shipeasy\Admin\AdminClient` for administering resources (generated from the O… |
 
 Copy-paste snippets live under [`docs/snippets/`](https://github.com/shipeasy-ai/sdk-php/blob/main/docs/snippets)
 (release · metrics · i18n · ops); an installable agent skill is at
