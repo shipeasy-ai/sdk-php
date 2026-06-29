@@ -6,16 +6,21 @@ namespace Shipeasy\Admin;
 
 use GuzzleHttp\Client as GuzzleClient;
 use Shipeasy\Admin\Generated\Configuration;
-use Shipeasy\Admin\Generated\Api\AlertRulesApi;
+use Shipeasy\Admin\Generated\Api\AlertsApi;
+use Shipeasy\Admin\Generated\Api\APIKeysApi;
 use Shipeasy\Admin\Generated\Api\AttributesApi;
 use Shipeasy\Admin\Generated\Api\ConfigsApi;
+use Shipeasy\Admin\Generated\Api\ConnectorsApi;
+use Shipeasy\Admin\Generated\Api\DraftsApi;
+use Shipeasy\Admin\Generated\Api\ErrorsApi;
 use Shipeasy\Admin\Generated\Api\EventsApi;
 use Shipeasy\Admin\Generated\Api\ExperimentsApi;
-use Shipeasy\Admin\Generated\Api\GatesApi;
-use Shipeasy\Admin\Generated\Api\I18nApi;
-use Shipeasy\Admin\Generated\Api\KillswitchesApi;
+use Shipeasy\Admin\Generated\Api\FlagsApi;
+use Shipeasy\Admin\Generated\Api\KeysApi;
+use Shipeasy\Admin\Generated\Api\KillswitchApi;
 use Shipeasy\Admin\Generated\Api\MetricsApi;
 use Shipeasy\Admin\Generated\Api\OpsApi;
+use Shipeasy\Admin\Generated\Api\ProfilesApi;
 use Shipeasy\Admin\Generated\Api\ProjectsApi;
 use Shipeasy\Admin\Generated\Api\UniversesApi;
 
@@ -40,7 +45,7 @@ use Shipeasy\Admin\Generated\Api\UniversesApi;
  *         getenv('SHIPEASY_ADMIN_KEY'),
  *         getenv('SHIPEASY_PROJECT_ID'),
  *     );
- *     $gates = $admin->gates()->listGates();
+ *     $flags = $admin->flags()->listGates();
  */
 final class AdminClient
 {
@@ -79,9 +84,9 @@ final class AdminClient
         return $this->config;
     }
 
-    public function gates(): GatesApi
+    public function flags(): FlagsApi
     {
-        return $this->api(GatesApi::class);
+        return $this->api(FlagsApi::class);
     }
 
     public function configs(): ConfigsApi
@@ -89,9 +94,9 @@ final class AdminClient
         return $this->api(ConfigsApi::class);
     }
 
-    public function killswitches(): KillswitchesApi
+    public function killswitch(): KillswitchApi
     {
-        return $this->api(KillswitchesApi::class);
+        return $this->api(KillswitchApi::class);
     }
 
     public function experiments(): ExperimentsApi
@@ -104,6 +109,11 @@ final class AdminClient
         return $this->api(UniversesApi::class);
     }
 
+    public function attributes(): AttributesApi
+    {
+        return $this->api(AttributesApi::class);
+    }
+
     public function metrics(): MetricsApi
     {
         return $this->api(MetricsApi::class);
@@ -114,14 +124,14 @@ final class AdminClient
         return $this->api(EventsApi::class);
     }
 
-    public function alertRules(): AlertRulesApi
+    public function ops(): OpsApi
     {
-        return $this->api(AlertRulesApi::class);
+        return $this->api(OpsApi::class);
     }
 
-    public function attributes(): AttributesApi
+    public function alerts(): AlertsApi
     {
-        return $this->api(AttributesApi::class);
+        return $this->api(AlertsApi::class);
     }
 
     public function projects(): ProjectsApi
@@ -129,14 +139,34 @@ final class AdminClient
         return $this->api(ProjectsApi::class);
     }
 
-    public function ops(): OpsApi
+    public function profiles(): ProfilesApi
     {
-        return $this->api(OpsApi::class);
+        return $this->api(ProfilesApi::class);
     }
 
-    public function i18n(): I18nApi
+    public function keys(): KeysApi
     {
-        return $this->api(I18nApi::class);
+        return $this->api(KeysApi::class);
+    }
+
+    public function drafts(): DraftsApi
+    {
+        return $this->api(DraftsApi::class);
+    }
+
+    public function errors(): ErrorsApi
+    {
+        return $this->api(ErrorsApi::class);
+    }
+
+    public function connectors(): ConnectorsApi
+    {
+        return $this->api(ConnectorsApi::class);
+    }
+
+    public function apiKeys(): APIKeysApi
+    {
+        return $this->api(APIKeysApi::class);
     }
 
     /**

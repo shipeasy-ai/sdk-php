@@ -32,7 +32,7 @@ $admin = new AdminClient(
     // 'http://localhost:3000',       // host; defaults to https://shipeasy.ai
 );
 
-$gates = $admin->gates()->listGates();
+$flags = $admin->flags()->listGates();
 ```
 
 `projectId` is sent as the `X-Project-Id` header on every request. Individual
@@ -44,15 +44,16 @@ Each resource group is a method returning the matching generated api whose
 methods map 1:1 to the OpenAPI operations:
 
 ```php
-$admin->gates()->createGate($request);
+$admin->flags()->createGate($request);
 $admin->experiments()->createExperiment($request);
 ```
 
-Available groups: `gates()`, `configs()`, `killswitches()`, `experiments()`,
-`universes()`, `metrics()`, `events()`, `alertRules()`, `attributes()`,
-`projects()`, `ops()`, `i18n()`. The exact method names, request models, and
-response shapes come straight from the spec — explore them under
-`Shipeasy\Admin\Generated\Model` or with your editor's autocomplete.
+Available groups: `flags()`, `configs()`, `killswitch()`, `experiments()`,
+`universes()`, `attributes()`, `metrics()`, `events()`, `ops()`, `alerts()`,
+`projects()`, `profiles()`, `keys()`, `drafts()`, `errors()`, `connectors()`,
+`apiKeys()`. The exact method names, request models, and response shapes come
+straight from the spec — explore them under `Shipeasy\Admin\Generated\Model` or
+with your editor's autocomplete.
 
 ## Regenerating
 

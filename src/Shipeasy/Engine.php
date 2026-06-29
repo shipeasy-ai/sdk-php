@@ -25,7 +25,7 @@ class Engine
      * This is the single runtime source of truth — keep it in sync with the
      * `version` field in composer.json (composer exposes no runtime constant).
      */
-    public const VERSION = '0.12.0';
+    public const VERSION = '0.12.1';
 
     private string $apiKey;
     private string $baseUrl;

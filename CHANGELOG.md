@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.12.1
+
+- **Admin API client regenerated from the canonical OpenAPI spec (2.0.0).** The
+  0.12.0 client was generated from a stale 1.0.0 subset; this regenerates it from
+  the full spec, adding the connectors, errors, keys, drafts, profiles and
+  api-keys endpoints. `AdminClient` resource accessors are now `flags()`,
+  `configs()`, `killswitch()`, `experiments()`, `universes()`, `attributes()`,
+  `metrics()`, `events()`, `ops()`, `alerts()`, `projects()`, `profiles()`,
+  `keys()`, `drafts()`, `errors()`, `connectors()`, `apiKeys()` (renamed/added to
+  track the spec's tags).
+
 ## 0.12.0
 
 - **Optional Admin API client** — a new opt-in `Shipeasy\Admin\AdminClient` for

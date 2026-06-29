@@ -33,10 +33,12 @@ final class AdminClientTest extends TestCase
     public function testExposesResourceGroups(): void
     {
         $admin = new AdminClient('sdk_admin_test', 'proj_123');
-        $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\GatesApi::class, $admin->gates());
+        $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\FlagsApi::class, $admin->flags());
         $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\ExperimentsApi::class, $admin->experiments());
+        $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\ConnectorsApi::class, $admin->connectors());
+        $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\ErrorsApi::class, $admin->errors());
         // Lazily constructed but cached: same instance on repeat access.
-        $this->assertSame($admin->gates(), $admin->gates());
+        $this->assertSame($admin->flags(), $admin->flags());
     }
 
     public function testDefaultHostIsProduction(): void
