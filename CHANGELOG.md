@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.16.1 — 2026-07-08
+
+### Laravel config pins network egress to production
+
+The published `config/shipeasy.php` now defaults `network_enabled` to
+`app()->isProduction()` (was `null`), so a scaffolded Laravel app is fully active
+in production and quiet elsewhere, stated explicitly. Override with
+`SHIPEASY_NETWORK_ENABLED`, or pass `null` to let the SDK infer production at
+runtime (safer under `config:cache`).
+
 ## 0.16.0 — 2026-07-08
 
 ### Environment-derived network & telemetry (egress) defaults

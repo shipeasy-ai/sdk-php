@@ -130,15 +130,15 @@ return [
     | telemetry. When off the SDK is fully offline: reads return your in-code
     | defaults / overrides and nothing is sent.
     |
-    | Leave `null` for the environment-derived DEFAULT: egress is ON in
-    | production and OFF everywhere else, so a local/CI run never phones home
-    | unless it opts in. "Production" is decided from SHIPEASY_ENV / APP_ENV / ENV
-    | ('production' or 'prod' ⇒ prod), falling back to the `env` option above.
-    | Set true/false (SHIPEASY_NETWORK_ENABLED=true) to force it. Because Laravel
-    | sets APP_ENV, a `local`/`testing` app is quiet by default with no extra
-    | config.
+    | Pinned to the Laravel environment: egress is ON in production and OFF
+    | everywhere else, so a local/CI run never phones home unless it opts in.
+    | Override with SHIPEASY_NETWORK_ENABLED=true/false, or replace
+    | `app()->isProduction()` with your own condition. (Pass `null` instead to let
+    | the SDK infer production itself from SHIPEASY_ENV / APP_ENV / ENV at runtime
+    | — handy if you run `config:cache` in a non-production build step, since a
+    | cached config freezes this value.)
     |
     */
-    'network_enabled' => env('SHIPEASY_NETWORK_ENABLED', null),
+    'network_enabled' => env('SHIPEASY_NETWORK_ENABLED', app()->isProduction()),
 
 ];
