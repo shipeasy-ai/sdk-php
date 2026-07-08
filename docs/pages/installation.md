@@ -54,7 +54,7 @@ configure(
     ],
     [                               // $opts — optional configure() options (all optional)
         'env'               => 'prod',                       // read environment for the blob
-        'baseUrl'           => 'https://edge.shipeasy.dev',  // edge API base
+        'baseUrl'           => 'https://api.shipeasy.ai',  // edge API base
         'disableTelemetry'  => false,                        // opt out of the usage beacon
         'telemetryUrl'      => null,                         // override telemetry endpoint
         'privateAttributes' => ['email'],                    // attrs stripped from event payloads
@@ -86,7 +86,7 @@ $enabled = $client->getFlag('new_checkout');
 | Key | Default | Meaning |
 | --- | --- | --- |
 | `env` | `'prod'` | The read environment for the blob. |
-| `baseUrl` | `https://edge.shipeasy.dev` | Edge API base. |
+| `baseUrl` | `https://api.shipeasy.ai` | Edge API base. |
 | `disableTelemetry` | `false` | Opt out of the usage-telemetry beacon. |
 | `telemetryUrl` | (built-in) | Override the telemetry endpoint. |
 | `privateAttributes` | `[]` | Attribute names stripped from outbound event payloads (LD/Statsig `privateAttributes`). See [Advanced](advanced.md). |

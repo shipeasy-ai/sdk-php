@@ -15,7 +15,7 @@ namespace Shipeasy;
  */
 class Engine
 {
-    private const DEFAULT_BASE_URL = 'https://edge.shipeasy.dev';
+    private const DEFAULT_BASE_URL = 'https://api.shipeasy.ai';
     // CDN origin serving the static loader scripts (/sdk/bootstrap.js,
     // /sdk/i18n/loader.js) — distinct from the edge API the blobs are fetched from.
     private const DEFAULT_CDN_BASE = 'https://cdn.shipeasy.ai';
@@ -25,7 +25,7 @@ class Engine
      * This is the single runtime source of truth — keep it in sync with the
      * `version` field in composer.json (composer exposes no runtime constant).
      */
-    public const VERSION = '0.13.0';
+    public const VERSION = '0.13.1';
 
     private string $apiKey;
     private string $baseUrl;

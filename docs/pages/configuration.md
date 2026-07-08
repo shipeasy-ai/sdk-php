@@ -18,7 +18,7 @@ configure(
     ],
     [                               // optional configure() options
         'env'                => 'prod',
-        'baseUrl'            => 'https://edge.shipeasy.dev',
+        'baseUrl'            => 'https://api.shipeasy.ai',
         'disableTelemetry'   => false,
         'telemetryUrl'       => null,
         'privateAttributes'  => ['email'],
@@ -41,7 +41,7 @@ configure(
 | Key | Default | Meaning |
 | --- | --- | --- |
 | `env` | `'prod'` | The read environment for the blob. |
-| `baseUrl` | `https://edge.shipeasy.dev` | Edge API base. |
+| `baseUrl` | `https://api.shipeasy.ai` | Edge API base. |
 | `disableTelemetry` | `false` | Opt out of the usage-telemetry beacon. |
 | `telemetryUrl` | (built-in) | Override the telemetry endpoint. |
 | `privateAttributes` | `[]` | Attribute names stripped from outbound event payloads (LD/Statsig `privateAttributes`). See [Advanced](advanced.md). |
