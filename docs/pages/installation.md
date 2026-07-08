@@ -59,6 +59,7 @@ configure(
         'telemetryUrl'      => null,                         // override telemetry endpoint
         'privateAttributes' => ['email'],                    // attrs stripped from event payloads
         'stickyStore'       => null,                         // Shipeasy\StickyBucketStore for durable bucketing
+        'logLevel'          => 'warn',                       // SDK diagnostics: silent|error|warn|info|debug
     ],
 );
 ```
@@ -90,6 +91,7 @@ $enabled = $client->getFlag('new_checkout');
 | `telemetryUrl` | (built-in) | Override the telemetry endpoint. |
 | `privateAttributes` | `[]` | Attribute names stripped from outbound event payloads (LD/Statsig `privateAttributes`). See [Advanced](advanced.md). |
 | `stickyStore` | `null` | A `Shipeasy\StickyBucketStore` for durable experiment bucketing. See [Advanced](advanced.md). |
+| `logLevel` | `'warn'` | SDK diagnostic verbosity: `'silent'`, `'error'`, `'warn'`, `'info'`, `'debug'`. Runtime reads are fail-safe (never throw) and log at this level. See [Configuration](configuration.md). |
 
 The **public client key** (a separate value) is *not* passed to `configure()`.
 It is only used for the i18n loader `<script>` tag — see [i18n](i18n.md).

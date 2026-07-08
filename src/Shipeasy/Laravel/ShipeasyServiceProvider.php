@@ -65,6 +65,7 @@ class ShipeasyServiceProvider extends ServiceProvider
 
         $opts = [
             'env' => (string) ($this->config('shipeasy.env') ?? 'prod'),
+            'logLevel' => (string) ($this->config('shipeasy.log_level') ?? 'warn'),
         ];
 
         \Shipeasy\configure($key, $transform, $opts);

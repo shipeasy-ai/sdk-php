@@ -38,7 +38,9 @@ const VERSION = Engine::VERSION;
  * @param string $apiKey The Shipeasy **server** key.
  * @param callable|null $attributes (yourUser) -> attributeMap; default identity.
  * @param array<string, mixed> $opts Extra Engine options (baseUrl, env,
- *        disableTelemetry, telemetryUrl, privateAttributes, stickyStore).
+ *        disableTelemetry, telemetryUrl, privateAttributes, stickyStore,
+ *        logLevel). `logLevel` is one of 'silent'|'error'|'warn'|'info'|'debug'
+ *        (default 'warn') and sets the SDK's own diagnostic verbosity.
  */
 function configure(string $apiKey, ?callable $attributes = null, array $opts = []): Engine
 {
@@ -173,10 +175,7 @@ function see(mixed $problem): SeeChain
 {
     $engine = Engine::getDefault();
     if ($engine === null) {
-        @trigger_error(
-            '[shipeasy] see() called before an engine was created — error dropped',
-            E_USER_WARNING
-        );
+        Logger::warn('see() called before an engine was created — error dropped');
         return new SeeChain($problem, static function (): void {
         });
     }
@@ -188,10 +187,7 @@ function seeViolation(string $name): SeeChain
 {
     $engine = Engine::getDefault();
     if ($engine === null) {
-        @trigger_error(
-            '[shipeasy] seeViolation() called before an engine was created — error dropped',
-            E_USER_WARNING
-        );
+        Logger::warn('seeViolation() called before an engine was created — error dropped');
         return new SeeChain(new Violation($name), static function (): void {
         });
     }

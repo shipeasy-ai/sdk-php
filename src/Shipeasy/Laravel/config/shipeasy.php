@@ -90,4 +90,19 @@ return [
     */
     'i18n_profile' => env('SHIPEASY_I18N_PROFILE', 'en:prod'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Log level
+    |--------------------------------------------------------------------------
+    |
+    | The SDK's own diagnostic verbosity. One of 'silent', 'error', 'warn',
+    | 'info', 'debug' (ordering silent<error<warn<info<debug; a message at level
+    | L is emitted iff the configured level is >= L). Passed to configure() as the
+    | `logLevel` option. Reads are fail-safe — they return the documented default
+    | rather than throwing — and log at this level when something unexpected
+    | happens. Defaults to 'warn'; set 'silent' to mute the SDK entirely.
+    |
+    */
+    'log_level' => env('SHIPEASY_LOG_LEVEL', 'warn'),
+
 ];

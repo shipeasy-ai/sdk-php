@@ -23,6 +23,7 @@ configure(
         'telemetryUrl'       => null,
         'privateAttributes'  => ['email'],
         'stickyStore'        => null,
+        'logLevel'           => 'warn',
     ],
 );
 ```
@@ -45,6 +46,36 @@ configure(
 | `telemetryUrl` | (built-in) | Override the telemetry endpoint. |
 | `privateAttributes` | `[]` | Attribute names stripped from outbound event payloads (LD/Statsig `privateAttributes`). See [Advanced](advanced.md). |
 | `stickyStore` | `null` | A `Shipeasy\StickyBucketStore` for durable experiment bucketing. See [Advanced](advanced.md). |
+| `logLevel` | `'warn'` | The SDK's own diagnostic verbosity: `'silent'`, `'error'`, `'warn'`, `'info'`, `'debug'`. See below. |
+
+## Fail-safe reads & the `logLevel` option
+
+Every **runtime read** — `getFlag`, `getFlagDetail`, `getConfig`,
+`getExperiment`, `getKillswitch`, plus `track`, `logExposure`, and the `see()`
+chain — is **fail-safe**: it never throws into your request. If a blob is
+malformed or a hook you supplied (e.g. a `stickyStore` or attributes transform)
+throws mid-read, the call swallows the error and returns its documented default
+(`getFlag` → the `$default` bool, `getConfig` → `$default`, `getExperiment` → a
+not-enrolled result with `group="control"` and your `$defaultParams`,
+`getKillswitch` → `false`, `track`/`logExposure` → a no-op). **Setup and
+lifecycle calls stay loud** — constructing `new Client()` before `configure()`,
+`configureForOffline` misconfig, and `init()`/`refresh()` still throw so boot-time
+mistakes surface.
+
+When a read falls back, the SDK logs why via `error_log('[shipeasy] …')`, gated
+by `logLevel`:
+
+| Level | Emits |
+| --- | --- |
+| `silent` | nothing |
+| `error` | unexpected errors only |
+| `warn` (default) | errors + recoverable warnings |
+| `info` | + informational |
+| `debug` | everything |
+
+Ordering is `silent < error < warn < info < debug`; a message at level L is
+emitted iff the configured level is ≥ L. An unknown value falls back to `warn`.
+Set `'silent'` to mute the SDK entirely.
 
 ## The fetch model (no background poll)
 

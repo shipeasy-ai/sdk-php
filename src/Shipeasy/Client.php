@@ -67,13 +67,23 @@ final class Client
     /** Evaluate the bound user against gate $name; $default when unevaluable. */
     public function getFlag(string $name, bool $default = false): bool
     {
-        return $this->engine->getFlag($name, $this->attributes, $default);
+        try {
+            return $this->engine->getFlag($name, $this->attributes, $default);
+        } catch (\Throwable $e) {
+            Logger::error("Client::getFlag('$name'): unexpected error, returning default — " . $e->getMessage());
+            return $default;
+        }
     }
 
     /** Evaluate gate $name and report why it resolved that way. */
     public function getFlagDetail(string $name): FlagDetail
     {
-        return $this->engine->getFlagDetail($name, $this->attributes);
+        try {
+            return $this->engine->getFlagDetail($name, $this->attributes);
+        } catch (\Throwable $e) {
+            Logger::error("Client::getFlagDetail('$name'): unexpected error, treating as unevaluable — " . $e->getMessage());
+            return new FlagDetail(false, FlagDetail::CLIENT_NOT_READY);
+        }
     }
 
     /**
@@ -82,19 +92,34 @@ final class Client
      */
     public function getConfig(string $name, mixed $default = null): mixed
     {
-        return $this->engine->getConfig($name, $default);
+        try {
+            return $this->engine->getConfig($name, $default);
+        } catch (\Throwable $e) {
+            Logger::error("Client::getConfig('$name'): unexpected error, returning default — " . $e->getMessage());
+            return $default;
+        }
     }
 
     /** Evaluate experiment $name for the bound user. */
     public function getExperiment(string $name, mixed $defaultParams): ExperimentResult
     {
-        return $this->engine->getExperiment($name, $this->attributes, $defaultParams);
+        try {
+            return $this->engine->getExperiment($name, $this->attributes, $defaultParams);
+        } catch (\Throwable $e) {
+            Logger::error("Client::getExperiment('$name'): unexpected error, returning control/not-enrolled — " . $e->getMessage());
+            return new ExperimentResult(false, 'control', $defaultParams);
+        }
     }
 
     /** Read kill switch $name (optionally a named per-key override). */
     public function getKillswitch(string $name, ?string $switchKey = null): bool
     {
-        return $this->engine->getKillswitch($name, $switchKey);
+        try {
+            return $this->engine->getKillswitch($name, $switchKey);
+        } catch (\Throwable $e) {
+            Logger::error("Client::getKillswitch('$name'): unexpected error, treating as not killed — " . $e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -107,8 +132,12 @@ final class Client
      */
     public function track(string $event, array $props = []): void
     {
-        $id = (string) ($this->attributes['user_id'] ?? $this->attributes['anonymous_id'] ?? '');
-        $this->engine->track($id, $event, $props);
+        try {
+            $id = (string) ($this->attributes['user_id'] ?? $this->attributes['anonymous_id'] ?? '');
+            $this->engine->track($id, $event, $props);
+        } catch (\Throwable $e) {
+            Logger::warn("Client::track('$event'): event dropped — " . $e->getMessage());
+        }
     }
 
     /**
@@ -118,6 +147,10 @@ final class Client
      */
     public function logExposure(string $experiment): void
     {
-        $this->engine->logExposure($this->attributes, $experiment);
+        try {
+            $this->engine->logExposure($this->attributes, $experiment);
+        } catch (\Throwable $e) {
+            Logger::warn("Client::logExposure('$experiment'): exposure dropped — " . $e->getMessage());
+        }
     }
 }

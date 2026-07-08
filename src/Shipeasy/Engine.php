@@ -25,11 +25,13 @@ class Engine
      * This is the single runtime source of truth — keep it in sync with the
      * `version` field in composer.json (composer exposes no runtime constant).
      */
-    public const VERSION = '0.12.1';
+    public const VERSION = '0.13.0';
 
     private string $apiKey;
     private string $baseUrl;
     private string $env;
+    /** SDK diagnostic log level (silent<error<warn<info<debug). Default 'warn'. */
+    private string $logLevel;
     private ?array $flagsBlob = null;
     private ?array $expsBlob = null;
     private ?string $flagsEtag = null;
@@ -81,6 +83,10 @@ class Engine
      *        variant (changing allocation %/weights won't re-bucket an enrolled
      *        unit — changing the experiment salt is the reshuffle lever). Absent
      *        ⇒ deterministic (fully backward compatible).
+     * @param string|null $logLevel SDK diagnostic verbosity — one of 'silent',
+     *        'error', 'warn', 'info', 'debug' (ordering silent<error<warn<info<
+     *        debug; a message at level L is emitted iff configured >= L). null or
+     *        an unknown value ⇒ 'warn'. Sets the process-wide {@see Logger} level.
      */
     public function __construct(
         string $apiKey,
@@ -89,13 +95,17 @@ class Engine
         bool $disableTelemetry = false,
         ?string $telemetryUrl = null,
         array $privateAttributes = [],
-        ?StickyBucketStore $stickyStore = null
+        ?StickyBucketStore $stickyStore = null,
+        ?string $logLevel = null
     ) {
         $this->apiKey = $apiKey;
         $this->baseUrl = rtrim($baseUrl ?? self::DEFAULT_BASE_URL, '/');
         $this->env = $env;
         $this->privateAttributes = array_values($privateAttributes);
         $this->stickyStore = $stickyStore;
+        // Diagnostic log level. Default 'warn'; drive the leveled Logger from it.
+        $this->logLevel = $logLevel ?? 'warn';
+        Logger::setLevel($this->logLevel);
         // Per-evaluation usage telemetry. ON by default; pass
         // disableTelemetry: true to opt out. See Telemetry.php.
         $this->telemetry = new Telemetry(
@@ -156,7 +166,8 @@ class Engine
      *        object to the Shipeasy attribute map (`['user_id' => ..., ...]`).
      *        Default = identity (the user object IS the attribute map).
      * @param array<string, mixed> $opts Extra Engine options: baseUrl, env,
-     *        disableTelemetry, telemetryUrl, privateAttributes, stickyStore.
+     *        disableTelemetry, telemetryUrl, privateAttributes, stickyStore,
+     *        logLevel.
      */
     public static function configure(string $apiKey, ?callable $attributes = null, array $opts = []): Engine
     {
@@ -178,6 +189,7 @@ class Engine
             $opts['telemetryUrl'] ?? null,
             $opts['privateAttributes'] ?? [],
             $opts['stickyStore'] ?? null,
+            $opts['logLevel'] ?? null,
         );
         self::setDefaultIfAbsent($engine);
         self::$attributesTransform = $attributes;
@@ -186,8 +198,9 @@ class Engine
         // break configure().
         try {
             $engine->initOnce();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
             // Evaluations will return defaults until a later init()/refresh().
+            Logger::warn('configure(): initial fetch failed, reads return defaults until refresh — ' . $e->getMessage());
         }
 
         return $engine;
@@ -462,11 +475,18 @@ class Engine
      */
     public function getFlag(string $name, array $user, bool $default = false): bool
     {
-        $d = $this->getFlagDetail($name, $user);
-        if ($d->reason === FlagDetail::CLIENT_NOT_READY || $d->reason === FlagDetail::FLAG_NOT_FOUND) {
+        try {
+            $d = $this->getFlagDetail($name, $user);
+            if ($d->reason === FlagDetail::CLIENT_NOT_READY || $d->reason === FlagDetail::FLAG_NOT_FOUND) {
+                return $default;
+            }
+            return $d->value;
+        } catch (\Throwable $e) {
+            // A runtime read must never throw into the caller — fall back to the
+            // documented default.
+            Logger::error("getFlag('$name'): unexpected error, returning default — " . $e->getMessage());
             return $default;
         }
-        return $d->value;
     }
 
     /**
@@ -477,33 +497,40 @@ class Engine
      */
     public function getFlagDetail(string $name, array $user): FlagDetail
     {
-        // 1. Override — short-circuit before telemetry, like getFlag's old path.
-        if (array_key_exists($name, $this->flagOverrides)) {
-            return new FlagDetail($this->flagOverrides[$name], FlagDetail::OVERRIDE);
-        }
+        try {
+            // 1. Override — short-circuit before telemetry, like getFlag's old path.
+            if (array_key_exists($name, $this->flagOverrides)) {
+                return new FlagDetail($this->flagOverrides[$name], FlagDetail::OVERRIDE);
+            }
 
-        $this->telemetry->emit('gate', $name);
+            $this->telemetry->emit('gate', $name);
 
-        // 2. Not initialized — the blob was never fetched.
-        if (!$this->initialized) {
+            // 2. Not initialized — the blob was never fetched.
+            if (!$this->initialized) {
+                return new FlagDetail(false, FlagDetail::CLIENT_NOT_READY);
+            }
+
+            // 3. Gate not present in the blob.
+            $gate = $this->flagsBlob['gates'][$name] ?? null;
+            if ($gate === null) {
+                return new FlagDetail(false, FlagDetail::FLAG_NOT_FOUND);
+            }
+
+            // 4. Gate present but disabled (mirrors evalGate's `enabled` read).
+            $enabled = ($gate['enabled'] ?? null) === true || ($gate['enabled'] ?? null) === 1;
+            if (!$enabled) {
+                return new FlagDetail(false, FlagDetail::OFF);
+            }
+
+            // 5. Run the canonical eval; reason follows the result.
+            $value = Eval_::evalGate($gate, self::withAnonId($user));
+            return new FlagDetail($value, $value ? FlagDetail::RULE_MATCH : FlagDetail::DEFAULT);
+        } catch (\Throwable $e) {
+            // Defensive: a malformed blob or unexpected eval error must never
+            // escape a runtime read — report false / CLIENT_NOT_READY.
+            Logger::error("getFlagDetail('$name'): unexpected error, treating as unevaluable — " . $e->getMessage());
             return new FlagDetail(false, FlagDetail::CLIENT_NOT_READY);
         }
-
-        // 3. Gate not present in the blob.
-        $gate = $this->flagsBlob['gates'][$name] ?? null;
-        if ($gate === null) {
-            return new FlagDetail(false, FlagDetail::FLAG_NOT_FOUND);
-        }
-
-        // 4. Gate present but disabled (mirrors evalGate's `enabled` read).
-        $enabled = ($gate['enabled'] ?? null) === true || ($gate['enabled'] ?? null) === 1;
-        if (!$enabled) {
-            return new FlagDetail(false, FlagDetail::OFF);
-        }
-
-        // 5. Run the canonical eval; reason follows the result.
-        $value = Eval_::evalGate($gate, self::withAnonId($user));
-        return new FlagDetail($value, $value ? FlagDetail::RULE_MATCH : FlagDetail::DEFAULT);
     }
 
     /**
@@ -533,14 +560,19 @@ class Engine
      */
     public function getConfig(string $name, mixed $default = null): mixed
     {
-        if (array_key_exists($name, $this->configOverrides)) {
-            return $this->configOverrides[$name];
-        }
-        $this->telemetry->emit('config', $name);
-        if (!isset($this->flagsBlob['configs'][$name]) || !array_key_exists('value', $this->flagsBlob['configs'][$name])) {
+        try {
+            if (array_key_exists($name, $this->configOverrides)) {
+                return $this->configOverrides[$name];
+            }
+            $this->telemetry->emit('config', $name);
+            if (!isset($this->flagsBlob['configs'][$name]) || !array_key_exists('value', $this->flagsBlob['configs'][$name])) {
+                return $default;
+            }
+            return $this->flagsBlob['configs'][$name]['value'];
+        } catch (\Throwable $e) {
+            Logger::error("getConfig('$name'): unexpected error, returning default — " . $e->getMessage());
             return $default;
         }
-        return $this->flagsBlob['configs'][$name]['value'];
     }
 
     /**
@@ -556,40 +588,52 @@ class Engine
      */
     public function getKillswitch(string $name, ?string $switchKey = null): bool
     {
-        if (!$this->initialized) {
+        try {
+            if (!$this->initialized) {
+                return false;
+            }
+            $entry = $this->flagsBlob['killswitches'][$name] ?? null;
+            if (!is_array($entry)) {
+                return false;
+            }
+            if ($switchKey !== null && is_array($entry['switches'] ?? null)
+                && array_key_exists($switchKey, $entry['switches'])) {
+                return (bool) $entry['switches'][$switchKey];
+            }
+            return (bool) ($entry['killed'] ?? false);
+        } catch (\Throwable $e) {
+            Logger::error("getKillswitch('$name'): unexpected error, treating as not killed — " . $e->getMessage());
             return false;
         }
-        $entry = $this->flagsBlob['killswitches'][$name] ?? null;
-        if (!is_array($entry)) {
-            return false;
-        }
-        if ($switchKey !== null && is_array($entry['switches'] ?? null)
-            && array_key_exists($switchKey, $entry['switches'])) {
-            return (bool) $entry['switches'][$switchKey];
-        }
-        return (bool) ($entry['killed'] ?? false);
     }
 
     public function getExperiment(string $name, array $user, mixed $defaultParams): ExperimentResult
     {
-        if (isset($this->experimentOverrides[$name])) {
-            $o = $this->experimentOverrides[$name];
-            return new ExperimentResult(true, $o['group'], $o['params']);
+        try {
+            if (isset($this->experimentOverrides[$name])) {
+                $o = $this->experimentOverrides[$name];
+                return new ExperimentResult(true, $o['group'], $o['params']);
+            }
+            $this->telemetry->emit('experiment', $name);
+            $exp = $this->expsBlob['experiments'][$name] ?? null;
+            $r = Eval_::evalExperiment(
+                $exp,
+                $this->flagsBlob,
+                $this->expsBlob,
+                self::withAnonId($user),
+                $this->stickyStore,
+                $name
+            );
+            if ($r->params === null) {
+                return new ExperimentResult($r->inExperiment, $r->group, $defaultParams);
+            }
+            return $r;
+        } catch (\Throwable $e) {
+            // A user-supplied StickyBucketStore or a malformed blob must never
+            // throw a read into the caller — report the safe not-enrolled result.
+            Logger::error("getExperiment('$name'): unexpected error, returning control/not-enrolled — " . $e->getMessage());
+            return new ExperimentResult(false, 'control', $defaultParams);
         }
-        $this->telemetry->emit('experiment', $name);
-        $exp = $this->expsBlob['experiments'][$name] ?? null;
-        $r = Eval_::evalExperiment(
-            $exp,
-            $this->flagsBlob,
-            $this->expsBlob,
-            self::withAnonId($user),
-            $this->stickyStore,
-            $name
-        );
-        if ($r->params === null) {
-            return new ExperimentResult($r->inExperiment, $r->group, $defaultParams);
-        }
-        return $r;
     }
 
     /**
@@ -705,17 +749,22 @@ class Engine
 
     public function track(string $userId, string $eventName, array $properties = []): void
     {
-        if ($this->localMode) return; // test mode never sends events
-        $safeProps = $this->stripPrivate($properties);
-        $event = [
-            'type' => 'metric',
-            'event_name' => $eventName,
-            'user_id' => $userId,
-            'ts' => (int) (microtime(true) * 1000),
-        ];
-        if (!empty($safeProps)) $event['properties'] = $safeProps;
-        $body = json_encode(['events' => [$event]], JSON_UNESCAPED_UNICODE);
-        $this->postNonBlocking('/collect', $body);
+        try {
+            if ($this->localMode) return; // test mode never sends events
+            $safeProps = $this->stripPrivate($properties);
+            $event = [
+                'type' => 'metric',
+                'event_name' => $eventName,
+                'user_id' => $userId,
+                'ts' => (int) (microtime(true) * 1000),
+            ];
+            if (!empty($safeProps)) $event['properties'] = $safeProps;
+            $body = json_encode(['events' => [$event]], JSON_UNESCAPED_UNICODE);
+            $this->postNonBlocking('/collect', $body);
+        } catch (\Throwable $e) {
+            // Fire-and-forget: a tracking failure must never break the caller.
+            Logger::warn("track('$eventName'): event dropped — " . $e->getMessage());
+        }
     }
 
     /**
@@ -745,7 +794,15 @@ class Engine
      */
     public function see(mixed $problem): SeeChain
     {
-        return new SeeChain($problem, $this->dispatchSee(...));
+        try {
+            return new SeeChain($problem, $this->dispatchSee(...));
+        } catch (\Throwable $e) {
+            // Error reporting must never raise into the caller — hand back an
+            // inert chain whose ->to() is a no-op.
+            Logger::warn('see(): could not build report chain — ' . $e->getMessage());
+            return new SeeChain($problem, static function (): void {
+            });
+        }
     }
 
     /**
@@ -754,7 +811,13 @@ class Engine
      */
     public function seeViolation(string $name): SeeChain
     {
-        return new SeeChain(new Violation($name), $this->dispatchSee(...));
+        try {
+            return new SeeChain(new Violation($name), $this->dispatchSee(...));
+        } catch (\Throwable $e) {
+            Logger::warn('seeViolation(): could not build report chain — ' . $e->getMessage());
+            return new SeeChain(new Violation($name), static function (): void {
+            });
+        }
     }
 
     /** Mark a throwable as expected control flow — reports nothing. */
@@ -790,8 +853,9 @@ class Engine
             }
             $body = json_encode(['events' => [$ev]], JSON_UNESCAPED_UNICODE);
             $this->postNonBlocking('/collect', $body);
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
             // Reporting must never raise into caller code.
+            Logger::warn('see(): report dropped — ' . $e->getMessage());
         }
     }
 
@@ -807,24 +871,29 @@ class Engine
      */
     public function logExposure(string|array $user, string $experimentName): void
     {
-        if ($this->localMode) return; // test mode never sends events
-        $u = is_string($user) ? ['user_id' => $user] : $user;
-        $result = $this->getExperiment($experimentName, $u, null);
-        if (!$result->inExperiment) return;
-        $event = [
-            'type' => 'exposure',
-            'experiment' => $experimentName,
-            'group' => $result->group,
-            'ts' => (int) (microtime(true) * 1000),
-        ];
-        if (isset($u['user_id']) && $u['user_id'] !== '') {
-            $event['user_id'] = (string) $u['user_id'];
+        try {
+            if ($this->localMode) return; // test mode never sends events
+            $u = is_string($user) ? ['user_id' => $user] : $user;
+            $result = $this->getExperiment($experimentName, $u, null);
+            if (!$result->inExperiment) return;
+            $event = [
+                'type' => 'exposure',
+                'experiment' => $experimentName,
+                'group' => $result->group,
+                'ts' => (int) (microtime(true) * 1000),
+            ];
+            if (isset($u['user_id']) && $u['user_id'] !== '') {
+                $event['user_id'] = (string) $u['user_id'];
+            }
+            if (isset($u['anonymous_id']) && $u['anonymous_id'] !== '') {
+                $event['anonymous_id'] = (string) $u['anonymous_id'];
+            }
+            $body = json_encode(['events' => [$event]], JSON_UNESCAPED_UNICODE);
+            $this->postNonBlocking('/collect', $body);
+        } catch (\Throwable $e) {
+            // Fire-and-forget: an exposure failure must never break the caller.
+            Logger::warn("logExposure('$experimentName'): exposure dropped — " . $e->getMessage());
         }
-        if (isset($u['anonymous_id']) && $u['anonymous_id'] !== '') {
-            $event['anonymous_id'] = (string) $u['anonymous_id'];
-        }
-        $body = json_encode(['events' => [$event]], JSON_UNESCAPED_UNICODE);
-        $this->postNonBlocking('/collect', $body);
     }
 
     private function fetchAll(): void

@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.13.0 — 2026-07-07
+
+- **Fail-safe runtime reads.** Every runtime read/track/report method now
+  guarantees it will **never throw into the caller** and instead returns its
+  documented safe default: `getFlag`/`getFlagDetail`→the `$default` bool (or a
+  `CLIENT_NOT_READY` detail), `getConfig`→`$default`, `getExperiment`→a
+  not-enrolled `ExperimentResult` (`inExperiment=false`, `group="control"`,
+  `params=$defaultParams`), `getKillswitch`→`false`, `track`/`logExposure`→a
+  no-op, and the `see()`/`seeViolation()` chains stay inert. This covers both the
+  `Engine` methods and the bound `Client::*` equivalents, so a malformed blob or a
+  user-supplied `StickyBucketStore`/attributes hook that throws mid-read can no
+  longer surface. Setup/lifecycle calls (constructing `new Client()` before
+  `configure()`, offline/`fromFile` misconfig, `init()`/`refresh()` network) stay
+  loud — the guarantee is runtime reads only.
+- **New `logLevel` option + leveled logger.** `configure()` (and
+  `Engine::__construct`) accept `logLevel` — one of `'silent'`, `'error'`,
+  `'warn'`, `'info'`, `'debug'` (ordering `silent<error<warn<info<debug`; a
+  message at level L is emitted iff the configured level is ≥ L; unknown → `warn`,
+  which is also the default). It drives a tiny `Shipeasy\Logger` that emits the
+  SDK's own diagnostics via `error_log('[shipeasy] …')` and never throws. The
+  fail-safe reads log at this level when something unexpected happens; set
+  `'silent'` to mute the SDK entirely. The Laravel config gains
+  `log_level` (`SHIPEASY_LOG_LEVEL`, default `warn`), wired through the service
+  provider.
+
 ## 0.12.1
 
 - **Admin API client regenerated from the canonical OpenAPI spec (2.0.0).** The
