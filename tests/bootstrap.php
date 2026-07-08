@@ -22,3 +22,18 @@ declare(strict_types=1);
 require __DIR__ . '/../vendor/autoload.php';
 
 \Shipeasy\InternalReport::setIngestKeyForTest(\Shipeasy\InternalReport::PLACEHOLDER_KEY);
+
+/**
+ * Declare the test suite production-equivalent for EGRESS.
+ *
+ * As of the environment-derived egress defaults, network + telemetry default OFF
+ * outside production, and the suite runs in a non-production env. The existing
+ * tests exercise the real network code paths (track / exposure / see / fetch)
+ * through Engine subclasses that capture the outbound payload, so they must run
+ * with egress ON. Force SHIPEASY_ENV=production process-wide here (mirrors
+ * sdk-ts's src/__tests__/setup.ts). The dedicated env tests in EnvTest override
+ * this locally to assert the dev/prod branching.
+ */
+putenv('SHIPEASY_ENV=production');
+$_ENV['SHIPEASY_ENV'] = 'production';
+$_SERVER['SHIPEASY_ENV'] = 'production';

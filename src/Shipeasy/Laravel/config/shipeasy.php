@@ -120,4 +120,25 @@ return [
     */
     'disable_internal_error_reporting' => env('SHIPEASY_DISABLE_INTERNAL_ERROR_REPORTING', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Network egress (master switch)
+    |--------------------------------------------------------------------------
+    |
+    | Master on/off for ALL outbound requests the SDK makes — rule-blob fetch,
+    | track(), exposures, see() reports, internal error reporting AND usage
+    | telemetry. When off the SDK is fully offline: reads return your in-code
+    | defaults / overrides and nothing is sent.
+    |
+    | Leave `null` for the environment-derived DEFAULT: egress is ON in
+    | production and OFF everywhere else, so a local/CI run never phones home
+    | unless it opts in. "Production" is decided from SHIPEASY_ENV / APP_ENV / ENV
+    | ('production' or 'prod' ⇒ prod), falling back to the `env` option above.
+    | Set true/false (SHIPEASY_NETWORK_ENABLED=true) to force it. Because Laravel
+    | sets APP_ENV, a `local`/`testing` app is quiet by default with no extra
+    | config.
+    |
+    */
+    'network_enabled' => env('SHIPEASY_NETWORK_ENABLED', null),
+
 ];

@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.16.0 — 2026-07-08
+
+### Environment-derived network & telemetry (egress) defaults
+
+The SDK is now **quiet outside production**: on a dev machine or in CI it makes
+**no** outbound request — rule-blob fetch, `track`, exposures, `see()` reports,
+internal error reporting, and usage telemetry are all off — until you opt in. In
+production it behaves exactly as before (fully on).
+
+- **New `configure()` option `isNetworkEnabled`** — a master switch for **all**
+  outbound requests. When off the SDK is fully offline: reads return your in-code
+  defaults / overrides and nothing is sent. `null` (the default) ⇒
+  environment-derived.
+- **`disableTelemetry` is now environment-derived too** — it defaults to on in
+  production and off everywhere else (and is always off when `isNetworkEnabled`
+  is off). Passing an explicit `true`/`false` still wins.
+- **New `Shipeasy\Env::isProductionEnv()` helper** decides "is this production"
+  with this precedence: a native env var — `SHIPEASY_ENV`, then `APP_ENV`
+  (Laravel/Symfony), then `ENV` (`production`/`prod`, case-insensitive ⇒ prod;
+  any other present value ⇒ not prod) — else the SDK's own `env` option (defaults
+  to `'prod'`, so a real production deploy stays on).
+- **Laravel:** new `network_enabled` config key (env `SHIPEASY_NETWORK_ENABLED`)
+  maps to `isNetworkEnabled`. Because Laravel sets `APP_ENV`, a `local`/`testing`
+  app is quiet by default with no extra config.
+
+**Behaviour change — how to restore the old always-on egress:** set
+`SHIPEASY_ENV=production` (or `APP_ENV=production`) in the environment, or pass
+`'isNetworkEnabled' => true` to `configure()`. Explicitly-passed values always
+override the environment default; `configureForTesting()` / `configureForOffline()`
+remain offline regardless.
+
 ## 0.15.0 — 2026-07-08
 
 ### Breaking — experiments are now read by universe, not by name

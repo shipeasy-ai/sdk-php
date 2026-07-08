@@ -25,7 +25,7 @@ class Engine
      * This is the single runtime source of truth — keep it in sync with the
      * `version` field in composer.json (composer exposes no runtime constant).
      */
-    public const VERSION = '0.15.0';
+    public const VERSION = '0.16.0';
 
     private string $apiKey;
     private string $baseUrl;
@@ -38,6 +38,14 @@ class Engine
     private ?string $expsEtag = null;
     private bool $initialized = false;
     private bool $localMode = false;
+    /**
+     * Master network gate — false puts the SDK fully offline (no fetch, no
+     * track, no exposure, no see() egress, no telemetry). Reads return in-code
+     * defaults / overrides. `localMode` (test/offline snapshot mode) implies
+     * offline too; this flag is the additional environment-derived gate for a
+     * normal (keyed) engine running outside production. See {@see Env}.
+     */
+    private bool $offline = false;
     private Telemetry $telemetry;
 
     /**
@@ -101,17 +109,28 @@ class Engine
      *        fail-safe read swallows) to Shipeasy's OWN project — distinct from
      *        the customer-facing see() path. Default ON; forced OFF in
      *        local/test mode. See {@see InternalReport}.
+     * @param bool|null $disableTelemetry Opt out of the per-evaluation usage
+     *        telemetry beacon. null ⇒ environment-derived DEFAULT (on in
+     *        production, off everywhere else). Pass true/false to force it.
+     * @param bool|null $isNetworkEnabled Master switch for ALL outbound requests
+     *        (blob fetch, track, exposure, see(), internal reporting AND
+     *        telemetry). null ⇒ environment-derived DEFAULT: ON in production,
+     *        OFF everywhere else (see {@see Env::isProductionEnv()}), so a
+     *        local/dev/CI run never phones home unless it opts in. Pass true/false
+     *        to force it. When off the engine is fully offline: reads return
+     *        in-code defaults / overrides and nothing is sent.
      */
     public function __construct(
         string $apiKey,
         ?string $baseUrl = null,
         string $env = 'prod',
-        bool $disableTelemetry = false,
+        ?bool $disableTelemetry = null,
         ?string $telemetryUrl = null,
         array $privateAttributes = [],
         ?StickyBucketStore $stickyStore = null,
         ?string $logLevel = null,
-        bool $disableInternalErrorReporting = false
+        bool $disableInternalErrorReporting = false,
+        ?bool $isNetworkEnabled = null
     ) {
         $this->apiKey = $apiKey;
         $this->baseUrl = rtrim($baseUrl ?? self::DEFAULT_BASE_URL, '/');
@@ -121,14 +140,25 @@ class Engine
         // Diagnostic log level. Default 'warn'; drive the leveled Logger from it.
         $this->logLevel = $logLevel ?? 'warn';
         Logger::setLevel($this->logLevel);
-        // Per-evaluation usage telemetry. ON by default; pass
-        // disableTelemetry: true to opt out. See Telemetry.php.
+        // Environment-derived egress defaults. ON in production, OFF everywhere
+        // else — so an app embedding the SDK is quiet on a dev machine / CI
+        // unless it opts in. An explicit $isNetworkEnabled / $disableTelemetry
+        // always wins. See Env::isProductionEnv().
+        $prod = Env::isProductionEnv($env);
+        // Master network gate. Explicit $isNetworkEnabled wins; else default to
+        // prod-on. localMode (set post-construction by forTesting/fromSnapshot)
+        // forces offline regardless.
+        $this->offline = !($isNetworkEnabled ?? $prod);
+        // Per-evaluation usage telemetry. Honour an explicit disableTelemetry;
+        // else default to prod-on (off outside production). Forced off whenever
+        // the master network gate is off.
+        $telemetryDisabled = $this->offline || ($disableTelemetry ?? !$prod);
         $this->telemetry = new Telemetry(
             $telemetryUrl ?? Telemetry::DEFAULT_TELEMETRY_URL,
             $apiKey,
             'server',
             $env,
-            $disableTelemetry
+            $telemetryDisabled
         );
         $this->seeLimiter = new SeeLimiter();
         // Register as the default engine backing the package-level see() funcs
@@ -139,8 +169,18 @@ class Engine
         // Wire the internal self-monitoring channel (SDK bugs shipped to
         // Shipeasy's OWN project, not the consumer's). ON by default; the caller
         // can opt out; forced OFF in local/test mode (see forTesting() /
-        // fromSnapshot(), which set localMode after construction).
-        InternalReport::setContext('server', self::VERSION, !$disableInternalErrorReporting);
+        // fromSnapshot(), which set localMode after construction) and whenever
+        // the master network gate is off.
+        InternalReport::setContext('server', self::VERSION, !$disableInternalErrorReporting && !$this->offline);
+        // When the master network gate is off (but not test/snapshot mode), seed
+        // empty blobs and mark initialized so getters read from overrides / code
+        // defaults instead of returning CLIENT_NOT_READY. init()/refresh() and
+        // every egress path are no-ops. Mirrors the TS SDK's offline seeding.
+        if ($this->offline) {
+            $this->flagsBlob ??= ['gates' => [], 'configs' => [], 'killswitches' => []];
+            $this->expsBlob ??= ['experiments' => [], 'universes' => []];
+            $this->initialized = true;
+        }
     }
 
     /**
@@ -205,12 +245,15 @@ class Engine
             $apiKey,
             $opts['baseUrl'] ?? null,
             $opts['env'] ?? 'prod',
-            (bool) ($opts['disableTelemetry'] ?? false),
+            // Leave null when the caller didn't pass it so the environment-derived
+            // default applies (on in prod, off elsewhere). An explicit value wins.
+            isset($opts['disableTelemetry']) ? (bool) $opts['disableTelemetry'] : null,
             $opts['telemetryUrl'] ?? null,
             $opts['privateAttributes'] ?? [],
             $opts['stickyStore'] ?? null,
             $opts['logLevel'] ?? null,
             (bool) ($opts['disableInternalErrorReporting'] ?? false),
+            isset($opts['isNetworkEnabled']) ? (bool) $opts['isNetworkEnabled'] : null,
         );
         self::setDefaultIfAbsent($engine);
         self::$attributesTransform = $attributes;
@@ -405,7 +448,7 @@ class Engine
      */
     public function initOnce(): void
     {
-        if ($this->localMode) return; // test mode never fetches
+        if ($this->localMode || $this->offline) return; // test/offline never fetches
         if ($this->initialized) return;
         $this->fetchAll();
         $this->initialized = true;
@@ -477,7 +520,7 @@ class Engine
      */
     public function refresh(): void
     {
-        if ($this->localMode) return;
+        if ($this->localMode || $this->offline) return;
         $this->fetchAll();
     }
 
@@ -853,7 +896,7 @@ class Engine
     public function track(string $userId, string $eventName, array $properties = []): void
     {
         try {
-            if ($this->localMode) return; // test mode never sends events
+            if ($this->localMode || $this->offline) return; // test/offline never sends events
             $safeProps = $this->stripPrivate($properties);
             $event = [
                 'type' => 'metric',
@@ -937,8 +980,8 @@ class Engine
      */
     private function dispatchSee(mixed $problem, string $subject, string $outcome, ?array $extras): void
     {
-        if ($this->localMode) {
-            return; // test mode never sends events
+        if ($this->localMode || $this->offline) {
+            return; // test/offline never sends events
         }
         try {
             $safeExtras = $extras !== null ? $this->stripPrivate($extras) : null;
@@ -974,7 +1017,7 @@ class Engine
     private function postExposure(array $user, string $experiment, string $group): void
     {
         try {
-            if ($this->localMode) return; // test mode never sends events
+            if ($this->localMode || $this->offline) return; // test/offline never sends events
             $uid = (string) ($user['user_id'] ?? $user['anonymous_id'] ?? '');
             $dedupKey = "$uid:$experiment:$group";
             if (isset($this->exposureSeen[$dedupKey])) return;

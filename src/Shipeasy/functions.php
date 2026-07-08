@@ -38,12 +38,15 @@ const VERSION = Engine::VERSION;
  * @param string $apiKey The Shipeasy **server** key.
  * @param callable|null $attributes (yourUser) -> attributeMap; default identity.
  * @param array<string, mixed> $opts Extra Engine options (baseUrl, env,
- *        disableTelemetry, telemetryUrl, privateAttributes, stickyStore,
- *        logLevel, disableInternalErrorReporting). `logLevel` is one of
- *        'silent'|'error'|'warn'|'info'|'debug' (default 'warn') and sets the
+ *        isNetworkEnabled, disableTelemetry, telemetryUrl, privateAttributes,
+ *        stickyStore, logLevel, disableInternalErrorReporting). `logLevel` is one
+ *        of 'silent'|'error'|'warn'|'info'|'debug' (default 'warn') and sets the
  *        SDK's own diagnostic verbosity. `disableInternalErrorReporting` opts
  *        out of the internal self-monitoring channel (SDK-internal errors shipped
- *        to Shipeasy's own project, not yours) — default ON.
+ *        to Shipeasy's own project, not yours) — default ON. `isNetworkEnabled`
+ *        and `disableTelemetry` default to environment-derived values (egress ON
+ *        in production, OFF everywhere else — see {@see Env}); pass explicit
+ *        booleans to override.
  */
 function configure(string $apiKey, ?callable $attributes = null, array $opts = []): Engine
 {

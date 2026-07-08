@@ -55,7 +55,8 @@ configure(
     [                               // $opts — optional configure() options (all optional)
         'env'               => 'prod',                       // read environment for the blob
         'baseUrl'           => 'https://api.shipeasy.ai',  // edge API base
-        'disableTelemetry'  => false,                        // opt out of the usage beacon
+        'isNetworkEnabled'  => null,                         // master egress switch; null = env-derived (on in prod, off elsewhere)
+        'disableTelemetry'  => null,                         // usage beacon; null = env-derived (off outside prod)
         'telemetryUrl'      => null,                         // override telemetry endpoint
         'privateAttributes' => ['email'],                    // attrs stripped from event payloads
         'stickyStore'       => null,                         // Shipeasy\StickyBucketStore for durable bucketing
@@ -87,7 +88,8 @@ $enabled = $client->getFlag('new_checkout');
 | --- | --- | --- |
 | `env` | `'prod'` | The read environment for the blob. |
 | `baseUrl` | `https://api.shipeasy.ai` | Edge API base. |
-| `disableTelemetry` | `false` | Opt out of the usage-telemetry beacon. |
+| `isNetworkEnabled` | env-derived | Master switch for **all** outbound requests. `null` ⇒ on in production, off everywhere else. See [Configuration](configuration.md). |
+| `disableTelemetry` | env-derived | Opt out of the usage-telemetry beacon. `null` ⇒ on in production, off everywhere else. |
 | `telemetryUrl` | (built-in) | Override the telemetry endpoint. |
 | `privateAttributes` | `[]` | Attribute names stripped from outbound event payloads (LD/Statsig `privateAttributes`). See [Advanced](advanced.md). |
 | `stickyStore` | `null` | A `Shipeasy\StickyBucketStore` for durable experiment bucketing. See [Advanced](advanced.md). |

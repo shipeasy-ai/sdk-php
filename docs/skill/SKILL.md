@@ -43,6 +43,14 @@ $d       = $c->getFlagDetail('new_checkout');           // $d->value, $d->reason
 
 `configure()` is first-config-wins and fetches once per request (PHP has no
 background poll). `new Client($user)` throws if called before `configure()`.
+
+**Quiet outside production.** All egress (fetch, `track`, exposures, `see()`,
+telemetry) **defaults ON in production and OFF everywhere else**, decided from
+`SHIPEASY_ENV` → `APP_ENV` → `ENV` (`production`/`prod` ⇒ on), falling back to the
+`env` option. So on a dev machine / CI the SDK sends nothing until you opt in —
+reads still resolve overrides/defaults. Force it with the `isNetworkEnabled`
+option (`true`/`false`) or set `SHIPEASY_ENV=production`.
+
 Reference: <https://shipeasy-ai.github.io/sdk-php/pages/configuration.md> ·
 <https://shipeasy-ai.github.io/sdk-php/pages/flags.md> ·
 <https://shipeasy-ai.github.io/sdk-php/pages/killswitches.md>

@@ -69,6 +69,14 @@ class ShipeasyServiceProvider extends ServiceProvider
             'disableInternalErrorReporting' => (bool) $this->config('shipeasy.disable_internal_error_reporting'),
         ];
 
+        // Master network egress switch. Only forward it when explicitly set so an
+        // absent config falls through to the environment-derived default (egress
+        // on in prod, off elsewhere — see Shipeasy\Env).
+        $networkEnabled = $this->config('shipeasy.network_enabled');
+        if ($networkEnabled !== null) {
+            $opts['isNetworkEnabled'] = (bool) $networkEnabled;
+        }
+
         \Shipeasy\configure($key, $transform, $opts);
     }
 
