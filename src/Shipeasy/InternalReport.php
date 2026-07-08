@@ -52,7 +52,7 @@ final class InternalReport
      * The baked-in ingest credential. Swap this initializer for the real minted
      * public client key. While it equals PLACEHOLDER_KEY the channel is inert.
      */
-    private static string $ingestKey = self::PLACEHOLDER_KEY;
+    private static string $ingestKey = 'sdk_client_00bd4608a03e4084922978f9522614d5';
 
     /**
      * Stable consequence. The $label (the guard's operation name, e.g.
