@@ -68,7 +68,7 @@ Constructing `new Client($user)` before `configure()` throws.
 | [Feature flags](https://github.com/shipeasy-ai/sdk-php/blob/main/docs/pages/flags.md) | `getFlag`, `getFlagDetail`, defaults. |
 | [Dynamic configs](https://github.com/shipeasy-ai/sdk-php/blob/main/docs/pages/configs.md) | `getConfig`, typed decode, defaults. |
 | [Kill switches](https://github.com/shipeasy-ai/sdk-php/blob/main/docs/pages/killswitches.md) | `getKillswitch`, named switches. |
-| [Experiments](https://github.com/shipeasy-ai/sdk-php/blob/main/docs/pages/experiments.md) | `getExperiment`, `logExposure`, `track`. |
+| [Experiments](https://github.com/shipeasy-ai/sdk-php/blob/main/docs/pages/experiments.md) | `universe()->assign()`, `track`. |
 | [Internationalization](https://github.com/shipeasy-ai/sdk-php/blob/main/docs/pages/i18n.md) | SSR bootstrap + i18n loader tags. |
 | [Error reporting](https://github.com/shipeasy-ai/sdk-php/blob/main/docs/pages/error-reporting.md) | `see()` structured error reporting. |
 | [Testing](https://github.com/shipeasy-ai/sdk-php/blob/main/docs/pages/testing.md) | `configureForTesting` / `configureForOffline`, overrides. |
@@ -93,22 +93,17 @@ use Shipeasy\Client;
 // Seed values up front (no key, no network). Seed shapes:
 //   flags       => ['name' => bool]
 //   configs     => ['name' => value]
-//   experiments => ['name' => [group, params]]
+//   experiments => ['name' => [group, params]]  (refines an experiment that
+//                  exists in a universe — see "Asserting an experiment" below)
 //   attributes  => optional (yourUser) => attributeMap transform
 configureForTesting([
-    'flags'       => ['new_checkout' => true],
-    'configs'     => ['billing_copy' => ['headline' => 'Hi']],
-    'experiments' => ['checkout_button' => ['treatment', ['color' => 'green']]],
+    'flags'   => ['new_checkout' => true],
+    'configs' => ['billing_copy' => ['headline' => 'Hi']],
 ]);
 
 $client = new Client(['user_id' => 'u1']);   // construct once per callsite
 $client->getFlag('new_checkout');            // true
 $client->getConfig('billing_copy');          // ['headline' => 'Hi']
-
-$r = $client->getExperiment('checkout_button', ['color' => 'blue']);
-$r->inExperiment;   // true
-$r->group;          // 'treatment'
-$r->params;         // ['color' => 'green']  (seeded params beat defaultParams)
 
 // track() is a no-op in test mode — safe to call, sends nothing
 $client->track('purchase', ['amount' => 49]);

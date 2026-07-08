@@ -5,11 +5,35 @@ declare(strict_types=1);
 namespace Shipeasy\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Shipeasy\Assignment;
 use Shipeasy\Engine;
-use Shipeasy\ExperimentResult;
 
 final class TestUtilitiesTest extends TestCase
 {
+    /**
+     * A one-experiment universe blob so `universe('u')->assign()` has a running
+     * experiment `$name` to land the override on (an override surfaces through
+     * assign() only when the experiment exists in the loaded blob).
+     */
+    private function seedExp(Engine $c, string $name = 'checkout_button', string $universe = 'u'): void
+    {
+        $c->applyData(
+            ['gates' => [], 'configs' => []],
+            [
+                'universes' => [$universe => ['holdout_range' => null]],
+                'experiments' => [
+                    $name => [
+                        'universe' => $universe,
+                        'status' => 'running',
+                        'salt' => 'seedsalt1234',
+                        'allocationPct' => 10000,
+                        'groups' => [['name' => 'control', 'weight' => 10000, 'params' => ['color' => 'blue']]],
+                    ],
+                ],
+            ],
+        );
+    }
+
     // forTesting() builds a usable client with no key and never touches the
     // network: init()/initOnce() are no-ops, so unseeded reads return defaults
     // (no RuntimeException from a failed fetch).
@@ -22,10 +46,13 @@ final class TestUtilitiesTest extends TestCase
         $this->assertFalse($c->getFlag('unset', ['user_id' => 'u1']));
         $this->assertNull($c->getConfig('unset'));
 
-        $r = $c->getExperiment('unset', ['user_id' => 'u1'], ['color' => 'blue']);
-        $this->assertInstanceOf(ExperimentResult::class, $r);
-        $this->assertFalse($r->inExperiment);
-        $this->assertSame(['color' => 'blue'], $r->params);
+        // No blob → not enrolled anywhere; assign is still safe and get() falls
+        // back to the caller's fallback.
+        $a = $c->universe('unset')->assign(['user_id' => 'u1']);
+        $this->assertInstanceOf(Assignment::class, $a);
+        $this->assertFalse($a->enrolled());
+        $this->assertNull($a->group);
+        $this->assertSame('blue', $a->get('color', 'blue'));
     }
 
     public function testOverrideFlagWins(): void
@@ -45,20 +72,23 @@ final class TestUtilitiesTest extends TestCase
         $this->assertSame(['headline' => 'Hi'], $c->getConfig('billing_copy'));
     }
 
-    public function testOverrideExperimentWins(): void
+    public function testOverrideExperimentSurfacesThroughAssign(): void
     {
         $c = Engine::forTesting();
+        $this->seedExp($c);
         $c->overrideExperiment('checkout_button', 'treatment', ['color' => 'green']);
 
-        $r = $c->getExperiment('checkout_button', ['user_id' => 'u1'], ['color' => 'blue']);
-        $this->assertTrue($r->inExperiment);
-        $this->assertSame('treatment', $r->group);
-        $this->assertSame(['color' => 'green'], $r->params);
+        $a = $c->universe('u')->assign(['user_id' => 'u1']);
+        $this->assertTrue($a->enrolled());
+        $this->assertSame('checkout_button', $a->name);
+        $this->assertSame('treatment', $a->group);
+        $this->assertSame('green', $a->get('color'));
     }
 
     public function testClearOverridesResets(): void
     {
         $c = Engine::forTesting();
+        $this->seedExp($c, 'exp');
         $c->overrideFlag('f', true);
         $c->overrideConfig('cfg', 'x');
         $c->overrideExperiment('exp', 'treatment', ['k' => 1]);
@@ -67,9 +97,10 @@ final class TestUtilitiesTest extends TestCase
 
         $this->assertFalse($c->getFlag('f', ['user_id' => 'u1']));
         $this->assertNull($c->getConfig('cfg'));
-        $r = $c->getExperiment('exp', ['user_id' => 'u1'], ['k' => 0]);
-        $this->assertFalse($r->inExperiment);
-        $this->assertSame(['k' => 0], $r->params);
+        // Override gone → the unit is bucketed normally into the seeded control.
+        $a = $c->universe('u')->assign(['user_id' => 'u1']);
+        $this->assertSame('control', $a->group);
+        $this->assertSame('blue', $a->get('color'));
     }
 
     public function testTrackIsNoOpWithoutError(): void
@@ -80,19 +111,25 @@ final class TestUtilitiesTest extends TestCase
     }
 
     // Overrides also work on a normal (non-test) client, taking precedence
-    // before any telemetry/blob read — so no network occurs for overridden keys.
+    // before the bucketing eval — so an overridden experiment surfaces its group.
     public function testOverridesWorkOnNormalClient(): void
     {
-        $c = new Engine('test-key', null, 'prod', true);
+        // A non-local engine that swallows /collect POSTs (auto-exposure) so the
+        // hermetic suite never touches the network.
+        $c = new class ('test-key', null, 'prod', true) extends Engine {
+            protected function postNonBlocking(string $path, string $body): void {}
+        };
+        $this->seedExp($c, 'exp');
         $c->overrideFlag('f', true);
         $c->overrideConfig('cfg', 42);
         $c->overrideExperiment('exp', 'control', ['v' => 1]);
 
         $this->assertTrue($c->getFlag('f', ['user_id' => 'u1']));
         $this->assertSame(42, $c->getConfig('cfg'));
-        $r = $c->getExperiment('exp', ['user_id' => 'u1'], ['v' => 0]);
-        $this->assertTrue($r->inExperiment);
-        $this->assertSame('control', $r->group);
-        $this->assertSame(['v' => 1], $r->params);
+        $a = $c->universe('u')->assign(['user_id' => 'u1']);
+        $this->assertTrue($a->enrolled());
+        $this->assertSame('exp', $a->name);
+        $this->assertSame('control', $a->group);
+        $this->assertSame(1, $a->get('v'));
     }
 }

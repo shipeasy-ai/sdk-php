@@ -53,13 +53,14 @@ configure(
 ## Fail-safe reads & the `logLevel` option
 
 Every **runtime read** — `getFlag`, `getFlagDetail`, `getConfig`,
-`getExperiment`, `getKillswitch`, plus `track`, `logExposure`, and the `see()`
+`universe()->assign()`, `getKillswitch`, plus `track` and the `see()`
 chain — is **fail-safe**: it never throws into your request. If a blob is
 malformed or a hook you supplied (e.g. a `stickyStore` or attributes transform)
 throws mid-read, the call swallows the error and returns its documented default
-(`getFlag` → the `$default` bool, `getConfig` → `$default`, `getExperiment` → a
-not-enrolled result with `group="control"` and your `$defaultParams`,
-`getKillswitch` → `false`, `track`/`logExposure` → a no-op). **Setup and
+(`getFlag` → the `$default` bool, `getConfig` → `$default`,
+`universe()->assign()` → a not-enrolled `Assignment` (`group === null`, `get()`
+falls back to the universe default or your fallback), `getKillswitch` → `false`,
+`track` → a no-op). **Setup and
 lifecycle calls stay loud** — constructing `new Client()` before `configure()`,
 `configureForOffline` misconfig, and `init()`/`refresh()` still throw so boot-time
 mistakes surface.

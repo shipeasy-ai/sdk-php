@@ -71,12 +71,12 @@ final class InternalReportTest extends TestCase
     public function testBuildsStableConsequenceSubjectOutcomeAndSdkMarker(): void
     {
         InternalReport::setContext('server', '9.9.9', true);
-        InternalReport::report('getExperiment', new \RuntimeException('boom'));
+        InternalReport::report('assignUniverse', new \RuntimeException('boom'));
 
         $ev = $this->events()[0];
         $this->assertSame('error', $ev['type']);
         $this->assertSame('caught', $ev['kind']);
-        $this->assertSame('getExperiment', $ev['subject']);
+        $this->assertSame('assignUniverse', $ev['subject']);
         $this->assertSame('returned a safe default', $ev['outcome']);
         $this->assertSame('RuntimeException', $ev['error_type']);
         $this->assertSame('boom', $ev['message']);
@@ -143,9 +143,10 @@ final class InternalReportTest extends TestCase
     // ---- fail-safe-read integration ----
 
     /**
-     * A non-local Engine whose fail-safe reads run for real, but a getExperiment
-     * with an injected throwing sticky store trips the internal guard. Assert the
-     * guard reports AND still returns the not-enrolled fallback.
+     * A non-local Engine whose fail-safe reads run for real, but a
+     * universe()->assign() with an injected throwing sticky store trips the
+     * internal guard. Assert the guard reports AND still returns the
+     * not-enrolled fallback.
      */
     public function testGuardReportsSwallowedErrorAndStillReturnsFallback(): void
     {
@@ -189,18 +190,17 @@ final class InternalReportTest extends TestCase
             ],
         ]);
 
-        $default = ['c' => 99];
-        $result = $engine->getExperiment('checkout_test', ['user_id' => 'u_1'], $default);
+        $result = $engine->universe('u1')->assign(['user_id' => 'u_1']);
 
-        // Still returned the safe not-enrolled default.
-        $this->assertFalse($result->inExperiment);
-        $this->assertSame('control', $result->group);
-        $this->assertSame($default, $result->params);
+        // Still returned the safe not-enrolled handle.
+        $this->assertFalse($result->enrolled());
+        $this->assertNull($result->group);
+        $this->assertSame(99, $result->get('c', 99));
 
         // And reported the swallowed internal error to the internal channel.
         $this->assertCount(1, $this->sends);
         $ev = $this->events()[0];
-        $this->assertSame('getExperiment', $ev['subject']);
+        $this->assertSame('assignUniverse', $ev['subject']);
         $this->assertSame('returned a safe default', $ev['outcome']);
         $this->assertSame('sticky store exploded', $ev['message']);
     }

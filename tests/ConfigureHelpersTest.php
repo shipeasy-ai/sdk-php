@@ -36,34 +36,80 @@ final class ConfigureHelpersTest extends TestCase
         configureForTesting([
             'flags' => ['new_checkout' => true],
             'configs' => ['theme' => 'blue'],
-            'experiments' => ['price_test' => ['treatment', ['price' => 9]]],
         ]);
         $c = new Client(['user_id' => 'u_1']);
         $this->assertTrue($c->getFlag('new_checkout'));
         $this->assertSame('blue', $c->getConfig('theme'));
-        $exp = $c->getExperiment('price_test', ['price' => 0]);
-        $this->assertTrue($exp->inExperiment);
-        $this->assertSame('treatment', $exp->group);
 
         // REPLACE (not first-wins): a second call wins.
         configureForTesting(['flags' => ['new_checkout' => false]]);
         $this->assertFalse((new Client([]))->getFlag('new_checkout'));
     }
 
+    public function testExperimentOverrideSurfacesThroughAssign(): void
+    {
+        // Overrides refine an experiment that lives in a universe — they don't
+        // invent one in an empty universe. Seed a real (offline) experiment in
+        // universe `pricing`, then force the enrolment with overrideExperiment.
+        configureForOffline([
+            'snapshot' => [
+                'flags' => ['gates' => [], 'configs' => [], 'killswitches' => []],
+                'experiments' => [
+                    'universes' => ['pricing' => ['holdout_range' => null]],
+                    'experiments' => [
+                        'price_test' => [
+                            'universe' => 'pricing',
+                            'allocationPct' => 10000,
+                            'salt' => 's',
+                            'status' => 'running',
+                            'groups' => [['name' => 'control', 'weight' => 10000, 'params' => ['price' => 0]]],
+                        ],
+                    ],
+                ],
+            ],
+            'experiments' => ['price_test' => ['treatment', ['price' => 9]]],
+        ]);
+        $a = (new Client(['user_id' => 'u_1']))->universe('pricing')->assign();
+        $this->assertTrue($a->enrolled());
+        $this->assertSame('treatment', $a->group);
+        $this->assertSame(9, $a->get('price'));
+    }
+
     public function testPackageOverridesAndClear(): void
     {
-        configureForTesting(['flags' => ['f' => true]]);
+        // Seed a real experiment `e` in universe `u` so the experiment override
+        // is reachable via universe()->assign(); flags/configs ride the blob.
+        configureForOffline([
+            'snapshot' => [
+                'flags' => ['gates' => [], 'configs' => [], 'killswitches' => []],
+                'experiments' => [
+                    'universes' => ['u' => ['holdout_range' => null]],
+                    'experiments' => [
+                        'e' => [
+                            'universe' => 'u',
+                            'allocationPct' => 10000,
+                            'salt' => 's',
+                            'status' => 'running',
+                            'groups' => [['name' => 'A', 'weight' => 10000, 'params' => ['v' => 1]]],
+                        ],
+                    ],
+                ],
+            ],
+            'flags' => ['f' => true],
+        ]);
         overrideFlag('f', false);
         overrideConfig('c', 123);
         overrideExperiment('e', 'B', ['v' => 2]);
         $c = new Client(['user_id' => 'u']);
         $this->assertFalse($c->getFlag('f'));
         $this->assertSame(123, $c->getConfig('c'));
-        $this->assertSame('B', $c->getExperiment('e', [])->group);
+        $this->assertSame('B', $c->universe('u')->assign()->group);
 
-        // Test mode has no blob beneath: clearOverrides drops the seed too.
+        // clearOverrides drops the override layer; the experiment reverts to its
+        // real assignment (group A).
         clearOverrides();
         $this->assertNull((new Client([]))->getConfig('c'));
+        $this->assertSame('A', (new Client(['user_id' => 'u']))->universe('u')->assign()->group);
     }
 
     public function testOverrideBeforeConfigureThrows(): void

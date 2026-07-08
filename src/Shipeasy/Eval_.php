@@ -91,7 +91,48 @@ final class Eval_
     }
 
     /**
+     * Flatten a universe param schema to a plain `name => default` map — the
+     * defaults `assign()` layers under a variant's override map. Returns null for
+     * a null/empty schema so the merge short-circuits. Mirrors @shipeasy/core.
+     *
+     * @param mixed $schema array of `{name, type, default}`, or null/empty
+     * @return array<string, mixed>|null
+     */
+    public static function paramDefaultsFromSchema(mixed $schema): ?array
+    {
+        if (!is_array($schema) || $schema === []) return null;
+        $out = [];
+        foreach ($schema as $p) {
+            if (is_array($p) && isset($p['name'])) {
+                $out[(string) $p['name']] = $p['default'] ?? null;
+            }
+        }
+        return $out === [] ? null : $out;
+    }
+
+    /**
+     * `universeDefaults ⊕ variantOverride` — a variant inherits every universe
+     * default it doesn't explicitly override.
+     *
+     * @param array<string, mixed>|null $paramDefaults
+     * @param mixed $groupParams the variant's own params (array, or null/other)
+     * @return array<string, mixed>
+     */
+    public static function mergeParams(?array $paramDefaults, mixed $groupParams): array
+    {
+        $override = is_array($groupParams) ? $groupParams : [];
+        return $paramDefaults !== null ? array_merge($paramDefaults, $override) : $override;
+    }
+
+    /**
      * Evaluate an experiment for a user.
+     *
+     * Targeting → universe holdout → holdout gate → sticky → allocation (pooled
+     * or legacy) → weighted group split. The single local mirror of
+     * @shipeasy/core's `classifyExperiment` (doc 20 §B) — keep the two in sync.
+     * The returned {@see ExperimentResult}'s `params` are the assigned variant's
+     * params merged UNDER the universe param-schema defaults (variant wins);
+     * `null` when not enrolled.
      *
      * When a {@see StickyBucketStore} is supplied (with the experiment $name so
      * it can be keyed), an enrolled unit whose stored salt prefix still matches
@@ -111,25 +152,48 @@ final class Eval_
         $notIn = new ExperimentResult(false, 'control', null);
         if ($exp === null || ($exp['status'] ?? null) !== 'running') return $notIn;
 
+        $universeName = $exp['universe'] ?? null;
+        $universe = is_string($universeName) ? ($exps['universes'][$universeName] ?? null) : null;
+        $paramDefaults = self::paramDefaultsFromSchema(
+            is_array($universe) ? ($universe['param_schema'] ?? null) : null
+        );
+
+        // A gate-name → bool lookup over the flags blob, reused by the two gate
+        // checks (targeting + holdout gate) so they run the SDK's real gate eval.
+        $evalGate = static function (string $gname) use ($flags, $user): bool {
+            $gate = $flags['gates'][$gname] ?? null;
+            return $gate !== null && self::evalGate($gate, $user);
+        };
+
+        // Return an enrolled result with universe defaults merged under the
+        // variant's own params (variant wins).
+        $asGroup = fn (string $groupName, mixed $groupParams): ExperimentResult =>
+            new ExperimentResult(true, $groupName, self::mergeParams($paramDefaults, $groupParams));
+
         $tg = $exp['targetingGate'] ?? null;
-        if (is_string($tg) && $tg !== '') {
-            $gate = $flags['gates'][$tg] ?? null;
-            if ($gate === null || !self::evalGate($gate, $user)) return $notIn;
-        }
+        if (is_string($tg) && $tg !== '' && !$evalGate($tg)) return $notIn;
 
         $bucketBy = $exp['bucketBy'] ?? null;
         $uid = self::pickIdentifier($user, is_string($bucketBy) ? $bucketBy : null);
         if ($uid === null) return $notIn;
 
-        $universeName = $exp['universe'] ?? null;
-        if (is_string($universeName)) {
-            $universe = $exps['universes'][$universeName] ?? null;
+        // One segment in the universe's shared `[0, 10000)` hash space. The
+        // holdout carve-out AND every experiment's pool slice are disjoint ranges
+        // of THIS segment — that's what makes "held out / taken / free" a real
+        // partition.
+        $universeSeg = is_string($universeName)
+            ? Murmur3::hash32("$universeName:$uid") % 10000
+            : Murmur3::hash32(":$uid") % 10000;
+
+        if (is_array($universe)) {
             $holdout = $universe['holdout_range'] ?? null;
             if (is_array($holdout) && count($holdout) === 2) {
-                $seg = Murmur3::hash32("$universeName:$uid") % 10000;
-                if ($seg >= (int)$holdout[0] && $seg <= (int)$holdout[1]) return $notIn;
+                if ($universeSeg >= (int) $holdout[0] && $universeSeg <= (int) $holdout[1]) return $notIn;
             }
         }
+
+        $holdoutGate = $exp['holdoutGate'] ?? null;
+        if (is_string($holdoutGate) && $holdoutGate !== '' && $evalGate($holdoutGate)) return $notIn;
 
         $salt = $exp['salt'] ?? '';
         $groups = $exp['groups'] ?? [];
@@ -144,17 +208,37 @@ final class Eval_
                 $storedGroup = $entry['g'] ?? null;
                 foreach ($groups as $g) {
                     if ((string) ($g['name'] ?? '') === (string) $storedGroup) {
-                        return new ExperimentResult(true, (string) $storedGroup, $g['params'] ?? null);
+                        return $asGroup((string) $storedGroup, $g['params'] ?? null);
                     }
                 }
                 // Stored group is gone — fall through to re-bucket + overwrite.
             }
         }
 
-        $allocPct = (int) ($exp['allocationPct'] ?? 0);
-        if (Murmur3::hash32("$salt:alloc:$uid") % 10000 >= $allocPct) return $notIn;
+        // Allocation. Pooled (hashVersion ≥ 2 with a slice) gives real mutual
+        // exclusion: the unit's universe segment must fall in the claimed range.
+        // Legacy falls back to an independent per-experiment salt so siblings
+        // overlap freely.
+        $hashVersion = (int) ($exp['hashVersion'] ?? 1);
+        $poolOffset = $exp['poolOffsetBp'] ?? null;
+        $poolSize = $exp['poolSizeBp'] ?? null;
+        $pooled = $hashVersion >= 2 && $poolOffset !== null && $poolSize !== null && (int) $poolSize > 0;
+        if ($pooled) {
+            $lo = (int) $poolOffset;
+            $hi = $lo + (int) $poolSize;
+            if ($universeSeg < $lo || $universeSeg >= $hi) return $notIn;
+        } else {
+            $allocPct = (int) ($exp['allocationPct'] ?? 0);
+            if (Murmur3::hash32("$salt:alloc:$uid") % 10000 >= $allocPct) return $notIn;
+        }
 
+        // Group split over `[0, usable)` where `usable = 10000 − reserved`; a unit
+        // in the reserved tail is left unassigned so an appended variant can
+        // absorb it (doc 20 §B5).
+        $reserved = max(0, min(10000, (int) ($exp['reservedHeadroomBp'] ?? 0)));
+        $usable = 10000 - $reserved;
         $groupHash = Murmur3::hash32("$salt:group:$uid") % 10000;
+        if ($groupHash >= $usable) return $notIn;
         $cumulative = 0;
         foreach ($groups as $i => $g) {
             $cumulative += (int) ($g['weight'] ?? 0);
@@ -163,7 +247,7 @@ final class Eval_
                 if ($stickyStore !== null && $name !== null) {
                     $stickyStore->set($uid, $name, ['g' => $groupName, 's' => $salt8]);
                 }
-                return new ExperimentResult(true, $groupName, $g['params'] ?? null);
+                return $asGroup($groupName, $g['params'] ?? null);
             }
         }
         return $notIn;

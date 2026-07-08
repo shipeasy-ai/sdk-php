@@ -1,6 +1,6 @@
 ---
 name: shipeasy-php
-description: Use Shipeasy (feature flags, configs, kill switches, A/B experiments, i18n) from PHP. Covers configure() + Client($user), getFlag/getConfig/getExperiment/getKillswitch, track, testing, OpenFeature.
+description: Use Shipeasy (feature flags, configs, kill switches, A/B experiments, i18n) from PHP. Covers configure() + Client($user), getFlag/getConfig/getKillswitch, universe()->assign(), track, testing, OpenFeature.
 ---
 
 # Shipeasy PHP SDK
@@ -59,12 +59,15 @@ Blade directives in your layout `<head>`. Reference:
 
 ## Experiments + track (Client-only, end to end)
 
+Experiments are read by **universe** (a mutual-exclusion pool — the unit lands in
+≤1 experiment). `assign()` auto-logs a single deduped exposure when enrolled.
+
 ```php
 $c = new Client($currentUser);                          // construct once per callsite
-$r = $c->getExperiment('checkout_button', ['color' => 'blue']);
-$color = $r->inExperiment ? $r->params['color'] : 'blue'; // $r->inExperiment, $r->group, $r->params
+$a = $c->universe('checkout')->assign();                // Shipeasy\Assignment (auto-logs exposure)
+$color = $a->get('color', 'blue');                      // variant ?? universe default ?? fallback
+// $a->name, $a->group, $a->enrolled()
 
-$c->logExposure('checkout_button');                     // record where you present the treatment
 $c->track('checkout_success', ['amount' => 49]);        // conversion for the bound user
 ```
 

@@ -100,15 +100,17 @@ final class Client
         }
     }
 
-    /** Evaluate experiment $name for the bound user. */
-    public function getExperiment(string $name, mixed $defaultParams): ExperimentResult
+    /**
+     * The universe-first experiment read entry point for the bound user:
+     * `(new Client($user))->universe('checkout')->assign()`. A universe is a
+     * mutual-exclusion pool, so the unit lands in **at most one** experiment.
+     * Returns a reusable handle whose `assign()` takes no argument (the user is
+     * already bound) and returns an {@see Assignment} — auto-logging a single
+     * deduped exposure when enrolled. Never throws.
+     */
+    public function universe(string $name): BoundUniverseHandle
     {
-        try {
-            return $this->engine->getExperiment($name, $this->attributes, $defaultParams);
-        } catch (\Throwable $e) {
-            Logger::error("Client::getExperiment('$name'): unexpected error, returning control/not-enrolled — " . $e->getMessage());
-            return new ExperimentResult(false, 'control', $defaultParams);
-        }
+        return new BoundUniverseHandle($this->engine, $name, $this->attributes);
     }
 
     /** Read kill switch $name (optionally a named per-key override). */
@@ -140,17 +142,4 @@ final class Client
         }
     }
 
-    /**
-     * Emit a server-side exposure for $experiment for the bound user (parity with
-     * the browser's auto-exposure). Delegates to {@see Engine::logExposure()}
-     * with the bound attribute map; a no-op when the user isn't enrolled.
-     */
-    public function logExposure(string $experiment): void
-    {
-        try {
-            $this->engine->logExposure($this->attributes, $experiment);
-        } catch (\Throwable $e) {
-            Logger::warn("Client::logExposure('$experiment'): exposure dropped — " . $e->getMessage());
-        }
-    }
 }

@@ -1,22 +1,31 @@
-Read an experiment assignment, then track the conversion on the same bound
-`Client`. Assumes `Shipeasy\configure()` ran at startup — see Installation.
+Assign a unit within a universe (a mutual-exclusion pool — the unit lands in ≤1
+experiment), read the assigned params, then record the conversion event on the
+same bound `Client`. Assumes `Shipeasy\configure()` ran at startup — see
+Installation.
 
 ```php
 use Shipeasy\Client;
 
-// construct once per callsite (cheap; binds the user)
+// construct once per callsite (cheap; binds the user + runs the attributes transform)
 $client = new Client($currentUser);
 
-$r = $client->getExperiment(
-    '{{EXPERIMENT_KEY}}',    // experiment name
-    ['color' => 'blue'],     // $defaultParams — params returned when the user isn't enrolled
-);
-$color = $r->inExperiment ? $r->params['color'] : 'blue';
+// universe($name)->assign() → Shipeasy\Assignment
+//   $name — the UNIVERSE name (not an experiment); the unit lands in ≤1 experiment
+//   ->name       — the experiment the unit landed in, or null when not enrolled
+//   ->group      — the assigned variant, or null when not enrolled
+//   ->enrolled() — bool (=== group !== null)
+//   ->get($field, $fallback) — variant override ?? universe default ?? $fallback
+$exp = $client->universe('{{EXPERIMENT_KEY}}')->assign();
 
-// track() is on the same bound Client — the unit comes from the bound user, so
-// there is no userId argument.
+echo $exp->get('primary_label', 'Sign up'); // always safe — falls back when not enrolled
+
+// On conversion — track() is on the same bound Client; the unit is inferred from
+// the bound user (user_id, else anonymous_id), so there is no userId argument:
+//   track($eventName, $props?)
+//     $eventName — the success event name
+//     $props     — optional metric properties (private attrs are stripped)
 $client->track(
     '{{SUCCESS_EVENT}}',     // event name (the experiment's success metric)
-    ['amount' => 49],        // optional $props — event properties (default [])
+    ['group' => $exp->group],// optional $props (default [])
 );
 ```

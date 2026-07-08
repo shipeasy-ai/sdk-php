@@ -18,26 +18,62 @@ use Shipeasy\Client;
 // Seed values up front (no key, no network). Seed shapes:
 //   flags       => ['name' => bool]
 //   configs     => ['name' => value]
-//   experiments => ['name' => [group, params]]
+//   experiments => ['name' => [group, params]]  (refines an experiment that
+//                  exists in a universe — see "Asserting an experiment" below)
 //   attributes  => optional (yourUser) => attributeMap transform
 configureForTesting([
-    'flags'       => ['new_checkout' => true],
-    'configs'     => ['billing_copy' => ['headline' => 'Hi']],
-    'experiments' => ['checkout_button' => ['treatment', ['color' => 'green']]],
+    'flags'   => ['new_checkout' => true],
+    'configs' => ['billing_copy' => ['headline' => 'Hi']],
 ]);
 
 $client = new Client(['user_id' => 'u1']);   // construct once per callsite
 $client->getFlag('new_checkout');            // true
 $client->getConfig('billing_copy');          // ['headline' => 'Hi']
 
-$r = $client->getExperiment('checkout_button', ['color' => 'blue']);
-$r->inExperiment;   // true
-$r->group;          // 'treatment'
-$r->params;         // ['color' => 'green']  (seeded params beat defaultParams)
-
 // track() is a no-op in test mode — safe to call, sends nothing
 $client->track('purchase', ['amount' => 49]);
 ```
+
+## Asserting an experiment
+
+Experiments are read by **universe**. An `experiments` seed (and
+`overrideExperiment`) **refines** an experiment that already lives in a universe —
+it forces that experiment's variant. It does *not* invent an experiment in an
+empty universe, and it is read by universe, not by experiment name. Seed the
+universe + experiment via `configureForOffline()`, then force the variant:
+
+```php
+use function Shipeasy\configureForOffline;
+use Shipeasy\Client;
+
+configureForOffline([
+    'snapshot' => [
+        'flags' => ['gates' => [], 'configs' => [], 'killswitches' => []],
+        'experiments' => [
+            'universes' => ['checkout' => ['holdout_range' => null]],
+            'experiments' => [
+                'checkout_button' => [
+                    'universe'      => 'checkout',
+                    'allocationPct' => 10000,
+                    'salt'          => 's',
+                    'status'        => 'running',
+                    'groups'        => [['name' => 'control', 'weight' => 10000, 'params' => ['color' => 'blue']]],
+                ],
+            ],
+        ],
+    ],
+    'experiments' => ['checkout_button' => ['treatment', ['color' => 'green']]],
+]);
+
+$a = (new Client(['user_id' => 'u1']))->universe('checkout')->assign();
+$a->enrolled();          // true
+$a->group;               // 'treatment'  (forced by the override)
+$a->get('color');        // 'green'       (override params beat the universe default)
+```
+
+On an empty test-mode blob (no snapshot) `universe($name)->assign()` returns a
+safe not-enrolled `Assignment` (`group === null`), and `get($field, $fallback)`
+resolves to the universe default, else your `$fallback`.
 
 ## On-the-spot overrides
 
@@ -49,7 +85,7 @@ wins until `clearOverrides()`:
 | --- | --- |
 | `Shipeasy\overrideFlag($name, bool $value)` | Force a gate's boolean value. |
 | `Shipeasy\overrideConfig($name, mixed $value)` | Force a dynamic config's value. |
-| `Shipeasy\overrideExperiment($name, string $group, mixed $params)` | Force an experiment assignment. |
+| `Shipeasy\overrideExperiment($name, string $group, mixed $params)` | Force an experiment's variant. Surfaces through `universe($name)->assign()` when the experiment exists in the loaded blob. |
 | `Shipeasy\clearOverrides()` | Drop all on-the-spot overrides. |
 
 ```php

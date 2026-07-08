@@ -25,7 +25,7 @@ class Engine
      * This is the single runtime source of truth — keep it in sync with the
      * `version` field in composer.json (composer exposes no runtime constant).
      */
-    public const VERSION = '0.14.0';
+    public const VERSION = '0.15.0';
 
     private string $apiKey;
     private string $baseUrl;
@@ -64,6 +64,15 @@ class Engine
     private array $changeListeners = [];
     private int $nextListenerId = 0;
 
+    /**
+     * Per-process exposure dedup set (bounded; cleared at ~5000 entries). Keyed
+     * `uid:experiment:group` so repeated assign() calls in one request/worker
+     * emit one exposure. See {@see postExposure()}.
+     *
+     * @var array<string, bool>
+     */
+    private array $exposureSeen = [];
+
     /** Per-process spam guard for see() reports. */
     private SeeLimiter $seeLimiter;
 
@@ -79,7 +88,7 @@ class Engine
      * @param array<int, string> $privateAttributes Attribute names stripped from
      *        every outbound track() payload (LD/Statsig private attributes).
      * @param StickyBucketStore|null $stickyStore Sticky-bucketing store; when
-     *        supplied, getExperiment() locks a unit to its first-assigned
+     *        supplied, `universe()->assign()` locks a unit to its first-assigned
      *        variant (changing allocation %/weights won't re-bucket an enrolled
      *        unit — changing the experiment salt is the reshuffle lever). Absent
      *        ⇒ deterministic (fully backward compatible).
@@ -423,8 +432,9 @@ class Engine
     }
 
     /**
-     * Force getExperiment($name) to return an inExperiment result with the given
-     * group and params (params take precedence over the call's defaultParams).
+     * Force the experiment $name to assign the given group + params. Surfaces
+     * through `universe($name)->assign()` when the experiment exists in the
+     * loaded blob (the override params are merged over the universe defaults).
      */
     public function overrideExperiment(string $name, string $group, mixed $params): void
     {
@@ -627,34 +637,105 @@ class Engine
         }
     }
 
-    public function getExperiment(string $name, array $user, mixed $defaultParams): ExperimentResult
+    /**
+     * Evaluate one experiment by name for $user — override → full classify
+     * pipeline (targeting → universe holdout → holdout gate → sticky →
+     * allocation → group), merging the universe defaults under the assigned
+     * variant. Internal: the public surface is `universe($name)->assign($user)`.
+     * Reused by the SSR {@see evaluate()} bootstrap (keyed by experiment name)
+     * and by {@see assignUniverse()}.
+     */
+    private function evalExperimentByName(string $name, ?array $exp, array $user): ExperimentResult
+    {
+        if (isset($this->experimentOverrides[$name])) {
+            $o = $this->experimentOverrides[$name];
+            $universeName = is_array($exp) ? ($exp['universe'] ?? null) : null;
+            $universe = is_string($universeName) ? ($this->expsBlob['universes'][$universeName] ?? null) : null;
+            $paramDefaults = Eval_::paramDefaultsFromSchema(
+                is_array($universe) ? ($universe['param_schema'] ?? null) : null
+            );
+            return new ExperimentResult(true, $o['group'], Eval_::mergeParams($paramDefaults, $o['params']));
+        }
+        return Eval_::evalExperiment(
+            $exp,
+            $this->flagsBlob,
+            $this->expsBlob,
+            $user,
+            $this->stickyStore,
+            $name
+        );
+    }
+
+    /**
+     * Assign $user within $universeName. A universe is a mutual-exclusion pool,
+     * so a unit lands in **at most one** experiment; the returned
+     * {@see Assignment} exposes the variant + resolved params and auto-logs a
+     * single exposure when enrolled. An un-enrolled unit still resolves `get()`
+     * to the universe defaults. Never throws. This is the sole experiment read
+     * path (there is no `getExperiment` — a caller asks a universe, not an
+     * experiment).
+     *
+     * @param array<string, mixed> $user
+     */
+    public function assignUniverse(string $universeName, array $user): Assignment
     {
         try {
-            if (isset($this->experimentOverrides[$name])) {
-                $o = $this->experimentOverrides[$name];
-                return new ExperimentResult(true, $o['group'], $o['params']);
-            }
-            $this->telemetry->emit('experiment', $name);
-            $exp = $this->expsBlob['experiments'][$name] ?? null;
-            $r = Eval_::evalExperiment(
-                $exp,
-                $this->flagsBlob,
-                $this->expsBlob,
-                self::withAnonId($user),
-                $this->stickyStore,
-                $name
+            $this->telemetry->emit('experiment', $universeName);
+            $user = self::withAnonId($user);
+            $universe = $this->expsBlob['universes'][$universeName] ?? null;
+            $paramDefaults = Eval_::paramDefaultsFromSchema(
+                is_array($universe) ? ($universe['param_schema'] ?? null) : null
             );
-            if ($r->params === null) {
-                return new ExperimentResult($r->inExperiment, $r->group, $defaultParams);
+            $notEnrolled = fn (): Assignment => new Assignment(null, null, $paramDefaults ?? []);
+            if (!is_array($this->expsBlob)) return $notEnrolled();
+
+            // Candidate running experiments in this universe. Deterministic order:
+            // pool-slice offset asc (slices are disjoint so ≤1 matches under
+            // pooling), then name. A universe-held-out or unallocated unit falls
+            // through to the defaults-only handle.
+            $candidates = [];
+            foreach (($this->expsBlob['experiments'] ?? []) as $name => $exp) {
+                if (!is_array($exp)) continue;
+                if (($exp['universe'] ?? null) !== $universeName) continue;
+                if (($exp['status'] ?? null) !== 'running') continue;
+                $candidates[] = [(string) $name, $exp];
             }
-            return $r;
+            usort($candidates, function (array $a, array $b): int {
+                $offA = (int) ($a[1]['poolOffsetBp'] ?? 0);
+                $offB = (int) ($b[1]['poolOffsetBp'] ?? 0);
+                return $offA <=> $offB ?: strcmp($a[0], $b[0]);
+            });
+
+            foreach ($candidates as [$name, $exp]) {
+                $r = $this->evalExperimentByName($name, $exp, $user);
+                if ($r->inExperiment) {
+                    $this->postExposure($user, $name, $r->group);
+                    $params = is_array($r->params) ? $r->params : [];
+                    return new Assignment($name, $r->group, $params);
+                }
+                // "holdout"/"out": try the next candidate — under pooling only one
+                // slice can match, so the loop lands on the winner (or falls out).
+            }
+            return $notEnrolled();
         } catch (\Throwable $e) {
             // A user-supplied StickyBucketStore or a malformed blob must never
-            // throw a read into the caller — report the safe not-enrolled result.
-            Logger::error("getExperiment('$name'): unexpected error, returning control/not-enrolled — " . $e->getMessage());
-            InternalReport::report('getExperiment', $e);
-            return new ExperimentResult(false, 'control', $defaultParams);
+            // throw an assignment into the caller — report the safe not-enrolled
+            // result.
+            Logger::error("assignUniverse('$universeName'): unexpected error, returning not-enrolled — " . $e->getMessage());
+            InternalReport::report('assignUniverse', $e);
+            return new Assignment(null, null, []);
         }
+    }
+
+    /**
+     * The universe-first experiment read entry point:
+     * `$engine->universe('checkout')->assign($user)`. Returns a reusable handle
+     * bound to one universe; `assign($user)` picks the ≤1 experiment the unit is
+     * pooled into and auto-logs a single exposure. See {@see assignUniverse()}.
+     */
+    public function universe(string $name): UniverseHandle
+    {
+        return new UniverseHandle($this, $name);
     }
 
     /**
@@ -683,30 +764,30 @@ class Engine
                 : ($entry['value'] ?? null);
         }
 
+        // Per-universe param defaults so the client can resolve
+        // `universe(name).get()` to a default even when the unit is not enrolled
+        // anywhere in the universe.
+        $universes = [];
         $experiments = [];
         foreach (($this->expsBlob['experiments'] ?? []) as $name => $exp) {
-            if (isset($this->experimentOverrides[$name])) {
-                $o = $this->experimentOverrides[$name];
-                $experiments[$name] = [
-                    'inExperiment' => true,
-                    'group' => $o['group'],
-                    'params' => $o['params'],
-                ];
-                continue;
+            $uniName = is_array($exp) ? ($exp['universe'] ?? null) : null;
+            if (is_string($uniName) && !array_key_exists($uniName, $universes)) {
+                $universe = $this->expsBlob['universes'][$uniName] ?? null;
+                $defaults = Eval_::paramDefaultsFromSchema(
+                    is_array($universe) ? ($universe['param_schema'] ?? null) : null
+                );
+                $universes[$uniName] = ['defaults' => (object) ($defaults ?? [])];
             }
-            $r = Eval_::evalExperiment(
-                $exp,
-                $this->flagsBlob,
-                $this->expsBlob,
-                $user,
-                $this->stickyStore,
-                $name
-            );
-            $experiments[$name] = [
+            $r = $this->evalExperimentByName($name, is_array($exp) ? $exp : null, $user);
+            $entry = [
                 'inExperiment' => $r->inExperiment,
                 'group' => $r->group,
-                'params' => $r->params,
+                'params' => $r->inExperiment ? (is_array($r->params) ? $r->params : []) : ($r->params ?? []),
             ];
+            if (is_string($uniName)) {
+                $entry['universe'] = $uniName;
+            }
+            $experiments[$name] = $entry;
         }
 
         return [
@@ -714,6 +795,7 @@ class Engine
             'configs' => (object) $configs,
             'experiments' => (object) $experiments,
             'killswitches' => (object) [],
+            'universes' => (object) $universes,
         ];
     }
 
@@ -881,39 +963,40 @@ class Engine
     }
 
     /**
-     * Emit an exposure event for an experiment at the server-side decision point
-     * (parity with the browser's auto-exposure). The server is stateless and
-     * never auto-logs, so call this when you actually present the treatment.
-     * Re-evaluates the experiment for $user (a bare user_id string is wrapped as
-     * ['user_id' => …]); if the user is enrolled, POSTs a single exposure to
-     * /collect. No-op in local/test mode or when the user isn't enrolled.
+     * POST a single exposure for an enrolled ($user, $experiment, $group).
+     * Deduped per process (bounded set) so repeated `assign()` calls in one
+     * request/worker don't spam /collect. Fire-and-forget; no-op in local/test
+     * mode. This is how {@see assignUniverse()} auto-logs — the browser's
+     * auto-exposure parity for SSR.
      *
-     * @param string|array<string, mixed> $user
+     * @param array<string, mixed> $user
      */
-    public function logExposure(string|array $user, string $experimentName): void
+    private function postExposure(array $user, string $experiment, string $group): void
     {
         try {
             if ($this->localMode) return; // test mode never sends events
-            $u = is_string($user) ? ['user_id' => $user] : $user;
-            $result = $this->getExperiment($experimentName, $u, null);
-            if (!$result->inExperiment) return;
+            $uid = (string) ($user['user_id'] ?? $user['anonymous_id'] ?? '');
+            $dedupKey = "$uid:$experiment:$group";
+            if (isset($this->exposureSeen[$dedupKey])) return;
+            if (count($this->exposureSeen) > 5000) $this->exposureSeen = [];
+            $this->exposureSeen[$dedupKey] = true;
             $event = [
                 'type' => 'exposure',
-                'experiment' => $experimentName,
-                'group' => $result->group,
+                'experiment' => $experiment,
+                'group' => $group,
                 'ts' => (int) (microtime(true) * 1000),
             ];
-            if (isset($u['user_id']) && $u['user_id'] !== '') {
-                $event['user_id'] = (string) $u['user_id'];
+            if (isset($user['user_id']) && $user['user_id'] !== '') {
+                $event['user_id'] = (string) $user['user_id'];
             }
-            if (isset($u['anonymous_id']) && $u['anonymous_id'] !== '') {
-                $event['anonymous_id'] = (string) $u['anonymous_id'];
+            if (isset($user['anonymous_id']) && $user['anonymous_id'] !== '') {
+                $event['anonymous_id'] = (string) $user['anonymous_id'];
             }
             $body = json_encode(['events' => [$event]], JSON_UNESCAPED_UNICODE);
             $this->postNonBlocking('/collect', $body);
         } catch (\Throwable $e) {
             // Fire-and-forget: an exposure failure must never break the caller.
-            Logger::warn("logExposure('$experimentName'): exposure dropped — " . $e->getMessage());
+            Logger::warn("postExposure('$experiment'): exposure dropped — " . $e->getMessage());
         }
     }
 

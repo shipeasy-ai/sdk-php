@@ -12,8 +12,8 @@ use Shipeasy\StickyBucketStore;
 /**
  * Coverage for the three parity features:
  *   A — private attributes stripped from track() egress
- *   B — server manual exposure (logExposure)
- *   C — sticky bucketing
+ *   B — auto-exposure on assign() (deduped, enrolled-only)
+ *   C — sticky bucketing (through universe()->assign())
  */
 final class StickyAndExposureTest extends TestCase
 {
@@ -91,15 +91,16 @@ final class StickyAndExposureTest extends TestCase
         $this->assertArrayNotHasKey('properties', $event);
     }
 
-    // ---- FEATURE B: manual exposure ----
+    // ---- FEATURE B: auto-exposure on assign() ----
 
-    public function testLogExposurePostsWhenEnrolled(): void
+    public function testAssignPostsExposureWhenEnrolled(): void
     {
         $c = $this->capturingClient();
         $c->applyData(['gates' => [], 'configs' => []], $this->expsBlob());
 
-        $c->logExposure('user-42', 'checkout_test');
+        $a = $c->universe('u1')->assign(['user_id' => 'user-42']);
 
+        $this->assertTrue($a->enrolled());
         $this->assertCount(1, $c->posts);
         $event = $c->posts[0]['body']['events'][0];
         $this->assertSame('exposure', $event['type']);
@@ -109,41 +110,55 @@ final class StickyAndExposureTest extends TestCase
         $this->assertArrayHasKey('ts', $event);
     }
 
-    public function testLogExposureAcceptsUserArray(): void
+    public function testAssignExposureUsesAnonymousId(): void
     {
         $c = $this->capturingClient();
         $c->applyData(['gates' => [], 'configs' => []], $this->expsBlob());
 
-        $c->logExposure(['anonymous_id' => 'anon-9'], 'checkout_test');
+        $c->universe('u1')->assign(['anonymous_id' => 'anon-9']);
         $event = $c->posts[0]['body']['events'][0];
         $this->assertSame('anon-9', $event['anonymous_id']);
         $this->assertArrayNotHasKey('user_id', $event);
     }
 
-    public function testLogExposureNoOpWhenNotEnrolled(): void
+    public function testAssignExposureIsDedupedAcrossRepeatCalls(): void
+    {
+        $c = $this->capturingClient();
+        $c->applyData(['gates' => [], 'configs' => []], $this->expsBlob());
+
+        for ($i = 0; $i < 5; $i++) {
+            $c->universe('u1')->assign(['user_id' => 'user-42']);
+        }
+        // Same (uid, experiment, group) → a single exposure over 5 assigns.
+        $this->assertCount(1, $c->posts);
+    }
+
+    public function testAssignNoExposureWhenNotEnrolled(): void
     {
         // allocation 0 → nobody enrolled → no exposure posted.
         $c = $this->capturingClient();
         $c->applyData(['gates' => [], 'configs' => []], $this->expsBlob('salt', 0));
 
-        $c->logExposure('user-42', 'checkout_test');
+        $a = $c->universe('u1')->assign(['user_id' => 'user-42']);
+        $this->assertFalse($a->enrolled());
         $this->assertCount(0, $c->posts);
     }
 
-    public function testLogExposureNoOpForUnknownExperiment(): void
+    public function testAssignNoExposureForUnknownUniverse(): void
     {
         $c = $this->capturingClient();
         $c->applyData(['gates' => [], 'configs' => []], $this->expsBlob());
-        $c->logExposure('user-42', 'does_not_exist');
+        $a = $c->universe('does_not_exist')->assign(['user_id' => 'user-42']);
+        $this->assertFalse($a->enrolled());
         $this->assertCount(0, $c->posts);
     }
 
-    public function testLogExposureNoOpInLocalMode(): void
+    public function testAssignNoOpInLocalMode(): void
     {
         $c = Engine::forTesting();
         // forTesting can't capture posts, but it must simply not throw / not send.
-        $c->logExposure('user-42', 'whatever');
-        $this->assertTrue(true);
+        $a = $c->universe('whatever')->assign(['user_id' => 'user-42']);
+        $this->assertFalse($a->enrolled());
     }
 
     // ---- FEATURE C: sticky bucketing ----
@@ -161,11 +176,11 @@ final class StickyAndExposureTest extends TestCase
         $store = new InMemoryStickyStore();
         $c = Engine::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob(), $store);
 
-        $r = $c->getExperiment('checkout_test', ['user_id' => 'u1'], null);
-        $this->assertTrue($r->inExperiment);
+        $a = $c->universe('u1')->assign(['user_id' => 'u1']);
+        $this->assertTrue($a->enrolled());
 
         $entry = $store->get('u1')['checkout_test'];
-        $this->assertSame($r->group, $entry['g']);
+        $this->assertSame($a->group, $entry['g']);
         $this->assertSame(substr('expsalt12345', 0, 8), $entry['s']);
     }
 
@@ -178,10 +193,10 @@ final class StickyAndExposureTest extends TestCase
         // Allocation now 0 — a deterministic eval would drop u1. Sticky keeps it.
         $c = Engine::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob('expsalt12345', 0), $store);
 
-        $r = $c->getExperiment('checkout_test', ['user_id' => 'u1'], null);
-        $this->assertTrue($r->inExperiment);
-        $this->assertSame('treatment', $r->group);
-        $this->assertSame(['c' => 2], $r->params);
+        $a = $c->universe('u1')->assign(['user_id' => 'u1']);
+        $this->assertTrue($a->enrolled());
+        $this->assertSame('treatment', $a->group);
+        $this->assertSame(2, $a->get('c'));
     }
 
     public function testSaltMismatchRebuckets(): void
@@ -191,12 +206,12 @@ final class StickyAndExposureTest extends TestCase
         $store = new InMemoryStickyStore(['u1' => ['checkout_test' => ['g' => 'treatment', 's' => 'OLDSALT0']]]);
         $c = Engine::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob('newsalt99999'), $store);
 
-        $r = $c->getExperiment('checkout_test', ['user_id' => 'u1'], null);
-        $this->assertTrue($r->inExperiment);
+        $a = $c->universe('u1')->assign(['user_id' => 'u1']);
+        $this->assertTrue($a->enrolled());
 
         $entry = $store->get('u1')['checkout_test'];
         $this->assertSame(substr('newsalt99999', 0, 8), $entry['s']);
-        $this->assertSame($r->group, $entry['g']);
+        $this->assertSame($a->group, $entry['g']);
     }
 
     public function testStoredGroupGoneRebuckets(): void
@@ -207,10 +222,10 @@ final class StickyAndExposureTest extends TestCase
         $store = new InMemoryStickyStore(['u1' => ['checkout_test' => ['g' => 'ghost', 's' => $salt8]]]);
         $c = Engine::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob(), $store);
 
-        $r = $c->getExperiment('checkout_test', ['user_id' => 'u1'], null);
-        $this->assertTrue($r->inExperiment);
-        $this->assertContains($r->group, ['control', 'treatment']);
-        $this->assertSame($r->group, $store->get('u1')['checkout_test']['g']);
+        $a = $c->universe('u1')->assign(['user_id' => 'u1']);
+        $this->assertTrue($a->enrolled());
+        $this->assertContains($a->group, ['control', 'treatment']);
+        $this->assertSame($a->group, $store->get('u1')['checkout_test']['g']);
     }
 
     public function testStickyIsStableAcrossCalls(): void
@@ -218,9 +233,9 @@ final class StickyAndExposureTest extends TestCase
         $store = new InMemoryStickyStore();
         $c = Engine::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob(), $store);
 
-        $first = $c->getExperiment('checkout_test', ['user_id' => 'u1'], null)->group;
+        $first = $c->universe('u1')->assign(['user_id' => 'u1'])->group;
         for ($i = 0; $i < 5; $i++) {
-            $this->assertSame($first, $c->getExperiment('checkout_test', ['user_id' => 'u1'], null)->group);
+            $this->assertSame($first, $c->universe('u1')->assign(['user_id' => 'u1'])->group);
         }
     }
 
@@ -228,8 +243,8 @@ final class StickyAndExposureTest extends TestCase
     {
         // Absent store ⇒ no behaviour change, no side effects.
         $c = Engine::fromSnapshot(['gates' => [], 'configs' => []], $this->expsBlob());
-        $r = $c->getExperiment('checkout_test', ['user_id' => 'u1'], null);
-        $this->assertTrue($r->inExperiment);
-        $this->assertContains($r->group, ['control', 'treatment']);
+        $a = $c->universe('u1')->assign(['user_id' => 'u1']);
+        $this->assertTrue($a->enrolled());
+        $this->assertContains($a->group, ['control', 'treatment']);
     }
 }

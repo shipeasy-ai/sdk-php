@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.15.0 — 2026-07-08
+
+### Breaking — experiments are now read by universe, not by name
+
+The whole experiment read surface is replaced. A **universe is a mutual-exclusion
+pool**: a unit is enrolled in **at most one** experiment in it, so you ask a
+universe for an assignment instead of naming an experiment. `Engine::getExperiment`,
+`Engine::logExposure`, and `Client::logExposure` are **removed**. (This is a 0.x
+minor bump but the change IS breaking — pin exactly if you cannot migrate.)
+
+```php
+// Before (removed):
+$exp = $client->getExperiment('checkout_color', ['button_color' => 'red']);
+if ($exp->inExperiment && $exp->params['button_color'] === 'green') { … }
+$client->logExposure('checkout_color');
+
+// After — bound Client (user pre-bound at construction):
+$a = $client->universe('checkout')->assign();
+if ($a->get('button_color') === 'green') { … }
+
+// After — Engine form (pass the user explicitly):
+$a = $engine->universe('checkout')->assign(['user_id' => 'u1']);
+```
+
+- **`universe($name)->assign($user)`** (Engine) / **`->universe($name)->assign()`**
+  (bound `Client`, forwards the bound attributes) returns an `Assignment`:
+  - `->name` — the experiment the unit landed in, or `null` when not enrolled.
+  - `->group` — the assigned variant, or `null` when not enrolled.
+  - `->enrolled()` — bool (`group !== null`).
+  - `->get($field, $fallback = null)` — resolves **variant override ?? universe
+    default ?? fallback**. Works even when not enrolled (you get the universe
+    default), because the universe now owns the param schema + defaults. There is
+    no `$defaultParams` argument anymore.
+- **Auto-exposure.** `assign()` logs a single exposure to `/collect` when the unit
+  is enrolled, deduped per process (bounded set, cleared at ~5000 entries). The
+  manual `logExposure` primitive is gone — reading *is* the exposure. No-op in
+  test/offline mode.
+- **Mutual exclusion (pooled assignment via `hashVersion`/`poolOffsetBp`/
+  `poolSizeBp`), per-experiment holdout gates (`holdoutGate`), reserved headroom
+  (`reservedHeadroomBp`), and universe-default ⊕ variant param merge** are now
+  honoured by local eval, matching the edge. A universe param schema
+  (`param_schema`) supplies the defaults every variant inherits.
+- **Bootstrap payload.** `Engine::evaluate()` now carries a top-level `universes`
+  defaults map and a `universe` field per experiment entry; enrolled `params` are
+  the MERGED (universe defaults ⊕ variant) params.
+- The internal `overrideExperiment` test seam is kept (still experiment-keyed); an
+  override surfaces through `universe($name)->assign()` when the experiment exists
+  in the loaded blob.
+
+Migration: replace each `getExperiment('<exp>', $defaults)` with
+`universe('<the experiment's universe>')->assign()` and read fields via
+`->get('field', $fallbackFromDefaults)`; delete `logExposure()` calls (exposure is
+automatic on `assign()`).
+
 ## 0.14.0 — 2026-07-08
 
 ### Added

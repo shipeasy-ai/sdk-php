@@ -107,8 +107,8 @@ function overrideConfig(string $name, mixed $value): void
 }
 
 /**
- * Force `getExperiment($name)` to report enrolment in $group with $params on the
- * spot (see {@see overrideFlag()}).
+ * Force the experiment $name to assign $group with $params on the spot — it
+ * surfaces through `universe($name)->assign()` (see {@see overrideFlag()}).
  */
 function overrideExperiment(string $name, string $group, mixed $params): void
 {

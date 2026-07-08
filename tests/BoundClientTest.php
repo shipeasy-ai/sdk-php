@@ -188,14 +188,21 @@ final class BoundClientTest extends TestCase
         $this->assertSame('anon-9', $event['user_id']);
     }
 
-    /** The bound Client.logExposure forwards the bound map and emits an exposure. */
-    public function testBoundClientLogExposure(): void
+    /**
+     * The bound Client.universe()->assign() forwards the bound attribute map to
+     * the engine and auto-logs a single exposure for the enrolled unit.
+     */
+    public function testBoundClientUniverseAssignAutoLogsExposure(): void
     {
         $engine = $this->capturingEngine();
         Engine::setDefault($engine);
         configure('server-key');
 
-        (new Client(['user_id' => 'user-42']))->logExposure('checkout_test');
+        $a = (new Client(['user_id' => 'user-42']))->universe('u1')->assign();
+
+        $this->assertTrue($a->enrolled());
+        $this->assertSame('checkout_test', $a->name);
+        $this->assertContains($a->group, ['control', 'treatment']);
 
         $this->assertCount(1, $engine->posts);
         $event = $engine->posts[0]['body']['events'][0];

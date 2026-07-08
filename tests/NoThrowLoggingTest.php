@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Shipeasy\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Shipeasy\Assignment;
 use Shipeasy\Engine;
-use Shipeasy\ExperimentResult;
 use Shipeasy\Logger;
 use Shipeasy\StickyBucketStore;
 
@@ -54,7 +54,7 @@ final class NoThrowLoggingTest extends TestCase
     }
 
     /**
-     * A running experiment; getExperiment() will consult the sticky store,
+     * A running experiment; universe()->assign() will consult the sticky store,
      * giving the injected throwing store a chance to blow up mid-read.
      */
     private function runningExpsBlob(): array
@@ -79,10 +79,10 @@ final class NoThrowLoggingTest extends TestCase
 
     // ---- (a) fail-safe read: a throwing user callable never escapes ----
 
-    public function testGetExperimentSwallowsThrowingStickyStoreAndReturnsDefault(): void
+    public function testAssignSwallowsThrowingStickyStoreAndReturnsNotEnrolled(): void
     {
         // A user-supplied store whose get() throws — the read-path "decode"
-        // callable the caller injected. It must not surface from getExperiment().
+        // callable the caller injected. It must not surface from assign().
         $boom = new class implements StickyBucketStore {
             public function get(string $unit): ?array
             {
@@ -97,14 +97,13 @@ final class NoThrowLoggingTest extends TestCase
         // Seed the running experiment snapshot without any network.
         $engine->applyData(null, $this->runningExpsBlob());
 
-        $default = ['c' => 99];
-        $result = $engine->getExperiment('checkout_test', ['user_id' => 'u_1'], $default);
+        $result = $engine->universe('u1')->assign(['user_id' => 'u_1']);
 
-        // Did NOT throw; returned the safe not-enrolled default.
-        $this->assertInstanceOf(ExperimentResult::class, $result);
-        $this->assertFalse($result->inExperiment);
-        $this->assertSame('control', $result->group);
-        $this->assertSame($default, $result->params);
+        // Did NOT throw; returned the safe not-enrolled handle.
+        $this->assertInstanceOf(Assignment::class, $result);
+        $this->assertFalse($result->enrolled());
+        $this->assertNull($result->group);
+        $this->assertSame('fallback', $result->get('c', 'fallback'));
     }
 
     public function testGetFlagSwallowsBadBlobAndReturnsDefault(): void

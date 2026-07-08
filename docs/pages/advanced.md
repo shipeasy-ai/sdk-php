@@ -1,23 +1,22 @@
 # Advanced
 
-## Manual exposure
+## Exposure logging
 
-The PHP server is stateless and **never auto-logs** experiment exposures. To get
-exposure parity with the browser, call `logExposure()` on the bound `Client` at
-the point you actually present the treatment:
+`universe($name)->assign()` **auto-logs** a single exposure when the unit is
+enrolled — reading *is* the exposure, so there is no manual `logExposure`
+primitive. The exposure POSTs one `exposure` event to `/collect`, deduped per
+process (a bounded set keyed by `unit:experiment:group`), so repeated `assign()`
+calls for the same unit in one request/worker emit one exposure:
 
 ```php
 use Shipeasy\Client;
 
 $client = new Client($currentUser);   // construct once per callsite
-$r      = $client->getExperiment('checkout_button', ['color' => 'blue']);
-
-$client->logExposure('checkout_button');   // emits one exposure if enrolled
+$cta    = $client->universe('checkout')->assign();   // enrolled → one exposure logged
+// …repeat assign() calls in this process do not re-log.
 ```
 
-It re-evaluates the experiment for the bound user; if enrolled, it POSTs a single
-`exposure` event to `/collect`. No-op in test/offline mode or when the user isn't
-enrolled.
+No-op in test/offline mode or when the user isn't enrolled.
 
 ## Private attributes
 
@@ -51,7 +50,7 @@ configure($_ENV['SHIPEASY_SERVER_KEY'], fn ($u) => [
 ]);
 
 $client = new Client($currentUser);   // construct once per callsite
-$r      = $client->getExperiment('pricing_test', $default);
+$exp    = $client->universe('pricing')->assign();   // buckets on company_id
 ```
 
 ## Sticky bucketing

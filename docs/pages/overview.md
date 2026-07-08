@@ -40,9 +40,9 @@ $client = new Client($currentUser);                // construct once per callsit
 $enabled = $client->getFlag('new_checkout');                       // gate
 $copy    = $client->getConfig('billing_copy');                     // dynamic config
 $panic   = $client->getKillswitch('payments_panic');               // kill switch
-$r       = $client->getExperiment('checkout_button', ['c' => 1]);  // experiment
-$client->track('checkout_completed', ['amount' => 49]);            // metric event
-$client->logExposure('checkout_button');                           // exposure
+$cta     = $client->universe('checkout')->assign();                // experiment (by universe)
+$color   = $cta->get('button_color', 'red');                       // variant ?? universe default ?? fallback
+$client->track('checkout_completed', ['amount' => 49]);            // metric event (auto-logs exposure on assign)
 ```
 
 Constructing a `Client` before `configure()` throws `RuntimeException`.
@@ -65,7 +65,7 @@ all backed by the same configured SDK, so you never construct anything heavy:
 - [Flags](flags.md) — `getFlag` / `getFlagDetail`.
 - [Configs](configs.md) — `getConfig`.
 - [Kill switches](killswitches.md) — `getKillswitch`.
-- [Experiments](experiments.md) — `getExperiment` + `track`.
+- [Experiments](experiments.md) — `universe()->assign()` + `track`.
 - [i18n](i18n.md) — SSR bootstrap + loader tag (browser does the rendering).
 - [Error reporting](error-reporting.md) — `see()` / `controlFlowException()`.
 - [Testing](testing.md) — `configureForTesting()` / `configureForOffline()` + overrides.
