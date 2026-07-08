@@ -24,6 +24,7 @@ configure(
         'privateAttributes'  => ['email'],
         'stickyStore'        => null,
         'logLevel'           => 'warn',
+        'disableInternalErrorReporting' => false,
     ],
 );
 ```
@@ -47,6 +48,7 @@ configure(
 | `privateAttributes` | `[]` | Attribute names stripped from outbound event payloads (LD/Statsig `privateAttributes`). See [Advanced](advanced.md). |
 | `stickyStore` | `null` | A `Shipeasy\StickyBucketStore` for durable experiment bucketing. See [Advanced](advanced.md). |
 | `logLevel` | `'warn'` | The SDK's own diagnostic verbosity: `'silent'`, `'error'`, `'warn'`, `'info'`, `'debug'`. See below. |
+| `disableInternalErrorReporting` | `false` | Opt out of internal SDK-error self-reporting. See below. |
 
 ## Fail-safe reads & the `logLevel` option
 
@@ -76,6 +78,20 @@ by `logLevel`:
 Ordering is `silent < error < warn < info < debug`; a message at level L is
 emitted iff the configured level is ≥ L. An unknown value falls back to `warn`.
 Set `'silent'` to mute the SDK entirely.
+
+## Internal error self-reporting (`disableInternalErrorReporting`)
+
+When a fail-safe read swallows one of the **SDK's own** internal errors (a bug on
+Shipeasy's side, not yours), the SDK also ships a small structured error event to
+**Shipeasy's own project** so the SDK team can track SDK-internal failures across
+every app it runs in. This is separate from your `see()` reports: it never
+authenticates with your key and never lands in **your** Errors tab. It's
+fire-and-forget, never blocks, never throws, and is rate-limited/deduped just like
+`see()`.
+
+It's ON by default and off automatically in `configureForTesting` /
+`configureForOffline`. Set `disableInternalErrorReporting => true` (or the Laravel
+`SHIPEASY_DISABLE_INTERNAL_ERROR_REPORTING` env var) to opt out entirely.
 
 ## The fetch model (no background poll)
 

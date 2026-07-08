@@ -105,4 +105,19 @@ return [
     */
     'log_level' => env('SHIPEASY_LOG_LEVEL', 'warn'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Internal error reporting
+    |--------------------------------------------------------------------------
+    |
+    | The SDK self-monitors: when a fail-safe read swallows one of the SDK's OWN
+    | internal errors, it also ships a structured error event to Shipeasy's own
+    | project (a baked-in destination + public write-only key) — distinct from
+    | your see() reports, which land in YOUR Errors tab. This never touches your
+    | dashboard. Set true (SHIPEASY_DISABLE_INTERNAL_ERROR_REPORTING=true) to opt
+    | out. Defaults to false (reporting ON).
+    |
+    */
+    'disable_internal_error_reporting' => env('SHIPEASY_DISABLE_INTERNAL_ERROR_REPORTING', false),
+
 ];

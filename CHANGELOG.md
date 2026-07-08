@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.14.0 — 2026-07-08
+
+### Added
+
+- **Internal SDK-error self-reporting.** When a fail-safe read guard swallows one
+  of the SDK's OWN internal errors — `getFlag` / `getFlagDetail` / `getConfig` /
+  `getKillswitch` / `getExperiment` catching an internal invariant violation and
+  returning its documented safe default — the SDK now also ships a structured
+  error event to **Shipeasy's own project** (a baked-in `/collect` destination +
+  public write-only client key), so the SDK team can track SDK-internal failures
+  across every app the SDK runs in. This is deliberately distinct from the
+  customer-facing `see()` path: internal errors never authenticate with your key
+  and never land in your Errors tab. The report is fire-and-forget, never blocks,
+  never throws into caller code, and is deduped/rate-limited by the same
+  `SeeLimiter` as `see()`. The wire event reuses the existing see-event builder,
+  so the consequence is stable (`subject` = the operation name, `outcome` =
+  `"returned a safe default"`, `extras.sdk` = `"php"`) and repeated occurrences of
+  the same bug fold into one issue. Until the real ingest key is provisioned the
+  channel is fully inert (it ships with an inert placeholder key).
+- **New `disableInternalErrorReporting` option.** `configure()` (and
+  `Engine::__construct`) accept `disableInternalErrorReporting` to opt out of the
+  channel above — default OFF (reporting ON); forced OFF in
+  `configureForTesting` / `configureForOffline` / test/offline mode. The Laravel
+  config gains `disable_internal_error_reporting`
+  (`SHIPEASY_DISABLE_INTERNAL_ERROR_REPORTING`, default `false`), wired through the
+  service provider.
+
 ## 0.13.1 — 2026-07-07
 
 ### Fixed

@@ -25,7 +25,7 @@ class Engine
      * This is the single runtime source of truth — keep it in sync with the
      * `version` field in composer.json (composer exposes no runtime constant).
      */
-    public const VERSION = '0.13.1';
+    public const VERSION = '0.14.0';
 
     private string $apiKey;
     private string $baseUrl;
@@ -87,6 +87,11 @@ class Engine
      *        'error', 'warn', 'info', 'debug' (ordering silent<error<warn<info<
      *        debug; a message at level L is emitted iff configured >= L). null or
      *        an unknown value ⇒ 'warn'. Sets the process-wide {@see Logger} level.
+     * @param bool $disableInternalErrorReporting Opt out of the internal
+     *        self-monitoring channel that ships SDK-internal errors (the ones a
+     *        fail-safe read swallows) to Shipeasy's OWN project — distinct from
+     *        the customer-facing see() path. Default ON; forced OFF in
+     *        local/test mode. See {@see InternalReport}.
      */
     public function __construct(
         string $apiKey,
@@ -96,7 +101,8 @@ class Engine
         ?string $telemetryUrl = null,
         array $privateAttributes = [],
         ?StickyBucketStore $stickyStore = null,
-        ?string $logLevel = null
+        ?string $logLevel = null,
+        bool $disableInternalErrorReporting = false
     ) {
         $this->apiKey = $apiKey;
         $this->baseUrl = rtrim($baseUrl ?? self::DEFAULT_BASE_URL, '/');
@@ -121,6 +127,11 @@ class Engine
         // analog of TS's shipeasy({key})). configure() uses setDefaultIfAbsent()
         // for first-config-wins idempotency instead.
         self::setDefault($this);
+        // Wire the internal self-monitoring channel (SDK bugs shipped to
+        // Shipeasy's OWN project, not the consumer's). ON by default; the caller
+        // can opt out; forced OFF in local/test mode (see forTesting() /
+        // fromSnapshot(), which set localMode after construction).
+        InternalReport::setContext('server', self::VERSION, !$disableInternalErrorReporting);
     }
 
     /**
@@ -167,7 +178,7 @@ class Engine
      *        Default = identity (the user object IS the attribute map).
      * @param array<string, mixed> $opts Extra Engine options: baseUrl, env,
      *        disableTelemetry, telemetryUrl, privateAttributes, stickyStore,
-     *        logLevel.
+     *        logLevel, disableInternalErrorReporting.
      */
     public static function configure(string $apiKey, ?callable $attributes = null, array $opts = []): Engine
     {
@@ -190,6 +201,7 @@ class Engine
             $opts['privateAttributes'] ?? [],
             $opts['stickyStore'] ?? null,
             $opts['logLevel'] ?? null,
+            (bool) ($opts['disableInternalErrorReporting'] ?? false),
         );
         self::setDefaultIfAbsent($engine);
         self::$attributesTransform = $attributes;
@@ -331,6 +343,8 @@ class Engine
         $c = new self('', null, 'prod', true, null, [], $stickyStore);
         $c->localMode = true;
         $c->initialized = true;
+        // Test mode never sends events — keep the internal channel inert too.
+        InternalReport::setContext('server', self::VERSION, false);
         return $c;
     }
 
@@ -370,6 +384,8 @@ class Engine
         $c->initialized = true;
         $c->flagsBlob = $flags;
         $c->expsBlob = $experiments;
+        // Offline/test mode never sends events — keep the internal channel inert.
+        InternalReport::setContext('server', self::VERSION, false);
         return $c;
     }
 
@@ -485,6 +501,7 @@ class Engine
             // A runtime read must never throw into the caller — fall back to the
             // documented default.
             Logger::error("getFlag('$name'): unexpected error, returning default — " . $e->getMessage());
+            InternalReport::report('getFlag', $e);
             return $default;
         }
     }
@@ -529,6 +546,7 @@ class Engine
             // Defensive: a malformed blob or unexpected eval error must never
             // escape a runtime read — report false / CLIENT_NOT_READY.
             Logger::error("getFlagDetail('$name'): unexpected error, treating as unevaluable — " . $e->getMessage());
+            InternalReport::report('getFlagDetail', $e);
             return new FlagDetail(false, FlagDetail::CLIENT_NOT_READY);
         }
     }
@@ -571,6 +589,7 @@ class Engine
             return $this->flagsBlob['configs'][$name]['value'];
         } catch (\Throwable $e) {
             Logger::error("getConfig('$name'): unexpected error, returning default — " . $e->getMessage());
+            InternalReport::report('getConfig', $e);
             return $default;
         }
     }
@@ -603,6 +622,7 @@ class Engine
             return (bool) ($entry['killed'] ?? false);
         } catch (\Throwable $e) {
             Logger::error("getKillswitch('$name'): unexpected error, treating as not killed — " . $e->getMessage());
+            InternalReport::report('getKillswitch', $e);
             return false;
         }
     }
@@ -632,6 +652,7 @@ class Engine
             // A user-supplied StickyBucketStore or a malformed blob must never
             // throw a read into the caller — report the safe not-enrolled result.
             Logger::error("getExperiment('$name'): unexpected error, returning control/not-enrolled — " . $e->getMessage());
+            InternalReport::report('getExperiment', $e);
             return new ExperimentResult(false, 'control', $defaultParams);
         }
     }

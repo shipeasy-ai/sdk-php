@@ -66,6 +66,7 @@ class ShipeasyServiceProvider extends ServiceProvider
         $opts = [
             'env' => (string) ($this->config('shipeasy.env') ?? 'prod'),
             'logLevel' => (string) ($this->config('shipeasy.log_level') ?? 'warn'),
+            'disableInternalErrorReporting' => (bool) $this->config('shipeasy.disable_internal_error_reporting'),
         ];
 
         \Shipeasy\configure($key, $transform, $opts);

@@ -3,7 +3,7 @@
     "description": "Shipeasy server SDK for PHP \u2014 flags, configs, experiments, metrics.",
     "type": "library",
     "license": "MIT",
-    "version": "0.13.1",
+    "version": "0.14.0",
     "require": {
         "php": ">=8.1",
         "ext-json": "*",
