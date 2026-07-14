@@ -208,3 +208,43 @@ function controlFlowException(\Throwable $err): ControlFlowChain
 {
     return new ControlFlowChain($err);
 }
+
+/**
+ * Attach ambient context that merges into EVERY see() report firing later in
+ * this request, from anywhere — no need to thread it into the catch block:
+ *
+ * ```php
+ * Shipeasy\addExtras(['order_id' => $order->id, 'tenant' => $tenant->slug]);
+ * // ...later, somewhere else in the same request...
+ * try {
+ *     charge($order);
+ * } catch (\Throwable $e) {
+ *     Shipeasy\see($e)->causesThe('checkout')->to('use cached prices');
+ *     // ^ report carries order_id + tenant automatically
+ * }
+ * ```
+ *
+ * A chained ->extras() / ->to() extra of the same key wins over an ambient one.
+ * Works with no engine configured (it only writes the buffer) and never throws.
+ *
+ * PHP is share-nothing per request: under PHP-FPM / mod_php the buffer resets
+ * per request automatically. Under a long-running runtime (Swoole / RoadRunner /
+ * a resident worker loop) the app MUST call {@see clearExtras()} at request end
+ * so context never leaks into the next request.
+ *
+ * @param array<string, mixed> $extras
+ */
+function addExtras(array $extras): void
+{
+    SeeContext::add($extras);
+}
+
+/**
+ * Drop the ambient see() extras buffer for the current request. Required at
+ * request end under long-running runtimes (Swoole / RoadRunner / workers); a
+ * safe reset under PHP-FPM.
+ */
+function clearExtras(): void
+{
+    SeeContext::clear();
+}

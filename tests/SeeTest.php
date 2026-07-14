@@ -13,6 +13,8 @@ use Shipeasy\See;
 use function Shipeasy\see;
 use function Shipeasy\seeViolation;
 use function Shipeasy\controlFlowException;
+use function Shipeasy\addExtras;
+use function Shipeasy\clearExtras;
 
 /**
  * Coverage for see() — structured error reporting (the cross-SDK errors
@@ -22,6 +24,14 @@ use function Shipeasy\controlFlowException;
  */
 final class SeeTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        // The ambient buffer is process-wide (static) — reset it so cases don't
+        // bleed into each other, mirroring the per-request reset in real apps.
+        clearExtras();
+        parent::tearDown();
+    }
+
     /** A non-local client that captures /collect POSTs instead of sending them. */
     private function capturingClient(array $privateAttributes = []): object
     {
@@ -215,5 +225,101 @@ final class SeeTest extends TestCase
         $this->assertSame('Error', $ev['error_type']);
         $this->assertSame('plain string problem', $ev['message']);
         $this->assertArrayNotHasKey('stack', $ev);
+    }
+
+    // ---- Part 1: inline extras on ->to + non-crashing tail ------------------
+
+    public function testToAcceptsInlineExtras(): void
+    {
+        $c = $this->capturingClient();
+        $c->see(new \RuntimeException('x'))
+            ->causesThe('checkout')
+            ->to('use cached prices', ['order_id' => 'o1', 'retry' => 2]);
+        $ev = $this->events($c)[0];
+        $this->assertSame(['order_id' => 'o1', 'retry' => 2], $ev['extras']);
+    }
+
+    public function testInlineExtrasMergeOverPriorExtras(): void
+    {
+        $c = $this->capturingClient();
+        $c->see(new \RuntimeException('x'))
+            ->causesThe('checkout')
+            ->extras(['order_id' => 'o1', 'stage' => 'auth'])
+            ->to('use cached prices', ['stage' => 'capture', 'retry' => 1]);
+        $ev = $this->events($c)[0];
+        // Inline ->to extras win over the earlier ->extras on the shared key.
+        $this->assertSame(
+            ['order_id' => 'o1', 'stage' => 'capture', 'retry' => 1],
+            $ev['extras']
+        );
+    }
+
+    public function testExtrasAfterToIsIgnoredAndDoesNotThrow(): void
+    {
+        $c = $this->capturingClient();
+        $chain = $c->see(new \RuntimeException('x'))->causesThe('checkout');
+        // A trailing ->extras() after ->to() must not throw and must not resend.
+        $chain->to('use cached prices')->extras(['late' => 'nope']);
+        $events = $this->events($c);
+        $this->assertCount(1, $events);
+        $this->assertArrayNotHasKey('extras', $events[0]);
+    }
+
+    public function testTrailingExtrasOnNoClientChainDoesNotThrow(): void
+    {
+        // No engine registered — the package-level see() hands back a no-op chain
+        // whose ->to() returns self, so a trailing ->extras() must not fatal.
+        Engine::resetForTesting();
+        see(new \RuntimeException('x'))->causesThe('checkout')
+            ->to('use cached prices')->extras(['late' => 'nope']);
+        $this->assertTrue(true);
+    }
+
+    // ---- Part 2: ambient per-request extras --------------------------------
+
+    public function testAmbientExtrasMergeIntoLaterReport(): void
+    {
+        $c = $this->capturingClient();
+        addExtras(['order_id' => 'o9', 'tenant' => 'acme']);
+        $c->see(new \RuntimeException('x'))->causesThe('checkout')->to('use cached prices');
+        $ev = $this->events($c)[0];
+        $this->assertSame('o9', $ev['extras']['order_id']);
+        $this->assertSame('acme', $ev['extras']['tenant']);
+    }
+
+    public function testAmbientExtrasAttachToMultipleReports(): void
+    {
+        $c = $this->capturingClient();
+        addExtras(['tenant' => 'acme']);
+        $c->see(new \RuntimeException('a'))->causesThe('checkout')->to('one');
+        $c->see(new \RuntimeException('b'))->causesThe('search')->to('two');
+        $events = $this->events($c);
+        $this->assertCount(2, $events);
+        $this->assertSame('acme', $events[0]['extras']['tenant']);
+        $this->assertSame('acme', $events[1]['extras']['tenant']);
+    }
+
+    public function testChainedExtraOverridesAmbientKey(): void
+    {
+        $c = $this->capturingClient();
+        addExtras(['stage' => 'ambient', 'tenant' => 'acme']);
+        $c->see(new \RuntimeException('x'))
+            ->causesThe('checkout')
+            ->extras(['stage' => 'chained'])
+            ->to('use cached prices');
+        $ev = $this->events($c)[0];
+        // Chain wins over ambient on the shared key; ambient-only keys survive.
+        $this->assertSame('chained', $ev['extras']['stage']);
+        $this->assertSame('acme', $ev['extras']['tenant']);
+    }
+
+    public function testClearExtrasEmptiesTheBuffer(): void
+    {
+        $c = $this->capturingClient();
+        addExtras(['tenant' => 'acme']);
+        clearExtras();
+        $c->see(new \RuntimeException('x'))->causesThe('checkout')->to('use cached prices');
+        $ev = $this->events($c)[0];
+        $this->assertArrayNotHasKey('extras', $ev);
     }
 }

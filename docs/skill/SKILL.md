@@ -68,12 +68,15 @@ Blade directives in your layout `<head>`. Reference:
 ## Experiments + track (Client-only, end to end)
 
 Experiments are read by **universe** (a mutual-exclusion pool — the unit lands in
-≤1 experiment). `assign()` auto-logs a single deduped exposure when enrolled.
+≤1 experiment). `assign()` is side-effect free; the exposure fires **on read** —
+the first `get()` logs one deduped exposure for the enrolled unit. Pass
+`exposure: false` to peek without logging.
 
 ```php
 $c = new Client($currentUser);                          // construct once per callsite
-$a = $c->universe('checkout')->assign();                // Shipeasy\Assignment (auto-logs exposure)
-$color = $a->get('color', 'blue');                      // variant ?? universe default ?? fallback
+$a = $c->universe('checkout')->assign();                // Shipeasy\Assignment (no exposure yet)
+$color = $a->get('color', 'blue');                      // variant ?? universe default ?? fallback; first read logs the exposure
+$peek  = $a->get('color', 'blue', false);               // peek — get($field, $fallback, exposure: false), no exposure
 // $a->name, $a->group, $a->enrolled()
 
 $c->track('checkout_success', ['amount' => 49]);        // conversion for the bound user
@@ -91,8 +94,18 @@ try {
     chargeCard($order);
 } catch (\Throwable $e) {
     see($e)->causesThe('checkout')->extras(['order_id' => $id])->to('use the backup processor');
+    // extras also fold into the terminal — no ordering to remember:
+    // see($e)->causesThe('checkout')->to('use the backup processor', ['order_id' => $id]);
 }
 ```
+
+A stray `->extras(...)` after `->to(...)` is ignored with a warning — it never
+throws into the catch block. To attach context from anywhere in a request without
+threading it into the catch, buffer it with `Shipeasy\addExtras(['order_id' => $id])`;
+every later `see()` in the same request merges it in. **PHP is share-nothing per
+request:** under PHP-FPM the buffer resets per request; under a long-running
+runtime (Swoole / RoadRunner / workers) call `Shipeasy\clearExtras()` at request
+end.
 
 `Shipeasy\controlFlowException($e)->because('expected')` marks an exception as
 expected (reports nothing). `Shipeasy\seeViolation('name')->...->to(...)` reports a

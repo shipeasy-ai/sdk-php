@@ -26,9 +26,40 @@ use function Shipeasy\see;
 try {
     charge($order);
 } catch (\Throwable $e) {
-    // ->extras($array)        structured fields attached to the report (local-only debug)
+    // ->extras($array)        structured fields attached to the report; call it
+    //                         BEFORE ->to, or pass extras inline as ->to($outcome, $array).
+    //                         (A stray ->extras AFTER ->to is ignored with a warning —
+    //                         it never throws into the catch block.)
     see($e)->causesThe('checkout')->extras(['order_id' => $oid])->to('use cached prices');
+
+    // equivalent — extras folded into the terminal, no ordering to remember:
+    see($e)->causesThe('checkout')->to('use cached prices', ['order_id' => $oid]);
 }
+```
+
+### Attach context from anywhere with `Shipeasy\addExtras(...)`
+
+```php
+use function Shipeasy\addExtras;
+use function Shipeasy\see;
+
+// Buffer extras earlier in the request — from any layer, not just the catch.
+// Every see() report that fires LATER in the same request carries them, so you
+// don't have to thread context down into the catch site. A chained ->extras /
+// ->to extra of the same key wins over the ambient one.
+addExtras(['order_id' => $order->id, 'tenant' => $tenant->slug]);
+
+// ...deep in a service, later in the same request...
+try {
+    charge($order);
+} catch (\Throwable $e) {
+    // report carries order_id + tenant automatically.
+    see($e)->causesThe('checkout')->to('use cached prices');
+}
+
+// PHP is share-nothing per request: under PHP-FPM / mod_php the buffer resets
+// per request automatically. Under a long-running runtime (Swoole / RoadRunner /
+// a resident worker loop) call Shipeasy\clearExtras() at request end.
 ```
 
 ### Report a non-exception violation

@@ -19,7 +19,7 @@ try {
 } catch (\Throwable $e) {
     see($e)
         ->causesThe('checkout')        // the subject — what the error affected (default: 'app')
-        ->extras(['order_id' => $id])  // local debug context (never transmitted)
+        ->extras(['order_id' => $id])  // structured debug context attached to the report
         ->to('failed to charge');      // terminal: the consequence (default: 'hit an error')
 
     return back()->withError('Payment failed');
@@ -29,11 +29,51 @@ try {
 The chain is `see($problem)->causesThe($subject)->extras($extras)->to($outcome)`:
 
 - `causesThe(string $subject)` — what the error affected (default `'app'`).
-- `extras(array $extras)` — debug context stored locally only, **never sent**.
-- `to(string $outcome)` — **terminal**; builds the event and fire-and-forgets the
-  report. Idempotent (a second `to()` is a no-op). The default outcome is
-  `'hit an error'`. `causesThe()` and `extras()` are chainable in any order
-  *before* `to()`.
+- `extras(array $extras)` — structured debug context attached to the report
+  (sanitized: string/int/float/bool only, truncated, ≤20 keys, private attributes
+  stripped). Chainable in any order *before* `to()`.
+- `to(string $outcome, ?array $extras = null)` — **terminal**; builds the event
+  and fire-and-forgets the report. Idempotent (a second `to()` is a no-op). The
+  default outcome is `'hit an error'`. Pass `$extras` inline here to fold them in
+  as a final `->extras(...)` — so there is no ordering to remember:
+
+```php
+see($e)->causesThe('checkout')->to('use cached prices', ['order_id' => $id]);
+```
+
+A stray `->extras(...)` chained **after** `->to(...)` is ignored with a warning
+(the report already shipped) — crucially, it **never throws** into your catch
+block. `->to()` returns the chain so the tail is harmless.
+
+### Attach context from anywhere: `Shipeasy\addExtras`
+
+To attach context without threading it into the catch block, buffer it earlier in
+the request with `Shipeasy\addExtras`. Every `see()` report that fires later in
+the **same request** merges it in:
+
+```php
+use function Shipeasy\addExtras;
+
+// from any layer, early in the request
+addExtras(['order_id' => $order->id, 'tenant' => $tenant->slug]);
+
+// ...later, deep in a service...
+try {
+    chargeCard($order);
+} catch (\Throwable $e) {
+    see($e)->causesThe('checkout')->to('use cached prices');
+    // report carries order_id + tenant automatically
+}
+```
+
+A chained `->extras` / `->to` extra of the same key overrides an ambient one;
+ambient extras are sanitized and private-attribute-stripped like any other.
+
+**PHP is share-nothing per request.** Under PHP-FPM / mod_php the buffer resets
+per request automatically — nothing to clean up. Under a **long-running runtime**
+(Swoole / RoadRunner / a resident worker loop) the same process serves many
+requests, so you MUST call `Shipeasy\clearExtras()` at request end so context
+never leaks into the next request.
 
 ## Report a non-exception violation
 

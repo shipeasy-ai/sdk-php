@@ -1,5 +1,47 @@
 # Changelog
 
+## 0.18.0 — 2026-07-13
+
+### see(): inline extras on `->to`, ambient per-request extras, no ordering footgun
+
+- **`->to($outcome, $extras)`** — the terminal now takes the extras inline, e.g.
+  `see($e)->causesThe('checkout')->to('use cached prices', ['order_id' => $oid])`.
+  Equivalent to a final `->extras(...)`; folds under any earlier `->extras` (later
+  wins). So there is no longer an order to remember.
+- **An `->extras` chained AFTER `->to` no longer fatals.** Previously `->to`
+  returned `void`, so a trailing `->extras(...)` raised a `TypeError` — inside your
+  catch block, the worst place. `->to` now returns the chain; a post-`->to`
+  `->extras` is ignored with a warning (the report already shipped). Use
+  `->to($outcome, $extras)` or `Shipeasy\addExtras()` for late context.
+- **`Shipeasy\addExtras(...)` / `Shipeasy\clearExtras()`** — an ambient
+  per-request extras buffer. Call `Shipeasy\addExtras(['order_id' => $id, 'tenant' => $t])`
+  from anywhere (any layer, not just the catch) and every `see()` report that
+  fires later in the same request merges it in. A chained `->extras` / `->to`
+  extra overrides an ambient key of the same name; ambient extras are sanitized
+  and private-attribute-stripped like any other. **PHP is share-nothing per
+  request:** under PHP-FPM / mod_php the buffer resets per request automatically;
+  under a long-running runtime (Swoole / RoadRunner / a resident worker loop) the
+  app MUST call `Shipeasy\clearExtras()` at request end so context never leaks
+  into the next request.
+
+## 0.17.0 — 2026-07-08
+
+### Exposure logs on read; durable forced-but-gated overrides
+
+- **Server exposure now fires on read, not on `assign()`.** `universe($name)->assign()`
+  is side-effect free — the exposure is logged the **first time** you read a param
+  via `$assignment->get(...)` on an enrolled unit. Exposure is deduped per process
+  **and** durably per `(unit, experiment, group)` server-side, so repeated reads
+  (or a re-`assign()` then re-`get()`) emit exactly one exposure.
+- **New peek opt-out on `get()`:** `get(string $field, mixed $fallback = null, bool $exposure = true)`
+  — pass `exposure: false` to read a param **without** logging an exposure.
+- **Durable forced-but-gated overrides.** The resolver now honours durable **ID
+  overrides** and **cohort/gate overrides** that are forced but still gated: a
+  matched override pins the group only if the unit passes targeting and isn't held
+  out, and ID overrides beat cohort overrides. Running experiments are
+  byte-identical — the new resolution order rides `hash_version: 3`. No new
+  user-facing SDK API (consumed via the experiments blob).
+
 ## 0.16.1 — 2026-07-08
 
 ### Laravel config pins network egress to production
