@@ -25,7 +25,7 @@ class Engine
      * This is the single runtime source of truth — keep it in sync with the
      * `version` field in composer.json (composer exposes no runtime constant).
      */
-    public const VERSION = '0.16.1';
+    public const VERSION = '0.18.0';
 
     private string $apiKey;
     private string $baseUrl;
@@ -752,9 +752,19 @@ class Engine
             foreach ($candidates as [$name, $exp]) {
                 $r = $this->evalExperimentByName($name, $exp, $user);
                 if ($r->inExperiment) {
-                    $this->postExposure($user, $name, $r->group);
                     $params = is_array($r->params) ? $r->params : [];
-                    return new Assignment($name, $r->group, $params);
+                    $group = $r->group;
+                    // On-read exposure (spec step 7): defer the single exposure
+                    // to the first param read via the callback, instead of
+                    // firing it here at assign time.
+                    return new Assignment(
+                        $name,
+                        $group,
+                        $params,
+                        function () use ($user, $name, $group): void {
+                            $this->postExposure($user, $name, $group);
+                        },
+                    );
                 }
                 // "holdout"/"out": try the next candidate — under pooling only one
                 // slice can match, so the loop lands on the winner (or falls out).

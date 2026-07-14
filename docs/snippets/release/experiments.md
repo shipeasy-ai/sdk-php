@@ -14,10 +14,14 @@ $client = new Client($currentUser);
 //   ->name       — the experiment the unit landed in, or null when not enrolled
 //   ->group      — the assigned variant, or null when not enrolled
 //   ->enrolled() — bool (=== group !== null)
-//   ->get($field, $fallback) — variant override ?? universe default ?? $fallback
-$exp = $client->universe('{{EXPERIMENT_KEY}}')->assign();
+//   ->get($field, $fallback, $exposure = true) — variant override ?? universe default ?? $fallback
+$exp = $client->universe('{{EXPERIMENT_KEY}}')->assign(); // side-effect free (no exposure yet)
 
+// The FIRST get() logs one deduped exposure for the enrolled unit:
 echo $exp->get('primary_label', 'Sign up'); // always safe — falls back when not enrolled
+
+// Peek without logging an exposure — pass exposure: false:
+$peek = $exp->get('primary_label', 'Sign up', false);
 
 // On conversion — track() is on the same bound Client; the unit is inferred from
 // the bound user (user_id, else anonymous_id), so there is no userId argument:

@@ -91,16 +91,19 @@ final class StickyAndExposureTest extends TestCase
         $this->assertArrayNotHasKey('properties', $event);
     }
 
-    // ---- FEATURE B: auto-exposure on assign() ----
+    // ---- FEATURE B: on-read auto-exposure ----
 
-    public function testAssignPostsExposureWhenEnrolled(): void
+    public function testAssignPostsExposureOnFirstReadWhenEnrolled(): void
     {
         $c = $this->capturingClient();
         $c->applyData(['gates' => [], 'configs' => []], $this->expsBlob());
 
         $a = $c->universe('u1')->assign(['user_id' => 'user-42']);
-
         $this->assertTrue($a->enrolled());
+        // assign() by itself is side-effect free — the exposure fires on read.
+        $this->assertCount(0, $c->posts);
+
+        $a->get('anything'); // first read → the single exposure
         $this->assertCount(1, $c->posts);
         $event = $c->posts[0]['body']['events'][0];
         $this->assertSame('exposure', $event['type']);
@@ -108,6 +111,21 @@ final class StickyAndExposureTest extends TestCase
         $this->assertSame('user-42', $event['user_id']);
         $this->assertContains($event['group'], ['control', 'treatment']);
         $this->assertArrayHasKey('ts', $event);
+
+        $a->get('again'); // same handle → deduped, no 2nd post
+        $this->assertCount(1, $c->posts);
+    }
+
+    public function testPeekReadDoesNotPostExposure(): void
+    {
+        $c = $this->capturingClient();
+        $c->applyData(['gates' => [], 'configs' => []], $this->expsBlob());
+
+        $a = $c->universe('u1')->assign(['user_id' => 'user-42']);
+        $a->get('anything', exposure: false);
+        $this->assertCount(0, $c->posts);
+        $a->get('anything'); // a real read still logs
+        $this->assertCount(1, $c->posts);
     }
 
     public function testAssignExposureUsesAnonymousId(): void
@@ -115,32 +133,33 @@ final class StickyAndExposureTest extends TestCase
         $c = $this->capturingClient();
         $c->applyData(['gates' => [], 'configs' => []], $this->expsBlob());
 
-        $c->universe('u1')->assign(['anonymous_id' => 'anon-9']);
+        $c->universe('u1')->assign(['anonymous_id' => 'anon-9'])->get('x');
         $event = $c->posts[0]['body']['events'][0];
         $this->assertSame('anon-9', $event['anonymous_id']);
         $this->assertArrayNotHasKey('user_id', $event);
     }
 
-    public function testAssignExposureIsDedupedAcrossRepeatCalls(): void
+    public function testAssignExposureIsDedupedAcrossRepeatReads(): void
     {
         $c = $this->capturingClient();
         $c->applyData(['gates' => [], 'configs' => []], $this->expsBlob());
 
         for ($i = 0; $i < 5; $i++) {
-            $c->universe('u1')->assign(['user_id' => 'user-42']);
+            $c->universe('u1')->assign(['user_id' => 'user-42'])->get('x');
         }
-        // Same (uid, experiment, group) → a single exposure over 5 assigns.
+        // Same (uid, experiment, group) → a single exposure over 5 reads.
         $this->assertCount(1, $c->posts);
     }
 
     public function testAssignNoExposureWhenNotEnrolled(): void
     {
-        // allocation 0 → nobody enrolled → no exposure posted.
+        // allocation 0 → nobody enrolled → reading logs nothing.
         $c = $this->capturingClient();
         $c->applyData(['gates' => [], 'configs' => []], $this->expsBlob('salt', 0));
 
         $a = $c->universe('u1')->assign(['user_id' => 'user-42']);
         $this->assertFalse($a->enrolled());
+        $a->get('anything');
         $this->assertCount(0, $c->posts);
     }
 
@@ -150,6 +169,7 @@ final class StickyAndExposureTest extends TestCase
         $c->applyData(['gates' => [], 'configs' => []], $this->expsBlob());
         $a = $c->universe('does_not_exist')->assign(['user_id' => 'user-42']);
         $this->assertFalse($a->enrolled());
+        $a->get('anything');
         $this->assertCount(0, $c->posts);
     }
 

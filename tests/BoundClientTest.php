@@ -190,7 +190,8 @@ final class BoundClientTest extends TestCase
 
     /**
      * The bound Client.universe()->assign() forwards the bound attribute map to
-     * the engine and auto-logs a single exposure for the enrolled unit.
+     * the engine and auto-logs a single exposure for the enrolled unit on the
+     * first param read (on-read exposure).
      */
     public function testBoundClientUniverseAssignAutoLogsExposure(): void
     {
@@ -203,6 +204,10 @@ final class BoundClientTest extends TestCase
         $this->assertTrue($a->enrolled());
         $this->assertSame('checkout_test', $a->name);
         $this->assertContains($a->group, ['control', 'treatment']);
+
+        // assign() alone logs nothing; the first read fires the single exposure.
+        $this->assertCount(0, $engine->posts);
+        $a->get('anything');
 
         $this->assertCount(1, $engine->posts);
         $event = $engine->posts[0]['body']['events'][0];

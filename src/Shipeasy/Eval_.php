@@ -141,6 +141,35 @@ final class Eval_
      * back via the store. A salt mismatch or a vanished stored group falls
      * through to re-bucket + overwrite. Absent store ⇒ deterministic (no I/O).
      */
+    /**
+     * Resolve a forced override group for $uid (spec step 1): ID overrides
+     * (tier 1) beat cohort/GK overrides (tier 2); within cohort overrides the
+     * first (pre-sorted by priority) gate that passes wins. Returns the forced
+     * group name or null. The caller applies eligibility + group-existence
+     * (forced-but-gated). Mirrors @shipeasy/core resolveForcedGroup.
+     *
+     * @param array<string,mixed> $exp
+     * @param callable(string):bool $evalGate
+     */
+    private static function resolveForcedGroup(array $exp, string $uid, callable $evalGate): ?string
+    {
+        $idOverrides = $exp['idOverrides'] ?? null;
+        if (is_array($idOverrides)) {
+            $byId = $idOverrides[$uid] ?? null;
+            if (is_string($byId) && $byId !== '') return $byId;
+        }
+        $cohortOverrides = $exp['cohortOverrides'] ?? null;
+        if (is_array($cohortOverrides)) {
+            foreach ($cohortOverrides as $co) {
+                $gname = $co['gate'] ?? null;
+                if (is_string($gname) && $evalGate($gname)) {
+                    return isset($co['group']) ? (string) $co['group'] : null;
+                }
+            }
+        }
+        return null;
+    }
+
     public static function evalExperiment(
         ?array $exp,
         ?array $flags,
@@ -198,6 +227,24 @@ final class Eval_
         $salt = $exp['salt'] ?? '';
         $groups = $exp['groups'] ?? [];
         $salt8 = substr((string) $salt, 0, 8);
+
+        // Durable overrides (spec step 1, forced-but-gated). Reached only after the
+        // unit passes targeting and is not held out, so an override may now pin the
+        // group — bypassing allocation + the weighted pick but NOT the gates above.
+        // ID overrides (tier 1) beat cohort/GK overrides (tier 2); a forced group
+        // that no longer exists falls through to normal allocation. No-op when
+        // unconfigured, so v1/v2 stay byte-identical. Mirrors @shipeasy/core.
+        $forced = self::resolveForcedGroup($exp, $uid, $evalGate);
+        if ($forced !== null) {
+            foreach ($groups as $g) {
+                if ((string) ($g['name'] ?? '') === $forced) {
+                    if ($stickyStore !== null && $name !== null) {
+                        $stickyStore->set($uid, $name, ['g' => $forced, 's' => $salt8]);
+                    }
+                    return $asGroup($forced, $g['params'] ?? null);
+                }
+            }
+        }
 
         // Sticky short-circuit (doc 20 §2): after holdout, before allocation —
         // an enrolled unit whose stored salt prefix still matches returns the

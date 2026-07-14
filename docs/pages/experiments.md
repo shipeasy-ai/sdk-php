@@ -2,10 +2,10 @@
 
 Experiments are read by **universe**. A universe is a mutual-exclusion pool: a
 unit lands in **at most one** experiment in it. `assign()` picks that experiment
-(if any), returns the assigned group plus its resolved parameters, and auto-logs
-a single (deduped) exposure. You read parameters with `assign()->get($field,
-$fallback)` and record a conversion with `track()` — both on the **same** bound
-`Client`.
+(if any) and returns the assigned group plus its resolved parameters — it is
+side-effect free. The exposure is logged **on read**: the first time you read a
+param via `assign()->get($field, $fallback)`. You record a conversion with
+`track()` — both on the **same** bound `Client`.
 
 ## Read an experiment
 
@@ -31,11 +31,16 @@ Assumes `Shipeasy\configure()` ran at startup — see [Installation](installatio
 `assign()` returns a `Shipeasy\Assignment` (it never throws):
 
 ```php
-$cta->name;                 // ?string — the experiment landed in, or null when not enrolled
-$cta->group;                // ?string — the assigned variant, or null when not enrolled
-$cta->enrolled();           // bool    — === ($cta->group !== null)
-$cta->get('field', $fb);    // mixed   — variant override ?? universe default ?? $fb
+$cta->name;                          // ?string — the experiment landed in, or null when not enrolled
+$cta->group;                         // ?string — the assigned variant, or null when not enrolled
+$cta->enrolled();                    // bool    — === ($cta->group !== null)
+$cta->get('field', $fb);             // mixed   — variant override ?? universe default ?? $fb (logs exposure on first read)
+$cta->get('field', $fb, false);      // mixed   — same read, but PEEK: does NOT log an exposure
 ```
+
+`get(string $field, mixed $fallback = null, bool $exposure = true)` — the first
+read logs one deduped exposure for the enrolled unit; pass `exposure: false` to
+peek at a param without recording an exposure.
 
 When the unit isn't enrolled (targeting/holdout/allocation), `enrolled()` is
 `false`, `group` and `name` are `null`, and `get($field, $fallback)` returns the
@@ -82,8 +87,11 @@ foreach ($users as $user) {
 
 ## Exposure logging
 
-By default `assign()` auto-logs a single (deduped) exposure to `/collect` when
-the unit is enrolled. The server dedups per process, so repeated `assign()` calls
-for the same unit/experiment/group emit one exposure. There is no manual
-`logExposure` primitive anymore — reading *is* the exposure. See
-[Advanced](advanced.md) for the private-attribute and sticky-bucketing notes.
+Exposure fires **on read**, not on `assign()`. The first `get()` on an enrolled
+`Assignment` logs a single exposure to `/collect`; `assign()` itself is
+side-effect free. Exposure is deduped per process **and** durably per
+`(unit, experiment, group)` server-side, so repeated reads — or a re-`assign()`
+then re-`get()` — emit one exposure. Pass `exposure: false` to `get()` to read a
+param without logging (`$cta->get('field', $fb, false)`). There is no manual
+`logExposure` primitive — reading *is* the exposure. See [Advanced](advanced.md)
+for the private-attribute and sticky-bucketing notes.
