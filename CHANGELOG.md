@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.18.1 — 2026-07-19
+
+### Local gate eval honors the gatekeeper `stack`
+
+- **`Eval_::evalGate` now evaluates a gate's ordered gatekeeper `stack`** instead
+  of only the flat `rules` + `rolloutPct` columns. For a modern gate the flat
+  fields are lossy: a whitelist condition at 100% followed by a 0% public rollout
+  flattens to `rules:[project_id in [...]]`, `rolloutPct:0`, which the flat path
+  wrongly read as "matches the whitelist AND is in a 0% bucket" = never true. When
+  a `stack` is present, entries are tried top-to-bottom and the gate passes on the
+  first whose rules match (all, or any with `pass:'any'`) AND whose per-entry
+  rollout bucket hits — with per-entry `bucketBy`, `salt`, and time-based `ramp`
+  support. Mirrors `@shipeasy/core`'s `evalGatekeeper`. A stack-less gate keeps the
+  exact legacy flat behavior.
+
 ## 0.18.0 — 2026-07-13
 
 ### see(): inline extras on `->to`, ambient per-request extras, no ordering footgun
