@@ -903,9 +903,10 @@ class Engine
     /**
      * Identity traits to publish on the bootstrap tag as `data-user`: the user's
      * attributes minus `anonymous_id` (which rides `data-anon-id`), dropping
-     * null/empty values. Insertion order is preserved for stable, deterministic
-     * output. Returns null when nothing identified remains (a purely anonymous
-     * request) so no PII is emitted on the tag.
+     * null values only (empty strings and other present values are kept, to
+     * match the cross-SDK contract). Insertion order is preserved for stable,
+     * deterministic output. Returns null when nothing identified remains (a
+     * purely anonymous request) so no PII is emitted on the tag.
      *
      * @param array<string, mixed> $identity
      */
@@ -919,7 +920,7 @@ class Engine
             if ($key === 'anonymous_id') {
                 continue;
             }
-            if ($value === null || $value === '') {
+            if ($value === null) {
                 continue;
             }
             $traits[$key] = $value;

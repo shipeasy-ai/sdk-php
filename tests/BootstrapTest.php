@@ -86,6 +86,21 @@ final class BootstrapTest extends TestCase
         $this->assertStringNotContainsString('data-user', $empty);
     }
 
+    public function testBootstrapScriptTagKeepsEmptyStringTrait(): void
+    {
+        // Cross-SDK contract: only null is dropped — an empty-string trait is
+        // kept, so a PHP backend emits the same data-user as the TS reference.
+        $tag = $this->client()->bootstrapScriptTag(
+            ['user_id' => 'u1', 'email' => ''],
+            ['anonId' => 'anon-1']
+        );
+        preg_match('/data-user="([^"]*)"/', $tag, $m);
+        $user = json_decode(html_entity_decode($m[1], ENT_QUOTES), true);
+        $this->assertSame('u1', $user['user_id']);
+        $this->assertArrayHasKey('email', $user);
+        $this->assertSame('', $user['email']);
+    }
+
     public function testI18nScriptTag(): void
     {
         $tag = $this->client()->i18nScriptTag('client_pub', 'fr:prod');
