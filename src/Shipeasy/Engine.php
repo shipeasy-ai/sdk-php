@@ -25,7 +25,7 @@ class Engine
      * This is the single runtime source of truth — keep it in sync with the
      * `version` field in composer.json (composer exposes no runtime constant).
      */
-    public const VERSION = '0.18.1';
+    public const VERSION = '0.19.0';
 
     private string $apiKey;
     private string $baseUrl;
@@ -876,6 +876,13 @@ class Engine
         if (!empty($opts['anonId'])) {
             $attrs[] = self::attr('data-anon-id', $opts['anonId']);
         }
+        // Carry the server-identified user so the browser SDK adopts the same
+        // identity on first paint — killing the anon->identified flip. Only the
+        // identified traits ride here; anonymous_id already rides data-anon-id.
+        $dataUser = self::identityAttrs($user);
+        if ($dataUser !== null) {
+            $attrs[] = self::attr('data-user', $dataUser);
+        }
         $src = htmlspecialchars($base . '/sdk/bootstrap.js', ENT_QUOTES);
         return '<script src="' . $src . '" ' . implode(' ', $attrs) . '></script>';
     }
@@ -891,6 +898,36 @@ class Engine
         return '<script src="' . $src . '" '
             . self::attr('data-key', $clientKey) . ' '
             . self::attr('data-profile', $profile) . '></script>';
+    }
+
+    /**
+     * Identity traits to publish on the bootstrap tag as `data-user`: the user's
+     * attributes minus `anonymous_id` (which rides `data-anon-id`), dropping
+     * null/empty values. Insertion order is preserved for stable, deterministic
+     * output. Returns null when nothing identified remains (a purely anonymous
+     * request) so no PII is emitted on the tag.
+     *
+     * @param array<string, mixed> $identity
+     */
+    private static function identityAttrs(array $identity): ?string
+    {
+        if ($identity === []) {
+            return null;
+        }
+        $traits = [];
+        foreach ($identity as $key => $value) {
+            if ($key === 'anonymous_id') {
+                continue;
+            }
+            if ($value === null || $value === '') {
+                continue;
+            }
+            $traits[$key] = $value;
+        }
+        if ($traits === []) {
+            return null;
+        }
+        return json_encode($traits, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
     private static function cdnBase(?string $override): string

@@ -55,6 +55,37 @@ final class BootstrapTest extends TestCase
         $this->assertStringNotContainsString('data-anon-id', $tag);
     }
 
+    public function testBootstrapScriptTagCarriesIdentifiedUser(): void
+    {
+        $tag = $this->client()->bootstrapScriptTag(
+            ['user_id' => 'u1', 'email' => 'u1@example.com', 'anonymous_id' => 'anon-1'],
+            ['anonId' => 'anon-1']
+        );
+        // anonymous_id still rides its own attribute.
+        $this->assertStringContainsString('data-anon-id="anon-1"', $tag);
+
+        // data-user carries the identified traits minus anonymous_id.
+        preg_match('/data-user="([^"]*)"/', $tag, $m);
+        $this->assertNotEmpty($m, 'expected a data-user attribute');
+        $decoded = html_entity_decode($m[1], ENT_QUOTES);
+        $this->assertSame('{"user_id":"u1","email":"u1@example.com"}', $decoded);
+        $user = json_decode($decoded, true);
+        $this->assertSame('u1', $user['user_id']);
+        $this->assertSame('u1@example.com', $user['email']);
+        $this->assertArrayNotHasKey('anonymous_id', $user);
+    }
+
+    public function testBootstrapScriptTagOmitsUserWhenAnonymous(): void
+    {
+        // Only an anonymous_id => nothing identified => no PII on the tag.
+        $anon = $this->client()->bootstrapScriptTag(['anonymous_id' => 'anon-1'], ['anonId' => 'anon-1']);
+        $this->assertStringNotContainsString('data-user', $anon);
+
+        // Empty user => no data-user either.
+        $empty = $this->client()->bootstrapScriptTag([], ['anonId' => 'anon-1']);
+        $this->assertStringNotContainsString('data-user', $empty);
+    }
+
     public function testI18nScriptTag(): void
     {
         $tag = $this->client()->i18nScriptTag('client_pub', 'fr:prod');

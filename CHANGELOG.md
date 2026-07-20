@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.19.0 — 2026-07-19
+
+### Carry the server-identified user on the SSR bootstrap tag
+
+- **`bootstrapScriptTag()` now emits `data-user`** — the request's identified
+  traits (the `$user` it already evaluates, minus `anonymous_id`, dropping
+  null/empty values) as JSON on the bootstrap `<script>`. The browser SDK reads it
+  and adopts the identity on first paint, so a PHP-backend + JS-frontend app
+  renders as the same identified user the server bucketed — killing the
+  anon→identified flip. A purely anonymous request (only `anonymous_id`, or an
+  empty user) emits no `data-user`, so no PII rides the tag. `anonymous_id`
+  continues to ride `data-anon-id`. Mirrors `@shipeasy/sdk` 7.9.0 and the Python
+  SDK 0.20.0; see `experiment-platform/18-identity-bucketing.md`.
+
 ## 0.18.1 — 2026-07-19
 
 ### Local gate eval honors the gatekeeper `stack`
