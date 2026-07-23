@@ -58,7 +58,8 @@ class SetExperimentMetricsResponseMetricsInner implements ModelInterface, ArrayA
      */
     protected static $openAPITypes = [
         'metric_id' => 'string',
-        'role' => 'string'
+        'role' => 'string',
+        'min_effect_of_interest' => 'float'
     ];
 
     /**
@@ -70,7 +71,8 @@ class SetExperimentMetricsResponseMetricsInner implements ModelInterface, ArrayA
      */
     protected static $openAPIFormats = [
         'metric_id' => null,
-        'role' => null
+        'role' => null,
+        'min_effect_of_interest' => null
     ];
 
     /**
@@ -80,7 +82,8 @@ class SetExperimentMetricsResponseMetricsInner implements ModelInterface, ArrayA
      */
     protected static array $openAPINullables = [
         'metric_id' => true,
-        'role' => false
+        'role' => false,
+        'min_effect_of_interest' => true
     ];
 
     /**
@@ -170,7 +173,8 @@ class SetExperimentMetricsResponseMetricsInner implements ModelInterface, ArrayA
      */
     protected static $attributeMap = [
         'metric_id' => 'metric_id',
-        'role' => 'role'
+        'role' => 'role',
+        'min_effect_of_interest' => 'min_effect_of_interest'
     ];
 
     /**
@@ -180,7 +184,8 @@ class SetExperimentMetricsResponseMetricsInner implements ModelInterface, ArrayA
      */
     protected static $setters = [
         'metric_id' => 'setMetricId',
-        'role' => 'setRole'
+        'role' => 'setRole',
+        'min_effect_of_interest' => 'setMinEffectOfInterest'
     ];
 
     /**
@@ -190,7 +195,8 @@ class SetExperimentMetricsResponseMetricsInner implements ModelInterface, ArrayA
      */
     protected static $getters = [
         'metric_id' => 'getMetricId',
-        'role' => 'getRole'
+        'role' => 'getRole',
+        'min_effect_of_interest' => 'getMinEffectOfInterest'
     ];
 
     /**
@@ -269,6 +275,7 @@ class SetExperimentMetricsResponseMetricsInner implements ModelInterface, ArrayA
     {
         $this->setIfExists('metric_id', $data ?? [], null);
         $this->setIfExists('role', $data ?? [], null);
+        $this->setIfExists('min_effect_of_interest', $data ?? [], null);
     }
 
     /**
@@ -313,6 +320,9 @@ class SetExperimentMetricsResponseMetricsInner implements ModelInterface, ArrayA
             );
         }
 
+        if ($this->container['min_effect_of_interest'] === null && !$this->isNullableSetToNull('min_effect_of_interest')) {
+            $invalidProperties[] = "'min_effect_of_interest' is required";
+        }
         return $invalidProperties;
     }
 
@@ -341,7 +351,7 @@ class SetExperimentMetricsResponseMetricsInner implements ModelInterface, ArrayA
     /**
      * Sets metric_id
      *
-     * @param string|null $metric_id Optional gate name. Only callers that pass the gate are enrolled in the experiment.
+     * @param string|null $metric_id Optional gate name (a `targeting`-type flag). Only callers that pass the gate are enrolled in the experiment.
      *
      * @return self
      */
@@ -395,6 +405,40 @@ class SetExperimentMetricsResponseMetricsInner implements ModelInterface, ArrayA
             );
         }
         $this->container['role'] = $role;
+
+        return $this;
+    }
+
+    /**
+     * Gets min_effect_of_interest
+     *
+     * @return float|null
+     */
+    public function getMinEffectOfInterest()
+    {
+        return $this->container['min_effect_of_interest'];
+    }
+
+    /**
+     * Sets min_effect_of_interest
+     *
+     * @param float|null $min_effect_of_interest The resolved per-experiment override, or `null` when this attachment inherits the metric's `default_min_effect_of_interest`.
+     *
+     * @return self
+     */
+    public function setMinEffectOfInterest($min_effect_of_interest)
+    {
+        if (is_null($min_effect_of_interest)) {
+            array_push($this->openAPINullablesSetToNull, 'min_effect_of_interest');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('min_effect_of_interest', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['min_effect_of_interest'] = $min_effect_of_interest;
 
         return $this;
     }

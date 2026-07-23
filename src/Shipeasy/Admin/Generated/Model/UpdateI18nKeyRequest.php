@@ -59,7 +59,8 @@ class UpdateI18nKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializ
      */
     protected static $openAPITypes = [
         'value' => 'string',
-        'description' => 'string'
+        'description' => 'string',
+        'variables' => 'string[]'
     ];
 
     /**
@@ -71,7 +72,8 @@ class UpdateI18nKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializ
      */
     protected static $openAPIFormats = [
         'value' => null,
-        'description' => null
+        'description' => null,
+        'variables' => null
     ];
 
     /**
@@ -81,7 +83,8 @@ class UpdateI18nKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializ
      */
     protected static array $openAPINullables = [
         'value' => false,
-        'description' => false
+        'description' => false,
+        'variables' => false
     ];
 
     /**
@@ -171,7 +174,8 @@ class UpdateI18nKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializ
      */
     protected static $attributeMap = [
         'value' => 'value',
-        'description' => 'description'
+        'description' => 'description',
+        'variables' => 'variables'
     ];
 
     /**
@@ -181,7 +185,8 @@ class UpdateI18nKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializ
      */
     protected static $setters = [
         'value' => 'setValue',
-        'description' => 'setDescription'
+        'description' => 'setDescription',
+        'variables' => 'setVariables'
     ];
 
     /**
@@ -191,7 +196,8 @@ class UpdateI18nKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializ
      */
     protected static $getters = [
         'value' => 'getValue',
-        'description' => 'getDescription'
+        'description' => 'getDescription',
+        'variables' => 'getVariables'
     ];
 
     /**
@@ -253,6 +259,7 @@ class UpdateI18nKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     {
         $this->setIfExists('value', $data ?? [], null);
         $this->setIfExists('description', $data ?? [], null);
+        $this->setIfExists('variables', $data ?? [], null);
     }
 
     /**
@@ -285,6 +292,10 @@ class UpdateI18nKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializ
         if ($this->container['value'] === null) {
             $invalidProperties[] = "'value' can't be null";
         }
+        if (!is_null($this->container['variables']) && (count($this->container['variables']) > 32)) {
+            $invalidProperties[] = "invalid value for 'variables', number of items must be less than or equal to 32.";
+        }
+
         return $invalidProperties;
     }
 
@@ -350,6 +361,37 @@ class UpdateI18nKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializ
             throw new \InvalidArgumentException('non-nullable description cannot be null');
         }
         $this->container['description'] = $description;
+
+        return $this;
+    }
+
+    /**
+     * Gets variables
+     *
+     * @return string[]|null
+     */
+    public function getVariables()
+    {
+        return $this->container['variables'];
+    }
+
+    /**
+     * Sets variables
+     *
+     * @param string[]|null $variables Explicit `{{var}}` placeholder names in the value. Omit to auto-derive them from the value.
+     *
+     * @return self
+     */
+    public function setVariables($variables)
+    {
+        if (is_null($variables)) {
+            throw new \InvalidArgumentException('non-nullable variables cannot be null');
+        }
+
+        if ((count($variables) > 32)) {
+            throw new \InvalidArgumentException('invalid value for $variables when calling UpdateI18nKeyRequest., number of items must be less than or equal to 32.');
+        }
+        $this->container['variables'] = $variables;
 
         return $this;
     }

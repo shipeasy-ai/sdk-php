@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * UpdateUniverseRequest Class Doc Comment
  *
  * @category Class
- * @description Body for &#x60;PATCH /api/admin/universes/{id}&#x60;. Only &#x60;holdout_range&#x60; is mutable — name and unit_type are immutable after create.
+ * @description Body for &#x60;PATCH /api/admin/universes/{id}&#x60;. &#x60;name&#x60; and &#x60;unit_type&#x60; are immutable after create; &#x60;holdout_range&#x60;, &#x60;description&#x60;, &#x60;recommended_headroom&#x60; and &#x60;param_schema&#x60; are mutable.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -59,7 +59,10 @@ class UpdateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     protected static $openAPITypes = [
         'folder' => 'string',
-        'holdout_range' => 'int[]'
+        'description' => 'string',
+        'holdout_range' => 'int[]',
+        'recommended_headroom' => 'int',
+        'param_schema' => '\Shipeasy\Admin\Generated\Model\UniverseParam[]'
     ];
 
     /**
@@ -71,7 +74,10 @@ class UpdateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     protected static $openAPIFormats = [
         'folder' => null,
-        'holdout_range' => null
+        'description' => null,
+        'holdout_range' => null,
+        'recommended_headroom' => null,
+        'param_schema' => null
     ];
 
     /**
@@ -81,7 +87,10 @@ class UpdateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     protected static array $openAPINullables = [
         'folder' => true,
-        'holdout_range' => true
+        'description' => true,
+        'holdout_range' => true,
+        'recommended_headroom' => false,
+        'param_schema' => true
     ];
 
     /**
@@ -171,7 +180,10 @@ class UpdateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     protected static $attributeMap = [
         'folder' => 'folder',
-        'holdout_range' => 'holdout_range'
+        'description' => 'description',
+        'holdout_range' => 'holdout_range',
+        'recommended_headroom' => 'recommended_headroom',
+        'param_schema' => 'param_schema'
     ];
 
     /**
@@ -181,7 +193,10 @@ class UpdateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     protected static $setters = [
         'folder' => 'setFolder',
-        'holdout_range' => 'setHoldoutRange'
+        'description' => 'setDescription',
+        'holdout_range' => 'setHoldoutRange',
+        'recommended_headroom' => 'setRecommendedHeadroom',
+        'param_schema' => 'setParamSchema'
     ];
 
     /**
@@ -191,7 +206,10 @@ class UpdateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     protected static $getters = [
         'folder' => 'getFolder',
-        'holdout_range' => 'getHoldoutRange'
+        'description' => 'getDescription',
+        'holdout_range' => 'getHoldoutRange',
+        'recommended_headroom' => 'getRecommendedHeadroom',
+        'param_schema' => 'getParamSchema'
     ];
 
     /**
@@ -252,7 +270,10 @@ class UpdateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
     public function __construct(?array $data = null)
     {
         $this->setIfExists('folder', $data ?? [], null);
+        $this->setIfExists('description', $data ?? [], null);
         $this->setIfExists('holdout_range', $data ?? [], null);
+        $this->setIfExists('recommended_headroom', $data ?? [], null);
+        $this->setIfExists('param_schema', $data ?? [], null);
     }
 
     /**
@@ -290,12 +311,24 @@ class UpdateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
             $invalidProperties[] = "invalid value for 'folder', must be conform to the pattern /^[a-zA-Z0-9_-]+$/.";
         }
 
+        if (!is_null($this->container['description']) && (mb_strlen($this->container['description']) > 2000)) {
+            $invalidProperties[] = "invalid value for 'description', the character length must be smaller than or equal to 2000.";
+        }
+
         if (!is_null($this->container['holdout_range']) && (count($this->container['holdout_range']) > 2)) {
             $invalidProperties[] = "invalid value for 'holdout_range', number of items must be less than or equal to 2.";
         }
 
         if (!is_null($this->container['holdout_range']) && (count($this->container['holdout_range']) < 2)) {
             $invalidProperties[] = "invalid value for 'holdout_range', number of items must be greater than or equal to 2.";
+        }
+
+        if (!is_null($this->container['recommended_headroom']) && ($this->container['recommended_headroom'] > 10000)) {
+            $invalidProperties[] = "invalid value for 'recommended_headroom', must be smaller than or equal to 10000.";
+        }
+
+        if (!is_null($this->container['recommended_headroom']) && ($this->container['recommended_headroom'] < 0)) {
+            $invalidProperties[] = "invalid value for 'recommended_headroom', must be bigger than or equal to 0.";
         }
 
         return $invalidProperties;
@@ -355,6 +388,44 @@ class UpdateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
     }
 
     /**
+     * Gets description
+     *
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->container['description'];
+    }
+
+    /**
+     * Sets description
+     *
+     * @param string|null $description Human-readable blurb shown in the universe picker/hovercard.
+     *
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        if (is_null($description)) {
+            array_push($this->openAPINullablesSetToNull, 'description');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('description', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        if (!is_null($description) && (mb_strlen($description) > 2000)) {
+            throw new \InvalidArgumentException('invalid length for $description when calling UpdateUniverseRequest., must be smaller than or equal to 2000.');
+        }
+
+        $this->container['description'] = $description;
+
+        return $this;
+    }
+
+    /**
      * Gets holdout_range
      *
      * @return int[]|null
@@ -391,6 +462,75 @@ class UpdateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
             throw new \InvalidArgumentException('invalid length for $holdout_range when calling UpdateUniverseRequest., number of items must be greater than or equal to 2.');
         }
         $this->container['holdout_range'] = $holdout_range;
+
+        return $this;
+    }
+
+    /**
+     * Gets recommended_headroom
+     *
+     * @return int|null
+     */
+    public function getRecommendedHeadroom()
+    {
+        return $this->container['recommended_headroom'];
+    }
+
+    /**
+     * Sets recommended_headroom
+     *
+     * @param int|null $recommended_headroom Basis points of reserved headroom seeded into new experiments in this universe.
+     *
+     * @return self
+     */
+    public function setRecommendedHeadroom($recommended_headroom)
+    {
+        if (is_null($recommended_headroom)) {
+            throw new \InvalidArgumentException('non-nullable recommended_headroom cannot be null');
+        }
+
+        if (($recommended_headroom > 10000)) {
+            throw new \InvalidArgumentException('invalid value for $recommended_headroom when calling UpdateUniverseRequest., must be smaller than or equal to 10000.');
+        }
+        if (($recommended_headroom < 0)) {
+            throw new \InvalidArgumentException('invalid value for $recommended_headroom when calling UpdateUniverseRequest., must be bigger than or equal to 0.');
+        }
+
+        $this->container['recommended_headroom'] = $recommended_headroom;
+
+        return $this;
+    }
+
+    /**
+     * Gets param_schema
+     *
+     * @return \Shipeasy\Admin\Generated\Model\UniverseParam[]|null
+     */
+    public function getParamSchema()
+    {
+        return $this->container['param_schema'];
+    }
+
+    /**
+     * Sets param_schema
+     *
+     * @param \Shipeasy\Admin\Generated\Model\UniverseParam[]|null $param_schema Replace the universe config schema. Additive changes + default edits are always allowed; removing a param a running experiment overrides is rejected (deprecate-only).
+     *
+     * @return self
+     */
+    public function setParamSchema($param_schema)
+    {
+        if (is_null($param_schema)) {
+            array_push($this->openAPINullablesSetToNull, 'param_schema');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('param_schema', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['param_schema'] = $param_schema;
 
         return $this;
     }

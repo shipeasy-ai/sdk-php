@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * Error Class Doc Comment
  *
  * @category Class
- * @description Uniform error envelope returned by every admin endpoint on a non-2xx status. &#x60;error&#x60; is the human-readable message; &#x60;code&#x60; is the stable machine code (present whenever the failure maps to a catalogued &#x60;ErrorCode&#x60;); &#x60;detail&#x60; carries extra context (validation paths, conflicting field).
+ * @description Uniform error envelope returned by every admin endpoint on a non-2xx status. &#x60;error&#x60; is the human-readable message; &#x60;code&#x60; is the stable machine code (present whenever the failure maps to a catalogued &#x60;ErrorCode&#x60;); &#x60;detail&#x60; carries extra context (validation paths, conflicting field); &#x60;fields&#x60; maps each failing input field to its own message; &#x60;instructions&#x60; is optional actionable guidance for resolving the error; &#x60;schema&#x60; echoes back the expected JSON Schema when a value failed schema validation.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -60,7 +60,10 @@ class Error implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $openAPITypes = [
         'error' => 'string',
         'code' => '\Shipeasy\Admin\Generated\Model\ErrorCode',
-        'detail' => 'string'
+        'detail' => 'string',
+        'fields' => 'array<string,string>',
+        'instructions' => 'string',
+        'schema' => 'array<string,mixed>'
     ];
 
     /**
@@ -73,7 +76,10 @@ class Error implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $openAPIFormats = [
         'error' => null,
         'code' => null,
-        'detail' => null
+        'detail' => null,
+        'fields' => null,
+        'instructions' => null,
+        'schema' => null
     ];
 
     /**
@@ -84,7 +90,10 @@ class Error implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static array $openAPINullables = [
         'error' => false,
         'code' => false,
-        'detail' => false
+        'detail' => false,
+        'fields' => false,
+        'instructions' => false,
+        'schema' => false
     ];
 
     /**
@@ -175,7 +184,10 @@ class Error implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $attributeMap = [
         'error' => 'error',
         'code' => 'code',
-        'detail' => 'detail'
+        'detail' => 'detail',
+        'fields' => 'fields',
+        'instructions' => 'instructions',
+        'schema' => 'schema'
     ];
 
     /**
@@ -186,7 +198,10 @@ class Error implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $setters = [
         'error' => 'setError',
         'code' => 'setCode',
-        'detail' => 'setDetail'
+        'detail' => 'setDetail',
+        'fields' => 'setFields',
+        'instructions' => 'setInstructions',
+        'schema' => 'setSchema'
     ];
 
     /**
@@ -197,7 +212,10 @@ class Error implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $getters = [
         'error' => 'getError',
         'code' => 'getCode',
-        'detail' => 'getDetail'
+        'detail' => 'getDetail',
+        'fields' => 'getFields',
+        'instructions' => 'getInstructions',
+        'schema' => 'getSchema'
     ];
 
     /**
@@ -260,6 +278,9 @@ class Error implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('error', $data ?? [], null);
         $this->setIfExists('code', $data ?? [], null);
         $this->setIfExists('detail', $data ?? [], null);
+        $this->setIfExists('fields', $data ?? [], null);
+        $this->setIfExists('instructions', $data ?? [], null);
+        $this->setIfExists('schema', $data ?? [], null);
     }
 
     /**
@@ -384,6 +405,87 @@ class Error implements ModelInterface, ArrayAccess, \JsonSerializable
             throw new \InvalidArgumentException('non-nullable detail cannot be null');
         }
         $this->container['detail'] = $detail;
+
+        return $this;
+    }
+
+    /**
+     * Gets fields
+     *
+     * @return array<string,string>|null
+     */
+    public function getFields()
+    {
+        return $this->container['fields'];
+    }
+
+    /**
+     * Sets fields
+     *
+     * @param array<string,string>|null $fields Per-field validation messages, keyed by the submitted field's path (dot-notation for nested fields, e.g. `groups.0.weight`). Present when structural validation failed on one or more specific input fields, so a client form can attach each message to its own input instead of collapsing everything into one banner.
+     *
+     * @return self
+     */
+    public function setFields($fields)
+    {
+        if (is_null($fields)) {
+            throw new \InvalidArgumentException('non-nullable fields cannot be null');
+        }
+        $this->container['fields'] = $fields;
+
+        return $this;
+    }
+
+    /**
+     * Gets instructions
+     *
+     * @return string|null
+     */
+    public function getInstructions()
+    {
+        return $this->container['instructions'];
+    }
+
+    /**
+     * Sets instructions
+     *
+     * @param string|null $instructions Actionable guidance for resolving this error — what to check or change next.
+     *
+     * @return self
+     */
+    public function setInstructions($instructions)
+    {
+        if (is_null($instructions)) {
+            throw new \InvalidArgumentException('non-nullable instructions cannot be null');
+        }
+        $this->container['instructions'] = $instructions;
+
+        return $this;
+    }
+
+    /**
+     * Gets schema
+     *
+     * @return array<string,mixed>|null
+     */
+    public function getSchema()
+    {
+        return $this->container['schema'];
+    }
+
+    /**
+     * Sets schema
+     *
+     * @param array<string,mixed>|null $schema The expected JSON Schema (draft 2020-12) the submitted value must satisfy. Returned only when a value failed schema validation (e.g. a config `value` that does not match its config's saved schema), so the caller can correct the value and retry without re-fetching.
+     *
+     * @return self
+     */
+    public function setSchema($schema)
+    {
+        if (is_null($schema)) {
+            throw new \InvalidArgumentException('non-nullable schema cannot be null');
+        }
+        $this->container['schema'] = $schema;
 
         return $this;
     }

@@ -59,7 +59,7 @@ class SaveConfigDraftRequest implements ModelInterface, ArrayAccess, \JsonSerial
      */
     protected static $openAPITypes = [
         'env' => '\Shipeasy\Admin\Generated\Model\Env',
-        'value' => 'mixed'
+        'value' => 'array<string,mixed>'
     ];
 
     /**
@@ -81,7 +81,7 @@ class SaveConfigDraftRequest implements ModelInterface, ArrayAccess, \JsonSerial
      */
     protected static array $openAPINullables = [
         'env' => false,
-        'value' => true
+        'value' => false
     ];
 
     /**
@@ -285,8 +285,8 @@ class SaveConfigDraftRequest implements ModelInterface, ArrayAccess, \JsonSerial
         if ($this->container['env'] === null) {
             $invalidProperties[] = "'env' can't be null";
         }
-        if ($this->container['value'] === null && !$this->isNullableSetToNull('value')) {
-            $invalidProperties[] = "'value' is required";
+        if ($this->container['value'] === null) {
+            $invalidProperties[] = "'value' can't be null";
         }
         return $invalidProperties;
     }
@@ -333,7 +333,7 @@ class SaveConfigDraftRequest implements ModelInterface, ArrayAccess, \JsonSerial
     /**
      * Gets value
      *
-     * @return mixed|null
+     * @return array<string,mixed>
      */
     public function getValue()
     {
@@ -343,21 +343,14 @@ class SaveConfigDraftRequest implements ModelInterface, ArrayAccess, \JsonSerial
     /**
      * Sets value
      *
-     * @param mixed|null $value value
+     * @param array<string,mixed> $value Draft value to stage on `env`. Validated against the config's current schema.
      *
      * @return self
      */
     public function setValue($value)
     {
         if (is_null($value)) {
-            array_push($this->openAPINullablesSetToNull, 'value');
-        } else {
-            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
-            $index = array_search('value', $nullablesSetToNull);
-            if ($index !== FALSE) {
-                unset($nullablesSetToNull[$index]);
-                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
-            }
+            throw new \InvalidArgumentException('non-nullable value cannot be null');
         }
         $this->container['value'] = $value;
 

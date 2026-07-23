@@ -86,6 +86,12 @@ class FlagsApi
         'enableGate' => [
             'application/json',
         ],
+        'getGate' => [
+            'application/json',
+        ],
+        'listGateActivity' => [
+            'application/json',
+        ],
         'listGates' => [
             'application/json',
         ],
@@ -510,7 +516,7 @@ class FlagsApi
      *
      * Delete a feature gate
      *
-     * @param  string|null $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteGate'] to see the possible values for this operation
      *
@@ -529,7 +535,7 @@ class FlagsApi
      *
      * Delete a feature gate
      *
-     * @param  string|null $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteGate'] to see the possible values for this operation
      *
@@ -699,7 +705,7 @@ class FlagsApi
      *
      * Delete a feature gate
      *
-     * @param  string|null $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteGate'] to see the possible values for this operation
      *
@@ -721,7 +727,7 @@ class FlagsApi
      *
      * Delete a feature gate
      *
-     * @param  string|null $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteGate'] to see the possible values for this operation
      *
@@ -772,7 +778,7 @@ class FlagsApi
     /**
      * Create request for operation 'deleteGate'
      *
-     * @param  string|null $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteGate'] to see the possible values for this operation
      *
@@ -788,7 +794,13 @@ class FlagsApi
                 'Missing the required parameter $id when calling deleteGate'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling FlagsApi.deleteGate, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling FlagsApi.deleteGate, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/gates/{id}';
@@ -931,7 +943,7 @@ class FlagsApi
 
 
             switch($statusCode) {
-                case 201:
+                case 200:
                     return $this->handleResponseWithDataType(
                         '\Shipeasy\Admin\Generated\Model\DisableGateResponse',
                         $request,
@@ -997,7 +1009,7 @@ class FlagsApi
             );
         } catch (ApiException $e) {
             switch ($e->getCode()) {
-                case 201:
+                case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Shipeasy\Admin\Generated\Model\DisableGateResponse',
@@ -1154,7 +1166,13 @@ class FlagsApi
                 'Missing the required parameter $id when calling disableGate'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling FlagsApi.disableGate, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling FlagsApi.disableGate, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/gates/{id}/disable';
@@ -1297,7 +1315,7 @@ class FlagsApi
 
 
             switch($statusCode) {
-                case 201:
+                case 200:
                     return $this->handleResponseWithDataType(
                         '\Shipeasy\Admin\Generated\Model\EnableGateResponse',
                         $request,
@@ -1363,7 +1381,7 @@ class FlagsApi
             );
         } catch (ApiException $e) {
             switch ($e->getCode()) {
-                case 201:
+                case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Shipeasy\Admin\Generated\Model\EnableGateResponse',
@@ -1520,7 +1538,13 @@ class FlagsApi
                 'Missing the required parameter $id when calling enableGate'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling FlagsApi.enableGate, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling FlagsApi.enableGate, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/gates/{id}/enable';
@@ -1604,6 +1628,771 @@ class FlagsApi
     }
 
     /**
+     * Operation getGate
+     *
+     * Get one gate
+     *
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getGate'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Shipeasy\Admin\Generated\Model\GateApiRow|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     */
+    public function getGate($id, $x_project_id = null, string $contentType = self::contentTypes['getGate'][0])
+    {
+        list($response) = $this->getGateWithHttpInfo($id, $x_project_id, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation getGateWithHttpInfo
+     *
+     * Get one gate
+     *
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getGate'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of \Shipeasy\Admin\Generated\Model\GateApiRow|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function getGateWithHttpInfo($id, $x_project_id = null, string $contentType = self::contentTypes['getGate'][0])
+    {
+        $request = $this->getGateRequest($id, $x_project_id, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\GateApiRow',
+                        $request,
+                        $response,
+                    );
+                case 400:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 401:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 409:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Shipeasy\Admin\Generated\Model\GateApiRow',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\GateApiRow',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+        
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation getGateAsync
+     *
+     * Get one gate
+     *
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getGate'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getGateAsync($id, $x_project_id = null, string $contentType = self::contentTypes['getGate'][0])
+    {
+        return $this->getGateAsyncWithHttpInfo($id, $x_project_id, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation getGateAsyncWithHttpInfo
+     *
+     * Get one gate
+     *
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getGate'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getGateAsyncWithHttpInfo($id, $x_project_id = null, string $contentType = self::contentTypes['getGate'][0])
+    {
+        $returnType = '\Shipeasy\Admin\Generated\Model\GateApiRow';
+        $request = $this->getGateRequest($id, $x_project_id, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getGate'
+     *
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getGate'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function getGateRequest($id, $x_project_id = null, string $contentType = self::contentTypes['getGate'][0])
+    {
+
+        // verify the required parameter 'id' is set
+        if ($id === null || (is_array($id) && count($id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $id when calling getGate'
+            );
+        }
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling FlagsApi.getGate, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling FlagsApi.getGate, must be bigger than or equal to 1.');
+        }
+        
+
+
+        $resourcePath = '/api/admin/gates/{id}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // header params
+        if ($x_project_id !== null) {
+            $headerParams['X-Project-Id'] = ObjectSerializer::toHeaderValue($x_project_id);
+        }
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{id}',
+                ObjectSerializer::toPathValue($id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (sdk_admin_*) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation listGateActivity
+     *
+     * List gate activity
+     *
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  int|null $limit Max rows to return (1–100). Defaults to 20. (optional, default to 20)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listGateActivity'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Shipeasy\Admin\Generated\Model\ListGateActivityResponseInner[]|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     */
+    public function listGateActivity($id, $x_project_id = null, $limit = 20, string $contentType = self::contentTypes['listGateActivity'][0])
+    {
+        list($response) = $this->listGateActivityWithHttpInfo($id, $x_project_id, $limit, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation listGateActivityWithHttpInfo
+     *
+     * List gate activity
+     *
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  int|null $limit Max rows to return (1–100). Defaults to 20. (optional, default to 20)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listGateActivity'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of \Shipeasy\Admin\Generated\Model\ListGateActivityResponseInner[]|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function listGateActivityWithHttpInfo($id, $x_project_id = null, $limit = 20, string $contentType = self::contentTypes['listGateActivity'][0])
+    {
+        $request = $this->listGateActivityRequest($id, $x_project_id, $limit, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\ListGateActivityResponseInner[]',
+                        $request,
+                        $response,
+                    );
+                case 400:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 401:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 409:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Shipeasy\Admin\Generated\Model\ListGateActivityResponseInner[]',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\ListGateActivityResponseInner[]',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+        
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation listGateActivityAsync
+     *
+     * List gate activity
+     *
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  int|null $limit Max rows to return (1–100). Defaults to 20. (optional, default to 20)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listGateActivity'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function listGateActivityAsync($id, $x_project_id = null, $limit = 20, string $contentType = self::contentTypes['listGateActivity'][0])
+    {
+        return $this->listGateActivityAsyncWithHttpInfo($id, $x_project_id, $limit, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation listGateActivityAsyncWithHttpInfo
+     *
+     * List gate activity
+     *
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  int|null $limit Max rows to return (1–100). Defaults to 20. (optional, default to 20)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listGateActivity'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function listGateActivityAsyncWithHttpInfo($id, $x_project_id = null, $limit = 20, string $contentType = self::contentTypes['listGateActivity'][0])
+    {
+        $returnType = '\Shipeasy\Admin\Generated\Model\ListGateActivityResponseInner[]';
+        $request = $this->listGateActivityRequest($id, $x_project_id, $limit, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'listGateActivity'
+     *
+     * @param  string $id Stable opaque gate id (&#x60;gat_…&#x60;) or the gate&#39;s &#x60;name&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  int|null $limit Max rows to return (1–100). Defaults to 20. (optional, default to 20)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listGateActivity'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function listGateActivityRequest($id, $x_project_id = null, $limit = 20, string $contentType = self::contentTypes['listGateActivity'][0])
+    {
+
+        // verify the required parameter 'id' is set
+        if ($id === null || (is_array($id) && count($id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $id when calling listGateActivity'
+            );
+        }
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling FlagsApi.listGateActivity, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling FlagsApi.listGateActivity, must be bigger than or equal to 1.');
+        }
+        
+
+        if ($limit !== null && $limit > 100) {
+            throw new \InvalidArgumentException('invalid value for "$limit" when calling FlagsApi.listGateActivity, must be smaller than or equal to 100.');
+        }
+        if ($limit !== null && $limit < 1) {
+            throw new \InvalidArgumentException('invalid value for "$limit" when calling FlagsApi.listGateActivity, must be bigger than or equal to 1.');
+        }
+        
+
+        $resourcePath = '/api/admin/gates/{id}/activity';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $limit,
+            'limit', // param base name
+            'integer', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
+
+        // header params
+        if ($x_project_id !== null) {
+            $headerParams['X-Project-Id'] = ObjectSerializer::toHeaderValue($x_project_id);
+        }
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{id}',
+                ObjectSerializer::toPathValue($id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (sdk_admin_*) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation listGates
      *
      * List feature gates
@@ -1611,15 +2400,16 @@ class FlagsApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listGates'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Shipeasy\Admin\Generated\Model\ListGatesResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
-    public function listGates($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listGates'][0])
+    public function listGates($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listGates'][0])
     {
-        list($response) = $this->listGatesWithHttpInfo($x_project_id, $limit, $cursor, $contentType);
+        list($response) = $this->listGatesWithHttpInfo($x_project_id, $limit, $cursor, $q, $contentType);
         return $response;
     }
 
@@ -1631,15 +2421,16 @@ class FlagsApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listGates'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return array of \Shipeasy\Admin\Generated\Model\ListGatesResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listGatesWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listGates'][0])
+    public function listGatesWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listGates'][0])
     {
-        $request = $this->listGatesRequest($x_project_id, $limit, $cursor, $contentType);
+        $request = $this->listGatesRequest($x_project_id, $limit, $cursor, $q, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1802,14 +2593,15 @@ class FlagsApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listGates'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listGatesAsync($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listGates'][0])
+    public function listGatesAsync($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listGates'][0])
     {
-        return $this->listGatesAsyncWithHttpInfo($x_project_id, $limit, $cursor, $contentType)
+        return $this->listGatesAsyncWithHttpInfo($x_project_id, $limit, $cursor, $q, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1825,15 +2617,16 @@ class FlagsApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listGates'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listGatesAsyncWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listGates'][0])
+    public function listGatesAsyncWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listGates'][0])
     {
         $returnType = '\Shipeasy\Admin\Generated\Model\ListGatesResponse';
-        $request = $this->listGatesRequest($x_project_id, $limit, $cursor, $contentType);
+        $request = $this->listGatesRequest($x_project_id, $limit, $cursor, $q, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1877,12 +2670,13 @@ class FlagsApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listGates'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listGatesRequest($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listGates'][0])
+    public function listGatesRequest($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listGates'][0])
     {
 
 
@@ -1894,6 +2688,10 @@ class FlagsApi
         }
         
 
+        if ($q !== null && strlen($q) > 100) {
+            throw new \InvalidArgumentException('invalid length for "$q" when calling FlagsApi.listGates, must be smaller than or equal to 100.');
+        }
+        
 
         $resourcePath = '/api/admin/gates';
         $formParams = [];
@@ -1915,6 +2713,15 @@ class FlagsApi
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $cursor,
             'cursor', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $q,
+            'q', // param base name
             'string', // openApiType
             'form', // style
             true, // explode
@@ -2273,7 +3080,13 @@ class FlagsApi
                 'Missing the required parameter $id when calling updateGate'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling FlagsApi.updateGate, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling FlagsApi.updateGate, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'update_gate_request' is set
         if ($update_gate_request === null || (is_array($update_gate_request) && count($update_gate_request) === 0)) {
             throw new \InvalidArgumentException(

@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * UpdateConfigRequest Class Doc Comment
  *
  * @category Class
- * @description Body for &#x60;PATCH /api/admin/configs/{id}&#x60;. Partial — only supplied fields change. &#x60;value&#x60; republishes on every env.
+ * @description Body for &#x60;PATCH /api/admin/configs/{id}&#x60;. Partial — only supplied fields change. &#x60;value&#x60; republishes on every env; per-env &#x60;dev&#x60;/&#x60;staging&#x60;/&#x60;prod&#x60; publish a new version to just that env.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -59,7 +59,10 @@ class UpdateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
      */
     protected static $openAPITypes = [
         'schema' => 'array<string,mixed>',
-        'value' => 'mixed',
+        'value' => 'array<string,mixed>',
+        'dev' => 'array<string,mixed>',
+        'staging' => 'array<string,mixed>',
+        'prod' => 'array<string,mixed>',
         'folder' => 'string'
     ];
 
@@ -73,6 +76,9 @@ class UpdateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     protected static $openAPIFormats = [
         'schema' => null,
         'value' => null,
+        'dev' => null,
+        'staging' => null,
+        'prod' => null,
         'folder' => null
     ];
 
@@ -83,7 +89,10 @@ class UpdateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
      */
     protected static array $openAPINullables = [
         'schema' => false,
-        'value' => true,
+        'value' => false,
+        'dev' => false,
+        'staging' => false,
+        'prod' => false,
         'folder' => true
     ];
 
@@ -175,6 +184,9 @@ class UpdateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     protected static $attributeMap = [
         'schema' => 'schema',
         'value' => 'value',
+        'dev' => 'dev',
+        'staging' => 'staging',
+        'prod' => 'prod',
         'folder' => 'folder'
     ];
 
@@ -186,6 +198,9 @@ class UpdateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     protected static $setters = [
         'schema' => 'setSchema',
         'value' => 'setValue',
+        'dev' => 'setDev',
+        'staging' => 'setStaging',
+        'prod' => 'setProd',
         'folder' => 'setFolder'
     ];
 
@@ -197,6 +212,9 @@ class UpdateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     protected static $getters = [
         'schema' => 'getSchema',
         'value' => 'getValue',
+        'dev' => 'getDev',
+        'staging' => 'getStaging',
+        'prod' => 'getProd',
         'folder' => 'getFolder'
     ];
 
@@ -259,6 +277,9 @@ class UpdateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     {
         $this->setIfExists('schema', $data ?? [], null);
         $this->setIfExists('value', $data ?? [], null);
+        $this->setIfExists('dev', $data ?? [], null);
+        $this->setIfExists('staging', $data ?? [], null);
+        $this->setIfExists('prod', $data ?? [], null);
         $this->setIfExists('folder', $data ?? [], null);
     }
 
@@ -342,7 +363,7 @@ class UpdateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Gets value
      *
-     * @return mixed|null
+     * @return array<string,mixed>|null
      */
     public function getValue()
     {
@@ -352,23 +373,97 @@ class UpdateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Sets value
      *
-     * @param mixed|null $value value
+     * @param array<string,mixed>|null $value Flat value applied to **every** env. Publishes a new version per env. To publish one env only, pass that env's key (`dev`/`staging`/`prod`) instead.
      *
      * @return self
      */
     public function setValue($value)
     {
         if (is_null($value)) {
-            array_push($this->openAPINullablesSetToNull, 'value');
-        } else {
-            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
-            $index = array_search('value', $nullablesSetToNull);
-            if ($index !== FALSE) {
-                unset($nullablesSetToNull[$index]);
-                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
-            }
+            throw new \InvalidArgumentException('non-nullable value cannot be null');
         }
         $this->container['value'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Gets dev
+     *
+     * @return array<string,mixed>|null
+     */
+    public function getDev()
+    {
+        return $this->container['dev'];
+    }
+
+    /**
+     * Sets dev
+     *
+     * @param array<string,mixed>|null $dev Publish a new version to the **dev** env only, immediately (no draft). Overrides `value` for dev. Must match the effective schema.
+     *
+     * @return self
+     */
+    public function setDev($dev)
+    {
+        if (is_null($dev)) {
+            throw new \InvalidArgumentException('non-nullable dev cannot be null');
+        }
+        $this->container['dev'] = $dev;
+
+        return $this;
+    }
+
+    /**
+     * Gets staging
+     *
+     * @return array<string,mixed>|null
+     */
+    public function getStaging()
+    {
+        return $this->container['staging'];
+    }
+
+    /**
+     * Sets staging
+     *
+     * @param array<string,mixed>|null $staging Publish a new version to the **staging** env only, immediately (no draft). Overrides `value` for staging. Must match the effective schema.
+     *
+     * @return self
+     */
+    public function setStaging($staging)
+    {
+        if (is_null($staging)) {
+            throw new \InvalidArgumentException('non-nullable staging cannot be null');
+        }
+        $this->container['staging'] = $staging;
+
+        return $this;
+    }
+
+    /**
+     * Gets prod
+     *
+     * @return array<string,mixed>|null
+     */
+    public function getProd()
+    {
+        return $this->container['prod'];
+    }
+
+    /**
+     * Sets prod
+     *
+     * @param array<string,mixed>|null $prod Publish a new version to the **prod** env only, immediately (no draft). Overrides `value` for prod. Must match the effective schema.
+     *
+     * @return self
+     */
+    public function setProd($prod)
+    {
+        if (is_null($prod)) {
+            throw new \InvalidArgumentException('non-nullable prod cannot be null');
+        }
+        $this->container['prod'] = $prod;
 
         return $this;
     }

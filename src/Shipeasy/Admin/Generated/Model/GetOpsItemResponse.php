@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * GetOpsItemResponse Class Doc Comment
  *
  * @category Class
- * @description One queue item — any type.
+ * @description One queue item, any of the five types. Shared fields apply to all; &#x60;stepsToReproduce&#x60;/&#x60;actualResult&#x60;/&#x60;expectedResult&#x60; are bug-specific, &#x60;description&#x60;/&#x60;useCase&#x60; feature-specific. The auto-collected browser fields (page URL, user-agent, viewport) live under &#x60;context.browser&#x60; for bug/feature. &#x60;context&#x60; also carries the hydrated per-type payload for auto-filed &#x60;error&#x60;/&#x60;alert&#x60;/&#x60;measure_plan&#x60; tickets, &#x60;attachments&#x60; lists any uploaded files, and &#x60;related&#x60; gives deep links to the underlying resources.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -62,10 +62,28 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
         'number' => 'float',
         'type' => 'string',
         'title' => 'string',
-        'status' => 'string',
-        'priority' => 'string',
+        'status' => '\Shipeasy\Admin\Generated\Model\OpsItemStatus',
+        'priority' => '\Shipeasy\Admin\Generated\Model\OpsItemPriority',
+        'source' => 'string',
         'source_ref' => 'string',
-        'created_at' => 'string'
+        'investigation_state' => '\Shipeasy\Admin\Generated\Model\OpsInvestigationState',
+        'reporter_email' => 'string',
+        'steps_to_reproduce' => 'string',
+        'actual_result' => 'string',
+        'expected_result' => 'string',
+        'description' => 'string',
+        'use_case' => 'string',
+        'context' => '\Shipeasy\Admin\Generated\Model\OpsItemContext',
+        'attachments' => '\Shipeasy\Admin\Generated\Model\OpsItemAttachment[]',
+        'related' => '\Shipeasy\Admin\Generated\Model\OpsItemRelated',
+        'connector_data' => '\Shipeasy\Admin\Generated\Model\ConnectorData',
+        'notify' => '\Shipeasy\Admin\Generated\Model\NotificationTarget',
+        'assignee_id' => 'string',
+        'assignee_connector_id' => 'string',
+        'assignee_agent' => 'string',
+        'owner' => '\Shipeasy\Admin\Generated\Model\OpsItemOwner',
+        'created_at' => 'string',
+        'updated_at' => 'string'
     ];
 
     /**
@@ -82,8 +100,26 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
         'title' => null,
         'status' => null,
         'priority' => null,
+        'source' => null,
         'source_ref' => null,
-        'created_at' => null
+        'investigation_state' => null,
+        'reporter_email' => null,
+        'steps_to_reproduce' => null,
+        'actual_result' => null,
+        'expected_result' => null,
+        'description' => null,
+        'use_case' => null,
+        'context' => null,
+        'attachments' => null,
+        'related' => null,
+        'connector_data' => null,
+        'notify' => null,
+        'assignee_id' => null,
+        'assignee_connector_id' => null,
+        'assignee_agent' => null,
+        'owner' => null,
+        'created_at' => null,
+        'updated_at' => null
     ];
 
     /**
@@ -98,8 +134,26 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
         'title' => false,
         'status' => false,
         'priority' => true,
+        'source' => false,
         'source_ref' => true,
-        'created_at' => false
+        'investigation_state' => true,
+        'reporter_email' => true,
+        'steps_to_reproduce' => false,
+        'actual_result' => false,
+        'expected_result' => false,
+        'description' => false,
+        'use_case' => false,
+        'context' => true,
+        'attachments' => false,
+        'related' => false,
+        'connector_data' => true,
+        'notify' => true,
+        'assignee_id' => true,
+        'assignee_connector_id' => true,
+        'assignee_agent' => true,
+        'owner' => false,
+        'created_at' => false,
+        'updated_at' => false
     ];
 
     /**
@@ -194,8 +248,26 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
         'title' => 'title',
         'status' => 'status',
         'priority' => 'priority',
+        'source' => 'source',
         'source_ref' => 'sourceRef',
-        'created_at' => 'createdAt'
+        'investigation_state' => 'investigationState',
+        'reporter_email' => 'reporterEmail',
+        'steps_to_reproduce' => 'stepsToReproduce',
+        'actual_result' => 'actualResult',
+        'expected_result' => 'expectedResult',
+        'description' => 'description',
+        'use_case' => 'useCase',
+        'context' => 'context',
+        'attachments' => 'attachments',
+        'related' => 'related',
+        'connector_data' => 'connectorData',
+        'notify' => 'notify',
+        'assignee_id' => 'assigneeId',
+        'assignee_connector_id' => 'assigneeConnectorId',
+        'assignee_agent' => 'assigneeAgent',
+        'owner' => 'owner',
+        'created_at' => 'createdAt',
+        'updated_at' => 'updatedAt'
     ];
 
     /**
@@ -210,8 +282,26 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
         'title' => 'setTitle',
         'status' => 'setStatus',
         'priority' => 'setPriority',
+        'source' => 'setSource',
         'source_ref' => 'setSourceRef',
-        'created_at' => 'setCreatedAt'
+        'investigation_state' => 'setInvestigationState',
+        'reporter_email' => 'setReporterEmail',
+        'steps_to_reproduce' => 'setStepsToReproduce',
+        'actual_result' => 'setActualResult',
+        'expected_result' => 'setExpectedResult',
+        'description' => 'setDescription',
+        'use_case' => 'setUseCase',
+        'context' => 'setContext',
+        'attachments' => 'setAttachments',
+        'related' => 'setRelated',
+        'connector_data' => 'setConnectorData',
+        'notify' => 'setNotify',
+        'assignee_id' => 'setAssigneeId',
+        'assignee_connector_id' => 'setAssigneeConnectorId',
+        'assignee_agent' => 'setAssigneeAgent',
+        'owner' => 'setOwner',
+        'created_at' => 'setCreatedAt',
+        'updated_at' => 'setUpdatedAt'
     ];
 
     /**
@@ -226,8 +316,26 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
         'title' => 'getTitle',
         'status' => 'getStatus',
         'priority' => 'getPriority',
+        'source' => 'getSource',
         'source_ref' => 'getSourceRef',
-        'created_at' => 'getCreatedAt'
+        'investigation_state' => 'getInvestigationState',
+        'reporter_email' => 'getReporterEmail',
+        'steps_to_reproduce' => 'getStepsToReproduce',
+        'actual_result' => 'getActualResult',
+        'expected_result' => 'getExpectedResult',
+        'description' => 'getDescription',
+        'use_case' => 'getUseCase',
+        'context' => 'getContext',
+        'attachments' => 'getAttachments',
+        'related' => 'getRelated',
+        'connector_data' => 'getConnectorData',
+        'notify' => 'getNotify',
+        'assignee_id' => 'getAssigneeId',
+        'assignee_connector_id' => 'getAssigneeConnectorId',
+        'assignee_agent' => 'getAssigneeAgent',
+        'owner' => 'getOwner',
+        'created_at' => 'getCreatedAt',
+        'updated_at' => 'getUpdatedAt'
     ];
 
     /**
@@ -275,16 +383,9 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
     public const TYPE_FEATURE_REQUEST = 'feature_request';
     public const TYPE_ERROR = 'error';
     public const TYPE_ALERT = 'alert';
-    public const STATUS_OPEN = 'open';
-    public const STATUS_TRIAGED = 'triaged';
-    public const STATUS_IN_PROGRESS = 'in_progress';
-    public const STATUS_READY_FOR_QA = 'ready_for_qa';
-    public const STATUS_RESOLVED = 'resolved';
-    public const STATUS_WONT_FIX = 'wont_fix';
-    public const PRIORITY_NICE_TO_HAVE = 'nice_to_have';
-    public const PRIORITY_MEDIUM = 'medium';
-    public const PRIORITY_HIGH = 'high';
-    public const PRIORITY_CRITICAL = 'critical';
+    public const TYPE_MEASURE_PLAN = 'measure_plan';
+    public const SOURCE_TEAM = 'team';
+    public const SOURCE_SYSTEM = 'system';
 
     /**
      * Gets allowable values of the enum
@@ -298,6 +399,7 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
             self::TYPE_FEATURE_REQUEST,
             self::TYPE_ERROR,
             self::TYPE_ALERT,
+            self::TYPE_MEASURE_PLAN,
         ];
     }
 
@@ -306,30 +408,11 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
      *
      * @return string[]
      */
-    public function getStatusAllowableValues()
+    public function getSourceAllowableValues()
     {
         return [
-            self::STATUS_OPEN,
-            self::STATUS_TRIAGED,
-            self::STATUS_IN_PROGRESS,
-            self::STATUS_READY_FOR_QA,
-            self::STATUS_RESOLVED,
-            self::STATUS_WONT_FIX,
-        ];
-    }
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getPriorityAllowableValues()
-    {
-        return [
-            self::PRIORITY_NICE_TO_HAVE,
-            self::PRIORITY_MEDIUM,
-            self::PRIORITY_HIGH,
-            self::PRIORITY_CRITICAL,
+            self::SOURCE_TEAM,
+            self::SOURCE_SYSTEM,
         ];
     }
 
@@ -354,8 +437,26 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
         $this->setIfExists('title', $data ?? [], null);
         $this->setIfExists('status', $data ?? [], null);
         $this->setIfExists('priority', $data ?? [], null);
+        $this->setIfExists('source', $data ?? [], null);
         $this->setIfExists('source_ref', $data ?? [], null);
+        $this->setIfExists('investigation_state', $data ?? [], null);
+        $this->setIfExists('reporter_email', $data ?? [], null);
+        $this->setIfExists('steps_to_reproduce', $data ?? [], null);
+        $this->setIfExists('actual_result', $data ?? [], null);
+        $this->setIfExists('expected_result', $data ?? [], null);
+        $this->setIfExists('description', $data ?? [], null);
+        $this->setIfExists('use_case', $data ?? [], null);
+        $this->setIfExists('context', $data ?? [], null);
+        $this->setIfExists('attachments', $data ?? [], null);
+        $this->setIfExists('related', $data ?? [], null);
+        $this->setIfExists('connector_data', $data ?? [], null);
+        $this->setIfExists('notify', $data ?? [], null);
+        $this->setIfExists('assignee_id', $data ?? [], null);
+        $this->setIfExists('assignee_connector_id', $data ?? [], null);
+        $this->setIfExists('assignee_agent', $data ?? [], null);
+        $this->setIfExists('owner', $data ?? [], null);
         $this->setIfExists('created_at', $data ?? [], null);
+        $this->setIfExists('updated_at', $data ?? [], null);
     }
 
     /**
@@ -409,27 +510,30 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
         if ($this->container['status'] === null) {
             $invalidProperties[] = "'status' can't be null";
         }
-        $allowedValues = $this->getStatusAllowableValues();
-        if (!is_null($this->container['status']) && !in_array($this->container['status'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'status', must be one of '%s'",
-                $this->container['status'],
-                implode("', '", $allowedValues)
-            );
-        }
-
         if ($this->container['priority'] === null && !$this->isNullableSetToNull('priority')) {
             $invalidProperties[] = "'priority' is required";
         }
-        $allowedValues = $this->getPriorityAllowableValues();
-        if (!is_null($this->container['priority']) && !in_array($this->container['priority'], $allowedValues, true)) {
+        $allowedValues = $this->getSourceAllowableValues();
+        if (!is_null($this->container['source']) && !in_array($this->container['source'], $allowedValues, true)) {
             $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'priority', must be one of '%s'",
-                $this->container['priority'],
+                "invalid value '%s' for 'source', must be one of '%s'",
+                $this->container['source'],
                 implode("', '", $allowedValues)
             );
         }
 
+        if ($this->container['context'] === null && !$this->isNullableSetToNull('context')) {
+            $invalidProperties[] = "'context' is required";
+        }
+        if ($this->container['attachments'] === null) {
+            $invalidProperties[] = "'attachments' can't be null";
+        }
+        if ($this->container['related'] === null) {
+            $invalidProperties[] = "'related' can't be null";
+        }
+        if ($this->container['owner'] === null) {
+            $invalidProperties[] = "'owner' can't be null";
+        }
         if ($this->container['created_at'] === null) {
             $invalidProperties[] = "'created_at' can't be null";
         }
@@ -522,7 +626,7 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
     /**
      * Sets type
      *
-     * @param string $type Queue item type. `bug` and `feature_request` are user-fileable; `error` and `alert` tickets are auto-filed by the platform.
+     * @param string $type Queue item type. `bug` and `feature_request` are user-fileable; `error`, `alert`, and `measure_plan` tickets are auto-filed by the platform (a tracked production error, a metric-threshold alert, and an assistant-proposed measurement plan respectively).
      *
      * @return self
      */
@@ -559,7 +663,7 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
     /**
      * Sets title
      *
-     * @param string $title One-line item title.
+     * @param string $title One-line item title (all types).
      *
      * @return self
      */
@@ -576,7 +680,7 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
     /**
      * Gets status
      *
-     * @return string
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemStatus
      */
     public function getStatus()
     {
@@ -586,7 +690,7 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
     /**
      * Sets status
      *
-     * @param string $status Lifecycle status of a queue item.
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemStatus $status status
      *
      * @return self
      */
@@ -594,16 +698,6 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
     {
         if (is_null($status)) {
             throw new \InvalidArgumentException('non-nullable status cannot be null');
-        }
-        $allowedValues = $this->getStatusAllowableValues();
-        if (!in_array($status, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'status', must be one of '%s'",
-                    $status,
-                    implode("', '", $allowedValues)
-                )
-            );
         }
         $this->container['status'] = $status;
 
@@ -613,7 +707,7 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
     /**
      * Gets priority
      *
-     * @return string|null
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemPriority|null
      */
     public function getPriority()
     {
@@ -623,7 +717,7 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
     /**
      * Sets priority
      *
-     * @param string|null $priority Triage priority of a queue item.
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemPriority|null $priority Triage priority, or `null` if not yet set (all types).
      *
      * @return self
      */
@@ -639,17 +733,44 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
                 $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
             }
         }
-        $allowedValues = $this->getPriorityAllowableValues();
-        if (!is_null($priority) && !in_array($priority, $allowedValues, true)) {
+        $this->container['priority'] = $priority;
+
+        return $this;
+    }
+
+    /**
+     * Gets source
+     *
+     * @return string|null
+     */
+    public function getSource()
+    {
+        return $this->container['source'];
+    }
+
+    /**
+     * Sets source
+     *
+     * @param string|null $source How the item was filed: `team` (a human admin/teammate — bug/feature) or `system` (auto-filed — error/alert/measure_plan).
+     *
+     * @return self
+     */
+    public function setSource($source)
+    {
+        if (is_null($source)) {
+            throw new \InvalidArgumentException('non-nullable source cannot be null');
+        }
+        $allowedValues = $this->getSourceAllowableValues();
+        if (!in_array($source, $allowedValues, true)) {
             throw new \InvalidArgumentException(
                 sprintf(
-                    "Invalid value '%s' for 'priority', must be one of '%s'",
-                    $priority,
+                    "Invalid value '%s' for 'source', must be one of '%s'",
+                    $source,
                     implode("', '", $allowedValues)
                 )
             );
         }
-        $this->container['priority'] = $priority;
+        $this->container['source'] = $source;
 
         return $this;
     }
@@ -667,7 +788,7 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
     /**
      * Sets source_ref
      *
-     * @param string|null $source_ref Source reference for auto-filed tickets (e.g. an error fingerprint).
+     * @param string|null $source_ref Stable key of the originating record for auto-filed tickets (error fingerprint, `<alert source>:<dedupeKey>`, or measurement-plan ref); `null` for human-filed bugs/features.
      *
      * @return self
      */
@@ -684,6 +805,494 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
             }
         }
         $this->container['source_ref'] = $source_ref;
+
+        return $this;
+    }
+
+    /**
+     * Gets investigation_state
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsInvestigationState|null
+     */
+    public function getInvestigationState()
+    {
+        return $this->container['investigation_state'];
+    }
+
+    /**
+     * Sets investigation_state
+     *
+     * @param \Shipeasy\Admin\Generated\Model\OpsInvestigationState|null $investigation_state Where automation has taken this item in the investigation lifecycle (see `OpsInvestigationState`). Written as a side-effect of the actions that already happen (link a PR, change status, an assistant reply); `null` on rows filed before the field existed — derive from `status`/`type` in that case.
+     *
+     * @return self
+     */
+    public function setInvestigationState($investigation_state)
+    {
+        if (is_null($investigation_state)) {
+            array_push($this->openAPINullablesSetToNull, 'investigation_state');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('investigation_state', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['investigation_state'] = $investigation_state;
+
+        return $this;
+    }
+
+    /**
+     * Gets reporter_email
+     *
+     * @return string|null
+     */
+    public function getReporterEmail()
+    {
+        return $this->container['reporter_email'];
+    }
+
+    /**
+     * Sets reporter_email
+     *
+     * @param string|null $reporter_email Reporter email (bug/feature), or `null`.
+     *
+     * @return self
+     */
+    public function setReporterEmail($reporter_email)
+    {
+        if (is_null($reporter_email)) {
+            array_push($this->openAPINullablesSetToNull, 'reporter_email');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('reporter_email', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['reporter_email'] = $reporter_email;
+
+        return $this;
+    }
+
+    /**
+     * Gets steps_to_reproduce
+     *
+     * @return string|null
+     */
+    public function getStepsToReproduce()
+    {
+        return $this->container['steps_to_reproduce'];
+    }
+
+    /**
+     * Sets steps_to_reproduce
+     *
+     * @param string|null $steps_to_reproduce Reproduction steps — populated for `bug`, empty string otherwise.
+     *
+     * @return self
+     */
+    public function setStepsToReproduce($steps_to_reproduce)
+    {
+        if (is_null($steps_to_reproduce)) {
+            throw new \InvalidArgumentException('non-nullable steps_to_reproduce cannot be null');
+        }
+        $this->container['steps_to_reproduce'] = $steps_to_reproduce;
+
+        return $this;
+    }
+
+    /**
+     * Gets actual_result
+     *
+     * @return string|null
+     */
+    public function getActualResult()
+    {
+        return $this->container['actual_result'];
+    }
+
+    /**
+     * Sets actual_result
+     *
+     * @param string|null $actual_result What actually happened — `bug` only, empty string otherwise.
+     *
+     * @return self
+     */
+    public function setActualResult($actual_result)
+    {
+        if (is_null($actual_result)) {
+            throw new \InvalidArgumentException('non-nullable actual_result cannot be null');
+        }
+        $this->container['actual_result'] = $actual_result;
+
+        return $this;
+    }
+
+    /**
+     * Gets expected_result
+     *
+     * @return string|null
+     */
+    public function getExpectedResult()
+    {
+        return $this->container['expected_result'];
+    }
+
+    /**
+     * Sets expected_result
+     *
+     * @param string|null $expected_result What was expected — `bug` only, empty string otherwise.
+     *
+     * @return self
+     */
+    public function setExpectedResult($expected_result)
+    {
+        if (is_null($expected_result)) {
+            throw new \InvalidArgumentException('non-nullable expected_result cannot be null');
+        }
+        $this->container['expected_result'] = $expected_result;
+
+        return $this;
+    }
+
+    /**
+     * Gets description
+     *
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->container['description'];
+    }
+
+    /**
+     * Sets description
+     *
+     * @param string|null $description Feature description — populated for `feature_request`, empty string otherwise.
+     *
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        if (is_null($description)) {
+            throw new \InvalidArgumentException('non-nullable description cannot be null');
+        }
+        $this->container['description'] = $description;
+
+        return $this;
+    }
+
+    /**
+     * Gets use_case
+     *
+     * @return string|null
+     */
+    public function getUseCase()
+    {
+        return $this->container['use_case'];
+    }
+
+    /**
+     * Sets use_case
+     *
+     * @param string|null $use_case Feature use case — `feature_request` only, empty string otherwise.
+     *
+     * @return self
+     */
+    public function setUseCase($use_case)
+    {
+        if (is_null($use_case)) {
+            throw new \InvalidArgumentException('non-nullable use_case cannot be null');
+        }
+        $this->container['use_case'] = $use_case;
+
+        return $this;
+    }
+
+    /**
+     * Gets context
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemContext|null
+     */
+    public function getContext()
+    {
+        return $this->container['context'];
+    }
+
+    /**
+     * Sets context
+     *
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemContext|null $context Type-specific capture context. For `bug`/`feature_request` it carries `browser` (the auto-collected page URL / user-agent / viewport). For auto-filed tickets it carries the hydrated `error`, `alert`, or `measurePlan` block. `null` only for legacy rows with nothing captured.
+     *
+     * @return self
+     */
+    public function setContext($context)
+    {
+        if (is_null($context)) {
+            array_push($this->openAPINullablesSetToNull, 'context');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('context', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['context'] = $context;
+
+        return $this;
+    }
+
+    /**
+     * Gets attachments
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemAttachment[]
+     */
+    public function getAttachments()
+    {
+        return $this->container['attachments'];
+    }
+
+    /**
+     * Sets attachments
+     *
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemAttachment[] $attachments Files attached to the report — screenshots, recordings, logs. Populated for `bug`/`feature_request`; always an empty array for auto-filed `error`/`alert`/`measure_plan` tickets. Fetch each via its `fetchUrl` with the same admin/ops key (the download route is ops-key allow-listed).
+     *
+     * @return self
+     */
+    public function setAttachments($attachments)
+    {
+        if (is_null($attachments)) {
+            throw new \InvalidArgumentException('non-nullable attachments cannot be null');
+        }
+        $this->container['attachments'] = $attachments;
+
+        return $this;
+    }
+
+    /**
+     * Gets related
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemRelated
+     */
+    public function getRelated()
+    {
+        return $this->container['related'];
+    }
+
+    /**
+     * Sets related
+     *
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemRelated $related related
+     *
+     * @return self
+     */
+    public function setRelated($related)
+    {
+        if (is_null($related)) {
+            throw new \InvalidArgumentException('non-nullable related cannot be null');
+        }
+        $this->container['related'] = $related;
+
+        return $this;
+    }
+
+    /**
+     * Gets connector_data
+     *
+     * @return \Shipeasy\Admin\Generated\Model\ConnectorData|null
+     */
+    public function getConnectorData()
+    {
+        return $this->container['connector_data'];
+    }
+
+    /**
+     * Sets connector_data
+     *
+     * @param \Shipeasy\Admin\Generated\Model\ConnectorData|null $connector_data Per-connector linkage recorded for this item, keyed by connector provider. Populated as connectors act on the item (e.g. GitHub opens an issue, Slack posts a message); more than one provider can be present at once. `null` if no connector has touched the item.
+     *
+     * @return self
+     */
+    public function setConnectorData($connector_data)
+    {
+        if (is_null($connector_data)) {
+            array_push($this->openAPINullablesSetToNull, 'connector_data');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('connector_data', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['connector_data'] = $connector_data;
+
+        return $this;
+    }
+
+    /**
+     * Gets notify
+     *
+     * @return \Shipeasy\Admin\Generated\Model\NotificationTarget|null
+     */
+    public function getNotify()
+    {
+        return $this->container['notify'];
+    }
+
+    /**
+     * Sets notify
+     *
+     * @param \Shipeasy\Admin\Generated\Model\NotificationTarget|null $notify Per-item completion-notification target, or `null` (falls back to the project default).
+     *
+     * @return self
+     */
+    public function setNotify($notify)
+    {
+        if (is_null($notify)) {
+            array_push($this->openAPINullablesSetToNull, 'notify');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('notify', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['notify'] = $notify;
+
+        return $this;
+    }
+
+    /**
+     * Gets assignee_id
+     *
+     * @return string|null
+     */
+    public function getAssigneeId()
+    {
+        return $this->container['assignee_id'];
+    }
+
+    /**
+     * Sets assignee_id
+     *
+     * @param string|null $assignee_id The PERSON owner — a `users.id` (resolved into `owner.user`), or `null` when unassigned.
+     *
+     * @return self
+     */
+    public function setAssigneeId($assignee_id)
+    {
+        if (is_null($assignee_id)) {
+            array_push($this->openAPINullablesSetToNull, 'assignee_id');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('assignee_id', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['assignee_id'] = $assignee_id;
+
+        return $this;
+    }
+
+    /**
+     * Gets assignee_connector_id
+     *
+     * @return string|null
+     */
+    public function getAssigneeConnectorId()
+    {
+        return $this->container['assignee_connector_id'];
+    }
+
+    /**
+     * Sets assignee_connector_id
+     *
+     * @param string|null $assignee_connector_id The AGENT owner when it is a connected trigger connector — a `connectors` row id (resolved into `owner.agent`), or `null`. Mutually exclusive with `assigneeAgent`.
+     *
+     * @return self
+     */
+    public function setAssigneeConnectorId($assignee_connector_id)
+    {
+        if (is_null($assignee_connector_id)) {
+            array_push($this->openAPINullablesSetToNull, 'assignee_connector_id');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('assignee_connector_id', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['assignee_connector_id'] = $assignee_connector_id;
+
+        return $this;
+    }
+
+    /**
+     * Gets assignee_agent
+     *
+     * @return string|null
+     */
+    public function getAssigneeAgent()
+    {
+        return $this->container['assignee_agent'];
+    }
+
+    /**
+     * Sets assignee_agent
+     *
+     * @param string|null $assignee_agent The AGENT owner when it is a built-in hosted Shipeasy agent — currently only `jarvis` — or `null`. Mutually exclusive with `assigneeConnectorId`.
+     *
+     * @return self
+     */
+    public function setAssigneeAgent($assignee_agent)
+    {
+        if (is_null($assignee_agent)) {
+            array_push($this->openAPINullablesSetToNull, 'assignee_agent');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('assignee_agent', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['assignee_agent'] = $assignee_agent;
+
+        return $this;
+    }
+
+    /**
+     * Gets owner
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemOwner
+     */
+    public function getOwner()
+    {
+        return $this->container['owner'];
+    }
+
+    /**
+     * Sets owner
+     *
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemOwner $owner owner
+     *
+     * @return self
+     */
+    public function setOwner($owner)
+    {
+        if (is_null($owner)) {
+            throw new \InvalidArgumentException('non-nullable owner cannot be null');
+        }
+        $this->container['owner'] = $owner;
 
         return $this;
     }
@@ -711,6 +1320,33 @@ class GetOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSerializab
             throw new \InvalidArgumentException('non-nullable created_at cannot be null');
         }
         $this->container['created_at'] = $created_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets updated_at
+     *
+     * @return string|null
+     */
+    public function getUpdatedAt()
+    {
+        return $this->container['updated_at'];
+    }
+
+    /**
+     * Sets updated_at
+     *
+     * @param string|null $updated_at ISO-8601 last-update timestamp.
+     *
+     * @return self
+     */
+    public function setUpdatedAt($updated_at)
+    {
+        if (is_null($updated_at)) {
+            throw new \InvalidArgumentException('non-nullable updated_at cannot be null');
+        }
+        $this->container['updated_at'] = $updated_at;
 
         return $this;
     }

@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * ListOpsItemsResponseInner Class Doc Comment
  *
  * @category Class
- * @description One queue item — any type.
+ * @description One queue item — any type — plus its resolved &#x60;owner&#x60; and run state.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -62,10 +62,28 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
         'number' => 'float',
         'type' => 'string',
         'title' => 'string',
-        'status' => 'string',
-        'priority' => 'string',
+        'status' => '\Shipeasy\Admin\Generated\Model\OpsItemStatus',
+        'priority' => '\Shipeasy\Admin\Generated\Model\OpsItemPriority',
         'source_ref' => 'string',
-        'created_at' => 'string'
+        'investigation_state' => '\Shipeasy\Admin\Generated\Model\OpsInvestigationState',
+        'source' => 'string',
+        'reporter_email' => 'string',
+        'steps_to_reproduce' => 'string',
+        'actual_result' => 'string',
+        'expected_result' => 'string',
+        'description' => 'string',
+        'use_case' => 'string',
+        'context' => '\Shipeasy\Admin\Generated\Model\OpsItemContext',
+        'connector_data' => '\Shipeasy\Admin\Generated\Model\ConnectorData',
+        'notify' => '\Shipeasy\Admin\Generated\Model\NotificationTarget',
+        'assignee_id' => 'string',
+        'assignee_connector_id' => 'string',
+        'assignee_agent' => 'string',
+        'owner' => '\Shipeasy\Admin\Generated\Model\OpsItemOwner',
+        'run' => '\Shipeasy\Admin\Generated\Model\OpsRun',
+        'last_run' => '\Shipeasy\Admin\Generated\Model\OpsRun',
+        'created_at' => 'string',
+        'updated_at' => 'string'
     ];
 
     /**
@@ -83,7 +101,25 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
         'status' => null,
         'priority' => null,
         'source_ref' => null,
-        'created_at' => null
+        'investigation_state' => null,
+        'source' => null,
+        'reporter_email' => null,
+        'steps_to_reproduce' => null,
+        'actual_result' => null,
+        'expected_result' => null,
+        'description' => null,
+        'use_case' => null,
+        'context' => null,
+        'connector_data' => null,
+        'notify' => null,
+        'assignee_id' => null,
+        'assignee_connector_id' => null,
+        'assignee_agent' => null,
+        'owner' => null,
+        'run' => null,
+        'last_run' => null,
+        'created_at' => null,
+        'updated_at' => null
     ];
 
     /**
@@ -99,7 +135,25 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
         'status' => false,
         'priority' => true,
         'source_ref' => true,
-        'created_at' => false
+        'investigation_state' => true,
+        'source' => false,
+        'reporter_email' => true,
+        'steps_to_reproduce' => false,
+        'actual_result' => false,
+        'expected_result' => false,
+        'description' => false,
+        'use_case' => false,
+        'context' => true,
+        'connector_data' => true,
+        'notify' => true,
+        'assignee_id' => true,
+        'assignee_connector_id' => true,
+        'assignee_agent' => true,
+        'owner' => false,
+        'run' => true,
+        'last_run' => true,
+        'created_at' => false,
+        'updated_at' => false
     ];
 
     /**
@@ -195,7 +249,25 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
         'status' => 'status',
         'priority' => 'priority',
         'source_ref' => 'sourceRef',
-        'created_at' => 'createdAt'
+        'investigation_state' => 'investigationState',
+        'source' => 'source',
+        'reporter_email' => 'reporterEmail',
+        'steps_to_reproduce' => 'stepsToReproduce',
+        'actual_result' => 'actualResult',
+        'expected_result' => 'expectedResult',
+        'description' => 'description',
+        'use_case' => 'useCase',
+        'context' => 'context',
+        'connector_data' => 'connectorData',
+        'notify' => 'notify',
+        'assignee_id' => 'assigneeId',
+        'assignee_connector_id' => 'assigneeConnectorId',
+        'assignee_agent' => 'assigneeAgent',
+        'owner' => 'owner',
+        'run' => 'run',
+        'last_run' => 'lastRun',
+        'created_at' => 'createdAt',
+        'updated_at' => 'updatedAt'
     ];
 
     /**
@@ -211,7 +283,25 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
         'status' => 'setStatus',
         'priority' => 'setPriority',
         'source_ref' => 'setSourceRef',
-        'created_at' => 'setCreatedAt'
+        'investigation_state' => 'setInvestigationState',
+        'source' => 'setSource',
+        'reporter_email' => 'setReporterEmail',
+        'steps_to_reproduce' => 'setStepsToReproduce',
+        'actual_result' => 'setActualResult',
+        'expected_result' => 'setExpectedResult',
+        'description' => 'setDescription',
+        'use_case' => 'setUseCase',
+        'context' => 'setContext',
+        'connector_data' => 'setConnectorData',
+        'notify' => 'setNotify',
+        'assignee_id' => 'setAssigneeId',
+        'assignee_connector_id' => 'setAssigneeConnectorId',
+        'assignee_agent' => 'setAssigneeAgent',
+        'owner' => 'setOwner',
+        'run' => 'setRun',
+        'last_run' => 'setLastRun',
+        'created_at' => 'setCreatedAt',
+        'updated_at' => 'setUpdatedAt'
     ];
 
     /**
@@ -227,7 +317,25 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
         'status' => 'getStatus',
         'priority' => 'getPriority',
         'source_ref' => 'getSourceRef',
-        'created_at' => 'getCreatedAt'
+        'investigation_state' => 'getInvestigationState',
+        'source' => 'getSource',
+        'reporter_email' => 'getReporterEmail',
+        'steps_to_reproduce' => 'getStepsToReproduce',
+        'actual_result' => 'getActualResult',
+        'expected_result' => 'getExpectedResult',
+        'description' => 'getDescription',
+        'use_case' => 'getUseCase',
+        'context' => 'getContext',
+        'connector_data' => 'getConnectorData',
+        'notify' => 'getNotify',
+        'assignee_id' => 'getAssigneeId',
+        'assignee_connector_id' => 'getAssigneeConnectorId',
+        'assignee_agent' => 'getAssigneeAgent',
+        'owner' => 'getOwner',
+        'run' => 'getRun',
+        'last_run' => 'getLastRun',
+        'created_at' => 'getCreatedAt',
+        'updated_at' => 'getUpdatedAt'
     ];
 
     /**
@@ -275,16 +383,9 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
     public const TYPE_FEATURE_REQUEST = 'feature_request';
     public const TYPE_ERROR = 'error';
     public const TYPE_ALERT = 'alert';
-    public const STATUS_OPEN = 'open';
-    public const STATUS_TRIAGED = 'triaged';
-    public const STATUS_IN_PROGRESS = 'in_progress';
-    public const STATUS_READY_FOR_QA = 'ready_for_qa';
-    public const STATUS_RESOLVED = 'resolved';
-    public const STATUS_WONT_FIX = 'wont_fix';
-    public const PRIORITY_NICE_TO_HAVE = 'nice_to_have';
-    public const PRIORITY_MEDIUM = 'medium';
-    public const PRIORITY_HIGH = 'high';
-    public const PRIORITY_CRITICAL = 'critical';
+    public const TYPE_MEASURE_PLAN = 'measure_plan';
+    public const SOURCE_TEAM = 'team';
+    public const SOURCE_SYSTEM = 'system';
 
     /**
      * Gets allowable values of the enum
@@ -298,6 +399,7 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
             self::TYPE_FEATURE_REQUEST,
             self::TYPE_ERROR,
             self::TYPE_ALERT,
+            self::TYPE_MEASURE_PLAN,
         ];
     }
 
@@ -306,30 +408,11 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
      *
      * @return string[]
      */
-    public function getStatusAllowableValues()
+    public function getSourceAllowableValues()
     {
         return [
-            self::STATUS_OPEN,
-            self::STATUS_TRIAGED,
-            self::STATUS_IN_PROGRESS,
-            self::STATUS_READY_FOR_QA,
-            self::STATUS_RESOLVED,
-            self::STATUS_WONT_FIX,
-        ];
-    }
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getPriorityAllowableValues()
-    {
-        return [
-            self::PRIORITY_NICE_TO_HAVE,
-            self::PRIORITY_MEDIUM,
-            self::PRIORITY_HIGH,
-            self::PRIORITY_CRITICAL,
+            self::SOURCE_TEAM,
+            self::SOURCE_SYSTEM,
         ];
     }
 
@@ -355,7 +438,25 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
         $this->setIfExists('status', $data ?? [], null);
         $this->setIfExists('priority', $data ?? [], null);
         $this->setIfExists('source_ref', $data ?? [], null);
+        $this->setIfExists('investigation_state', $data ?? [], null);
+        $this->setIfExists('source', $data ?? [], null);
+        $this->setIfExists('reporter_email', $data ?? [], null);
+        $this->setIfExists('steps_to_reproduce', $data ?? [], null);
+        $this->setIfExists('actual_result', $data ?? [], null);
+        $this->setIfExists('expected_result', $data ?? [], null);
+        $this->setIfExists('description', $data ?? [], null);
+        $this->setIfExists('use_case', $data ?? [], null);
+        $this->setIfExists('context', $data ?? [], null);
+        $this->setIfExists('connector_data', $data ?? [], null);
+        $this->setIfExists('notify', $data ?? [], null);
+        $this->setIfExists('assignee_id', $data ?? [], null);
+        $this->setIfExists('assignee_connector_id', $data ?? [], null);
+        $this->setIfExists('assignee_agent', $data ?? [], null);
+        $this->setIfExists('owner', $data ?? [], null);
+        $this->setIfExists('run', $data ?? [], null);
+        $this->setIfExists('last_run', $data ?? [], null);
         $this->setIfExists('created_at', $data ?? [], null);
+        $this->setIfExists('updated_at', $data ?? [], null);
     }
 
     /**
@@ -409,29 +510,35 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
         if ($this->container['status'] === null) {
             $invalidProperties[] = "'status' can't be null";
         }
-        $allowedValues = $this->getStatusAllowableValues();
-        if (!is_null($this->container['status']) && !in_array($this->container['status'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'status', must be one of '%s'",
-                $this->container['status'],
-                implode("', '", $allowedValues)
-            );
-        }
-
         if ($this->container['priority'] === null && !$this->isNullableSetToNull('priority')) {
             $invalidProperties[] = "'priority' is required";
         }
-        $allowedValues = $this->getPriorityAllowableValues();
-        if (!is_null($this->container['priority']) && !in_array($this->container['priority'], $allowedValues, true)) {
+        if ($this->container['source'] === null) {
+            $invalidProperties[] = "'source' can't be null";
+        }
+        $allowedValues = $this->getSourceAllowableValues();
+        if (!is_null($this->container['source']) && !in_array($this->container['source'], $allowedValues, true)) {
             $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'priority', must be one of '%s'",
-                $this->container['priority'],
+                "invalid value '%s' for 'source', must be one of '%s'",
+                $this->container['source'],
                 implode("', '", $allowedValues)
             );
         }
 
+        if ($this->container['owner'] === null) {
+            $invalidProperties[] = "'owner' can't be null";
+        }
+        if ($this->container['run'] === null && !$this->isNullableSetToNull('run')) {
+            $invalidProperties[] = "'run' is required";
+        }
+        if ($this->container['last_run'] === null && !$this->isNullableSetToNull('last_run')) {
+            $invalidProperties[] = "'last_run' is required";
+        }
         if ($this->container['created_at'] === null) {
             $invalidProperties[] = "'created_at' can't be null";
+        }
+        if ($this->container['updated_at'] === null) {
+            $invalidProperties[] = "'updated_at' can't be null";
         }
         return $invalidProperties;
     }
@@ -522,7 +629,7 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
     /**
      * Sets type
      *
-     * @param string $type Queue item type. `bug` and `feature_request` are user-fileable; `error` and `alert` tickets are auto-filed by the platform.
+     * @param string $type Queue item type. `bug` and `feature_request` are user-fileable; `error`, `alert`, and `measure_plan` tickets are auto-filed by the platform (a tracked production error, a metric-threshold alert, and an assistant-proposed measurement plan respectively).
      *
      * @return self
      */
@@ -576,7 +683,7 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
     /**
      * Gets status
      *
-     * @return string
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemStatus
      */
     public function getStatus()
     {
@@ -586,7 +693,7 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
     /**
      * Sets status
      *
-     * @param string $status Lifecycle status of a queue item.
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemStatus $status status
      *
      * @return self
      */
@@ -594,16 +701,6 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
     {
         if (is_null($status)) {
             throw new \InvalidArgumentException('non-nullable status cannot be null');
-        }
-        $allowedValues = $this->getStatusAllowableValues();
-        if (!in_array($status, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'status', must be one of '%s'",
-                    $status,
-                    implode("', '", $allowedValues)
-                )
-            );
         }
         $this->container['status'] = $status;
 
@@ -613,7 +710,7 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
     /**
      * Gets priority
      *
-     * @return string|null
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemPriority|null
      */
     public function getPriority()
     {
@@ -623,7 +720,7 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
     /**
      * Sets priority
      *
-     * @param string|null $priority Triage priority of a queue item.
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemPriority|null $priority Triage priority, or `null` if not yet set.
      *
      * @return self
      */
@@ -638,16 +735,6 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
                 unset($nullablesSetToNull[$index]);
                 $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
             }
-        }
-        $allowedValues = $this->getPriorityAllowableValues();
-        if (!is_null($priority) && !in_array($priority, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'priority', must be one of '%s'",
-                    $priority,
-                    implode("', '", $allowedValues)
-                )
-            );
         }
         $this->container['priority'] = $priority;
 
@@ -689,6 +776,545 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
     }
 
     /**
+     * Gets investigation_state
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsInvestigationState|null
+     */
+    public function getInvestigationState()
+    {
+        return $this->container['investigation_state'];
+    }
+
+    /**
+     * Sets investigation_state
+     *
+     * @param \Shipeasy\Admin\Generated\Model\OpsInvestigationState|null $investigation_state Where automation has taken this item in the investigation lifecycle (see `OpsInvestigationState`). Optional — absent/`null` on rows filed before the field existed; derive from `status`/`type` in that case.
+     *
+     * @return self
+     */
+    public function setInvestigationState($investigation_state)
+    {
+        if (is_null($investigation_state)) {
+            array_push($this->openAPINullablesSetToNull, 'investigation_state');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('investigation_state', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['investigation_state'] = $investigation_state;
+
+        return $this;
+    }
+
+    /**
+     * Gets source
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return $this->container['source'];
+    }
+
+    /**
+     * Sets source
+     *
+     * @param string $source How the item was filed: `team` (a human admin/teammate — bug/feature) or `system` (auto-filed — error/alert/measure_plan).
+     *
+     * @return self
+     */
+    public function setSource($source)
+    {
+        if (is_null($source)) {
+            throw new \InvalidArgumentException('non-nullable source cannot be null');
+        }
+        $allowedValues = $this->getSourceAllowableValues();
+        if (!in_array($source, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'source', must be one of '%s'",
+                    $source,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['source'] = $source;
+
+        return $this;
+    }
+
+    /**
+     * Gets reporter_email
+     *
+     * @return string|null
+     */
+    public function getReporterEmail()
+    {
+        return $this->container['reporter_email'];
+    }
+
+    /**
+     * Sets reporter_email
+     *
+     * @param string|null $reporter_email Reporter email (bug/feature), or `null`.
+     *
+     * @return self
+     */
+    public function setReporterEmail($reporter_email)
+    {
+        if (is_null($reporter_email)) {
+            array_push($this->openAPINullablesSetToNull, 'reporter_email');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('reporter_email', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['reporter_email'] = $reporter_email;
+
+        return $this;
+    }
+
+    /**
+     * Gets steps_to_reproduce
+     *
+     * @return string|null
+     */
+    public function getStepsToReproduce()
+    {
+        return $this->container['steps_to_reproduce'];
+    }
+
+    /**
+     * Sets steps_to_reproduce
+     *
+     * @param string|null $steps_to_reproduce Reproduction steps — populated for `bug`, empty string otherwise.
+     *
+     * @return self
+     */
+    public function setStepsToReproduce($steps_to_reproduce)
+    {
+        if (is_null($steps_to_reproduce)) {
+            throw new \InvalidArgumentException('non-nullable steps_to_reproduce cannot be null');
+        }
+        $this->container['steps_to_reproduce'] = $steps_to_reproduce;
+
+        return $this;
+    }
+
+    /**
+     * Gets actual_result
+     *
+     * @return string|null
+     */
+    public function getActualResult()
+    {
+        return $this->container['actual_result'];
+    }
+
+    /**
+     * Sets actual_result
+     *
+     * @param string|null $actual_result What actually happened — `bug` only, empty string otherwise.
+     *
+     * @return self
+     */
+    public function setActualResult($actual_result)
+    {
+        if (is_null($actual_result)) {
+            throw new \InvalidArgumentException('non-nullable actual_result cannot be null');
+        }
+        $this->container['actual_result'] = $actual_result;
+
+        return $this;
+    }
+
+    /**
+     * Gets expected_result
+     *
+     * @return string|null
+     */
+    public function getExpectedResult()
+    {
+        return $this->container['expected_result'];
+    }
+
+    /**
+     * Sets expected_result
+     *
+     * @param string|null $expected_result What was expected — `bug` only, empty string otherwise.
+     *
+     * @return self
+     */
+    public function setExpectedResult($expected_result)
+    {
+        if (is_null($expected_result)) {
+            throw new \InvalidArgumentException('non-nullable expected_result cannot be null');
+        }
+        $this->container['expected_result'] = $expected_result;
+
+        return $this;
+    }
+
+    /**
+     * Gets description
+     *
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->container['description'];
+    }
+
+    /**
+     * Sets description
+     *
+     * @param string|null $description Feature description — populated for `feature_request`, empty string otherwise.
+     *
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        if (is_null($description)) {
+            throw new \InvalidArgumentException('non-nullable description cannot be null');
+        }
+        $this->container['description'] = $description;
+
+        return $this;
+    }
+
+    /**
+     * Gets use_case
+     *
+     * @return string|null
+     */
+    public function getUseCase()
+    {
+        return $this->container['use_case'];
+    }
+
+    /**
+     * Sets use_case
+     *
+     * @param string|null $use_case Feature use case — `feature_request` only, empty string otherwise.
+     *
+     * @return self
+     */
+    public function setUseCase($use_case)
+    {
+        if (is_null($use_case)) {
+            throw new \InvalidArgumentException('non-nullable use_case cannot be null');
+        }
+        $this->container['use_case'] = $use_case;
+
+        return $this;
+    }
+
+    /**
+     * Gets context
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemContext|null
+     */
+    public function getContext()
+    {
+        return $this->container['context'];
+    }
+
+    /**
+     * Sets context
+     *
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemContext|null $context The RAW stored capture context on the row — NOT hydrated: list rows carry only what was captured at file time (e.g. `context.browser` for bug/feature, the trigger subset for auto-filed tickets). The live `error`/`alert` readings and `errorChart` are added only by the single-item read (`GET /api/admin/ops/{handle}`). `null` when nothing was captured.
+     *
+     * @return self
+     */
+    public function setContext($context)
+    {
+        if (is_null($context)) {
+            array_push($this->openAPINullablesSetToNull, 'context');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('context', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['context'] = $context;
+
+        return $this;
+    }
+
+    /**
+     * Gets connector_data
+     *
+     * @return \Shipeasy\Admin\Generated\Model\ConnectorData|null
+     */
+    public function getConnectorData()
+    {
+        return $this->container['connector_data'];
+    }
+
+    /**
+     * Sets connector_data
+     *
+     * @param \Shipeasy\Admin\Generated\Model\ConnectorData|null $connector_data Per-connector linkage recorded for this item, keyed by connector provider. `null` if no connector has touched the item.
+     *
+     * @return self
+     */
+    public function setConnectorData($connector_data)
+    {
+        if (is_null($connector_data)) {
+            array_push($this->openAPINullablesSetToNull, 'connector_data');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('connector_data', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['connector_data'] = $connector_data;
+
+        return $this;
+    }
+
+    /**
+     * Gets notify
+     *
+     * @return \Shipeasy\Admin\Generated\Model\NotificationTarget|null
+     */
+    public function getNotify()
+    {
+        return $this->container['notify'];
+    }
+
+    /**
+     * Sets notify
+     *
+     * @param \Shipeasy\Admin\Generated\Model\NotificationTarget|null $notify Per-item completion-notification target, or `null` (falls back to the project default).
+     *
+     * @return self
+     */
+    public function setNotify($notify)
+    {
+        if (is_null($notify)) {
+            array_push($this->openAPINullablesSetToNull, 'notify');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('notify', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['notify'] = $notify;
+
+        return $this;
+    }
+
+    /**
+     * Gets assignee_id
+     *
+     * @return string|null
+     */
+    public function getAssigneeId()
+    {
+        return $this->container['assignee_id'];
+    }
+
+    /**
+     * Sets assignee_id
+     *
+     * @param string|null $assignee_id The PERSON owner — a `users.id` (resolved into `owner.user`), or `null` when unassigned.
+     *
+     * @return self
+     */
+    public function setAssigneeId($assignee_id)
+    {
+        if (is_null($assignee_id)) {
+            array_push($this->openAPINullablesSetToNull, 'assignee_id');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('assignee_id', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['assignee_id'] = $assignee_id;
+
+        return $this;
+    }
+
+    /**
+     * Gets assignee_connector_id
+     *
+     * @return string|null
+     */
+    public function getAssigneeConnectorId()
+    {
+        return $this->container['assignee_connector_id'];
+    }
+
+    /**
+     * Sets assignee_connector_id
+     *
+     * @param string|null $assignee_connector_id The AGENT owner when it is a connected trigger connector — a `connectors` row id (resolved into `owner.agent`), or `null`. Mutually exclusive with `assigneeAgent`.
+     *
+     * @return self
+     */
+    public function setAssigneeConnectorId($assignee_connector_id)
+    {
+        if (is_null($assignee_connector_id)) {
+            array_push($this->openAPINullablesSetToNull, 'assignee_connector_id');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('assignee_connector_id', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['assignee_connector_id'] = $assignee_connector_id;
+
+        return $this;
+    }
+
+    /**
+     * Gets assignee_agent
+     *
+     * @return string|null
+     */
+    public function getAssigneeAgent()
+    {
+        return $this->container['assignee_agent'];
+    }
+
+    /**
+     * Sets assignee_agent
+     *
+     * @param string|null $assignee_agent The AGENT owner when it is a built-in hosted Shipeasy agent — currently only `jarvis` — or `null`. Mutually exclusive with `assigneeConnectorId`.
+     *
+     * @return self
+     */
+    public function setAssigneeAgent($assignee_agent)
+    {
+        if (is_null($assignee_agent)) {
+            array_push($this->openAPINullablesSetToNull, 'assignee_agent');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('assignee_agent', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['assignee_agent'] = $assignee_agent;
+
+        return $this;
+    }
+
+    /**
+     * Gets owner
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemOwner
+     */
+    public function getOwner()
+    {
+        return $this->container['owner'];
+    }
+
+    /**
+     * Sets owner
+     *
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemOwner $owner owner
+     *
+     * @return self
+     */
+    public function setOwner($owner)
+    {
+        if (is_null($owner)) {
+            throw new \InvalidArgumentException('non-nullable owner cannot be null');
+        }
+        $this->container['owner'] = $owner;
+
+        return $this;
+    }
+
+    /**
+     * Gets run
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsRun|null
+     */
+    public function getRun()
+    {
+        return $this->container['run'];
+    }
+
+    /**
+     * Sets run
+     *
+     * @param \Shipeasy\Admin\Generated\Model\OpsRun|null $run The currently OPEN run on this item (someone acked it and is actively working — the cockpit's live working indicator), or `null` when nothing is in flight.
+     *
+     * @return self
+     */
+    public function setRun($run)
+    {
+        if (is_null($run)) {
+            array_push($this->openAPINullablesSetToNull, 'run');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('run', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['run'] = $run;
+
+        return $this;
+    }
+
+    /**
+     * Gets last_run
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsRun|null
+     */
+    public function getLastRun()
+    {
+        return $this->container['last_run'];
+    }
+
+    /**
+     * Sets last_run
+     *
+     * @param \Shipeasy\Admin\Generated\Model\OpsRun|null $last_run The most recently COMPLETED run (the run result — final action, PR, duration), excluding superseded runs; `null` when no run has completed yet.
+     *
+     * @return self
+     */
+    public function setLastRun($last_run)
+    {
+        if (is_null($last_run)) {
+            array_push($this->openAPINullablesSetToNull, 'last_run');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('last_run', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['last_run'] = $last_run;
+
+        return $this;
+    }
+
+    /**
      * Gets created_at
      *
      * @return string
@@ -711,6 +1337,33 @@ class ListOpsItemsResponseInner implements ModelInterface, ArrayAccess, \JsonSer
             throw new \InvalidArgumentException('non-nullable created_at cannot be null');
         }
         $this->container['created_at'] = $created_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets updated_at
+     *
+     * @return string
+     */
+    public function getUpdatedAt()
+    {
+        return $this->container['updated_at'];
+    }
+
+    /**
+     * Sets updated_at
+     *
+     * @param string $updated_at ISO-8601 last-update timestamp.
+     *
+     * @return self
+     */
+    public function setUpdatedAt($updated_at)
+    {
+        if (is_null($updated_at)) {
+            throw new \InvalidArgumentException('non-nullable updated_at cannot be null');
+        }
+        $this->container['updated_at'] = $updated_at;
 
         return $this;
     }

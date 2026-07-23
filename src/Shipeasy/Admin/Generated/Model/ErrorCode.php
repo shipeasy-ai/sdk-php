@@ -84,6 +84,11 @@ class ErrorCode
     public const IMMUTABLE_FIELD = 'IMMUTABLE_FIELD';
 
     /**
+     * The resource is a read-only built-in (e.g. a built-in gate-rule template) and cannot be modified or deleted.
+     */
+    public const READ_ONLY = 'READ_ONLY';
+
+    /**
      * The resource cannot be archived/deleted while another resource still references it.
      */
     public const REFERENCED_IN_USE = 'REFERENCED_IN_USE';
@@ -114,6 +119,56 @@ class ErrorCode
     public const INTERNAL = 'INTERNAL';
 
     /**
+     * The action would exceed a plan quota (e.g. the tier&#39;s maximum experiments, metrics, or configs). Upgrade the plan or archive an existing resource.
+     */
+    public const PLAN_LIMIT = 'PLAN_LIMIT';
+
+    /**
+     * The experiment has no goal metric set, which the requested action requires.
+     */
+    public const EXPERIMENT_NO_GOAL_METRIC = 'EXPERIMENT_NO_GOAL_METRIC';
+
+    /**
+     * An archived experiment cannot be restarted.
+     */
+    public const EXPERIMENT_ARCHIVED_RESTART = 'EXPERIMENT_ARCHIVED_RESTART';
+
+    /**
+     * The experiment cannot be restored from its current state.
+     */
+    public const EXPERIMENT_RESTORE_INVALID = 'EXPERIMENT_RESTORE_INVALID';
+
+    /**
+     * The action requires the experiment to be running.
+     */
+    public const EXPERIMENT_NOT_RUNNING = 'EXPERIMENT_NOT_RUNNING';
+
+    /**
+     * A running experiment cannot be archived — stop it first.
+     */
+    public const EXPERIMENT_RUNNING_ARCHIVE = 'EXPERIMENT_RUNNING_ARCHIVE';
+
+    /**
+     * A field that is immutable while the experiment is running was modified.
+     */
+    public const EXPERIMENT_IMMUTABLE_FIELD = 'EXPERIMENT_IMMUTABLE_FIELD';
+
+    /**
+     * The referenced metric does not exist or is not visible to the caller.
+     */
+    public const METRIC_NOT_FOUND = 'METRIC_NOT_FOUND';
+
+    /**
+     * The supplied metric id is malformed or not recognised.
+     */
+    public const METRIC_UNKNOWN_ID = 'METRIC_UNKNOWN_ID';
+
+    /**
+     * The named AI agent type has no connected trigger connector in this project — list the available agents (&#x60;ops agents list&#x60; / &#x60;GET /api/admin/agent-profiles&#x60;) and use one of those, or connect the agent under Settings → Triggers.
+     */
+    public const AGENT_NOT_CONNECTED = 'AGENT_NOT_CONNECTED';
+
+    /**
      * Gets allowable values of the enum
      * @return string[]
      */
@@ -128,12 +183,23 @@ class ErrorCode
             self::ALREADY_EXISTS,
             self::INVALID_TRANSITION,
             self::IMMUTABLE_FIELD,
+            self::READ_ONLY,
             self::REFERENCED_IN_USE,
             self::VALIDATION,
             self::REFERENCED_NOT_FOUND,
             self::GROUPS_WEIGHT_SUM,
             self::EVENT_PENDING,
-            self::INTERNAL
+            self::INTERNAL,
+            self::PLAN_LIMIT,
+            self::EXPERIMENT_NO_GOAL_METRIC,
+            self::EXPERIMENT_ARCHIVED_RESTART,
+            self::EXPERIMENT_RESTORE_INVALID,
+            self::EXPERIMENT_NOT_RUNNING,
+            self::EXPERIMENT_RUNNING_ARCHIVE,
+            self::EXPERIMENT_IMMUTABLE_FIELD,
+            self::METRIC_NOT_FOUND,
+            self::METRIC_UNKNOWN_ID,
+            self::AGENT_NOT_CONNECTED
         ];
     }
 }

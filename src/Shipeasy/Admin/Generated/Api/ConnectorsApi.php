@@ -95,6 +95,9 @@ class ConnectorsApi
         'updateConnector' => [
             'application/json',
         ],
+        'updateTriggerConnector' => [
+            'application/json',
+        ],
     ];
 
     /**
@@ -791,7 +794,13 @@ class ConnectorsApi
                 'Missing the required parameter $id when calling deleteConnector'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ConnectorsApi.deleteConnector, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ConnectorsApi.deleteConnector, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/connectors/{id}';
@@ -886,7 +895,7 @@ class ConnectorsApi
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
-     * @return \Shipeasy\Admin\Generated\Model\FireConnectorResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     * @return \Shipeasy\Admin\Generated\Model\FireConnectorResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
     public function fireConnector($id, $x_project_id = null, $fire_connector_request = null, string $contentType = self::contentTypes['fireConnector'][0])
     {
@@ -906,7 +915,7 @@ class ConnectorsApi
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
-     * @return array of \Shipeasy\Admin\Generated\Model\FireConnectorResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Shipeasy\Admin\Generated\Model\FireConnectorResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
     public function fireConnectorWithHttpInfo($id, $x_project_id = null, $fire_connector_request = null, string $contentType = self::contentTypes['fireConnector'][0])
     {
@@ -973,6 +982,12 @@ class ConnectorsApi
                         $response,
                     );
                 case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 502:
                     return $this->handleResponseWithDataType(
                         '\Shipeasy\Admin\Generated\Model\Error',
                         $request,
@@ -1051,6 +1066,14 @@ class ConnectorsApi
                     $e->setResponseObject($data);
                     throw $e;
                 case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 502:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Shipeasy\Admin\Generated\Model\Error',
@@ -1162,7 +1185,13 @@ class ConnectorsApi
                 'Missing the required parameter $id when calling fireConnector'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ConnectorsApi.fireConnector, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ConnectorsApi.fireConnector, must be bigger than or equal to 1.');
+        }
+        
 
 
 
@@ -1258,7 +1287,7 @@ class ConnectorsApi
      *
      * Get a connector
      *
-     * @param  string|null $id Stable opaque connector id. (required)
+     * @param  string $id Stable opaque connector id. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getConnector'] to see the possible values for this operation
      *
@@ -1277,7 +1306,7 @@ class ConnectorsApi
      *
      * Get a connector
      *
-     * @param  string|null $id Stable opaque connector id. (required)
+     * @param  string $id Stable opaque connector id. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getConnector'] to see the possible values for this operation
      *
@@ -1447,7 +1476,7 @@ class ConnectorsApi
      *
      * Get a connector
      *
-     * @param  string|null $id Stable opaque connector id. (required)
+     * @param  string $id Stable opaque connector id. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getConnector'] to see the possible values for this operation
      *
@@ -1469,7 +1498,7 @@ class ConnectorsApi
      *
      * Get a connector
      *
-     * @param  string|null $id Stable opaque connector id. (required)
+     * @param  string $id Stable opaque connector id. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getConnector'] to see the possible values for this operation
      *
@@ -1520,7 +1549,7 @@ class ConnectorsApi
     /**
      * Create request for operation 'getConnector'
      *
-     * @param  string|null $id Stable opaque connector id. (required)
+     * @param  string $id Stable opaque connector id. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getConnector'] to see the possible values for this operation
      *
@@ -1536,7 +1565,13 @@ class ConnectorsApi
                 'Missing the required parameter $id when calling getConnector'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ConnectorsApi.getConnector, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ConnectorsApi.getConnector, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/connectors/{id}';
@@ -1625,15 +1660,16 @@ class ConnectorsApi
      * List connectors
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectors'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Shipeasy\Admin\Generated\Model\ConnectorRecord[]|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
-    public function listConnectors($x_project_id = null, string $contentType = self::contentTypes['listConnectors'][0])
+    public function listConnectors($x_project_id = null, $q = null, string $contentType = self::contentTypes['listConnectors'][0])
     {
-        list($response) = $this->listConnectorsWithHttpInfo($x_project_id, $contentType);
+        list($response) = $this->listConnectorsWithHttpInfo($x_project_id, $q, $contentType);
         return $response;
     }
 
@@ -1643,15 +1679,16 @@ class ConnectorsApi
      * List connectors
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectors'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return array of \Shipeasy\Admin\Generated\Model\ConnectorRecord[]|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listConnectorsWithHttpInfo($x_project_id = null, string $contentType = self::contentTypes['listConnectors'][0])
+    public function listConnectorsWithHttpInfo($x_project_id = null, $q = null, string $contentType = self::contentTypes['listConnectors'][0])
     {
-        $request = $this->listConnectorsRequest($x_project_id, $contentType);
+        $request = $this->listConnectorsRequest($x_project_id, $q, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1812,14 +1849,15 @@ class ConnectorsApi
      * List connectors
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectors'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listConnectorsAsync($x_project_id = null, string $contentType = self::contentTypes['listConnectors'][0])
+    public function listConnectorsAsync($x_project_id = null, $q = null, string $contentType = self::contentTypes['listConnectors'][0])
     {
-        return $this->listConnectorsAsyncWithHttpInfo($x_project_id, $contentType)
+        return $this->listConnectorsAsyncWithHttpInfo($x_project_id, $q, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1833,15 +1871,16 @@ class ConnectorsApi
      * List connectors
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectors'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listConnectorsAsyncWithHttpInfo($x_project_id = null, string $contentType = self::contentTypes['listConnectors'][0])
+    public function listConnectorsAsyncWithHttpInfo($x_project_id = null, $q = null, string $contentType = self::contentTypes['listConnectors'][0])
     {
         $returnType = '\Shipeasy\Admin\Generated\Model\ConnectorRecord[]';
-        $request = $this->listConnectorsRequest($x_project_id, $contentType);
+        $request = $this->listConnectorsRequest($x_project_id, $q, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1883,15 +1922,20 @@ class ConnectorsApi
      * Create request for operation 'listConnectors'
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectors'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listConnectorsRequest($x_project_id = null, string $contentType = self::contentTypes['listConnectors'][0])
+    public function listConnectorsRequest($x_project_id = null, $q = null, string $contentType = self::contentTypes['listConnectors'][0])
     {
 
 
+        if ($q !== null && strlen($q) > 100) {
+            throw new \InvalidArgumentException('invalid length for "$q" when calling ConnectorsApi.listConnectors, must be smaller than or equal to 100.');
+        }
+        
 
         $resourcePath = '/api/admin/connectors';
         $formParams = [];
@@ -1900,6 +1944,15 @@ class ConnectorsApi
         $httpBody = '';
         $multipart = false;
 
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $q,
+            'q', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
 
         // header params
         if ($x_project_id !== null) {
@@ -1976,7 +2029,7 @@ class ConnectorsApi
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
-     * @return \Shipeasy\Admin\Generated\Model\TestConnectorResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     * @return \Shipeasy\Admin\Generated\Model\TestConnectorResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
     public function testConnector($id, $x_project_id = null, string $contentType = self::contentTypes['testConnector'][0])
     {
@@ -1995,7 +2048,7 @@ class ConnectorsApi
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
-     * @return array of \Shipeasy\Admin\Generated\Model\TestConnectorResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Shipeasy\Admin\Generated\Model\TestConnectorResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
     public function testConnectorWithHttpInfo($id, $x_project_id = null, string $contentType = self::contentTypes['testConnector'][0])
     {
@@ -2062,6 +2115,12 @@ class ConnectorsApi
                         $response,
                     );
                 case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 502:
                     return $this->handleResponseWithDataType(
                         '\Shipeasy\Admin\Generated\Model\Error',
                         $request,
@@ -2140,6 +2199,14 @@ class ConnectorsApi
                     $e->setResponseObject($data);
                     throw $e;
                 case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 502:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Shipeasy\Admin\Generated\Model\Error',
@@ -2248,7 +2315,13 @@ class ConnectorsApi
                 'Missing the required parameter $id when calling testConnector'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ConnectorsApi.testConnector, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ConnectorsApi.testConnector, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/connectors/{id}/test';
@@ -2619,7 +2692,13 @@ class ConnectorsApi
                 'Missing the required parameter $id when calling updateConnector'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ConnectorsApi.updateConnector, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ConnectorsApi.updateConnector, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'update_connector_request' is set
         if ($update_connector_request === null || (is_array($update_connector_request) && count($update_connector_request) === 0)) {
             throw new \InvalidArgumentException(
@@ -2665,6 +2744,397 @@ class ConnectorsApi
                 $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($update_connector_request));
             } else {
                 $httpBody = $update_connector_request;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (sdk_admin_*) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'PATCH',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation updateTriggerConnector
+     *
+     * Update a trigger connector
+     *
+     * @param  string $id Stable opaque connector id. Its stored &#x60;provider&#x60; must match the body&#39;s &#x60;provider&#x60;. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\UpdateTriggerConnectorRequest $update_trigger_connector_request update_trigger_connector_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateTriggerConnector'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Shipeasy\Admin\Generated\Model\UpdateConnectorResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     */
+    public function updateTriggerConnector($id, $update_trigger_connector_request, $x_project_id = null, string $contentType = self::contentTypes['updateTriggerConnector'][0])
+    {
+        list($response) = $this->updateTriggerConnectorWithHttpInfo($id, $update_trigger_connector_request, $x_project_id, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation updateTriggerConnectorWithHttpInfo
+     *
+     * Update a trigger connector
+     *
+     * @param  string $id Stable opaque connector id. Its stored &#x60;provider&#x60; must match the body&#39;s &#x60;provider&#x60;. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\UpdateTriggerConnectorRequest $update_trigger_connector_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateTriggerConnector'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of \Shipeasy\Admin\Generated\Model\UpdateConnectorResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function updateTriggerConnectorWithHttpInfo($id, $update_trigger_connector_request, $x_project_id = null, string $contentType = self::contentTypes['updateTriggerConnector'][0])
+    {
+        $request = $this->updateTriggerConnectorRequest($id, $update_trigger_connector_request, $x_project_id, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\UpdateConnectorResponse',
+                        $request,
+                        $response,
+                    );
+                case 400:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 401:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 409:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Shipeasy\Admin\Generated\Model\UpdateConnectorResponse',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\UpdateConnectorResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+        
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation updateTriggerConnectorAsync
+     *
+     * Update a trigger connector
+     *
+     * @param  string $id Stable opaque connector id. Its stored &#x60;provider&#x60; must match the body&#39;s &#x60;provider&#x60;. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\UpdateTriggerConnectorRequest $update_trigger_connector_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateTriggerConnector'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function updateTriggerConnectorAsync($id, $update_trigger_connector_request, $x_project_id = null, string $contentType = self::contentTypes['updateTriggerConnector'][0])
+    {
+        return $this->updateTriggerConnectorAsyncWithHttpInfo($id, $update_trigger_connector_request, $x_project_id, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation updateTriggerConnectorAsyncWithHttpInfo
+     *
+     * Update a trigger connector
+     *
+     * @param  string $id Stable opaque connector id. Its stored &#x60;provider&#x60; must match the body&#39;s &#x60;provider&#x60;. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\UpdateTriggerConnectorRequest $update_trigger_connector_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateTriggerConnector'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function updateTriggerConnectorAsyncWithHttpInfo($id, $update_trigger_connector_request, $x_project_id = null, string $contentType = self::contentTypes['updateTriggerConnector'][0])
+    {
+        $returnType = '\Shipeasy\Admin\Generated\Model\UpdateConnectorResponse';
+        $request = $this->updateTriggerConnectorRequest($id, $update_trigger_connector_request, $x_project_id, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'updateTriggerConnector'
+     *
+     * @param  string $id Stable opaque connector id. Its stored &#x60;provider&#x60; must match the body&#39;s &#x60;provider&#x60;. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\UpdateTriggerConnectorRequest $update_trigger_connector_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateTriggerConnector'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function updateTriggerConnectorRequest($id, $update_trigger_connector_request, $x_project_id = null, string $contentType = self::contentTypes['updateTriggerConnector'][0])
+    {
+
+        // verify the required parameter 'id' is set
+        if ($id === null || (is_array($id) && count($id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $id when calling updateTriggerConnector'
+            );
+        }
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ConnectorsApi.updateTriggerConnector, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ConnectorsApi.updateTriggerConnector, must be bigger than or equal to 1.');
+        }
+        
+        // verify the required parameter 'update_trigger_connector_request' is set
+        if ($update_trigger_connector_request === null || (is_array($update_trigger_connector_request) && count($update_trigger_connector_request) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $update_trigger_connector_request when calling updateTriggerConnector'
+            );
+        }
+
+
+
+        $resourcePath = '/api/admin/connectors/{id}/trigger';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // header params
+        if ($x_project_id !== null) {
+            $headerParams['X-Project-Id'] = ObjectSerializer::toHeaderValue($x_project_id);
+        }
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{id}',
+                ObjectSerializer::toPathValue($id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (isset($update_trigger_connector_request)) {
+            if (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the body
+                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($update_trigger_connector_request));
+            } else {
+                $httpBody = $update_trigger_connector_request;
             }
         } elseif (count($formParams) > 0) {
             if ($multipart) {

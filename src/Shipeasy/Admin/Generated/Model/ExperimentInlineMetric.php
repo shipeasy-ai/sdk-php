@@ -62,7 +62,8 @@ class ExperimentInlineMetric implements ModelInterface, ArrayAccess, \JsonSerial
         'query' => 'string',
         'event' => 'string',
         'aggregation' => 'string',
-        'value' => 'string'
+        'value' => 'string',
+        'min_effect_of_interest' => 'float'
     ];
 
     /**
@@ -77,7 +78,8 @@ class ExperimentInlineMetric implements ModelInterface, ArrayAccess, \JsonSerial
         'query' => null,
         'event' => null,
         'aggregation' => null,
-        'value' => null
+        'value' => null,
+        'min_effect_of_interest' => null
     ];
 
     /**
@@ -90,7 +92,8 @@ class ExperimentInlineMetric implements ModelInterface, ArrayAccess, \JsonSerial
         'query' => false,
         'event' => false,
         'aggregation' => false,
-        'value' => false
+        'value' => false,
+        'min_effect_of_interest' => true
     ];
 
     /**
@@ -183,7 +186,8 @@ class ExperimentInlineMetric implements ModelInterface, ArrayAccess, \JsonSerial
         'query' => 'query',
         'event' => 'event',
         'aggregation' => 'aggregation',
-        'value' => 'value'
+        'value' => 'value',
+        'min_effect_of_interest' => 'min_effect_of_interest'
     ];
 
     /**
@@ -196,7 +200,8 @@ class ExperimentInlineMetric implements ModelInterface, ArrayAccess, \JsonSerial
         'query' => 'setQuery',
         'event' => 'setEvent',
         'aggregation' => 'setAggregation',
-        'value' => 'setValue'
+        'value' => 'setValue',
+        'min_effect_of_interest' => 'setMinEffectOfInterest'
     ];
 
     /**
@@ -209,7 +214,8 @@ class ExperimentInlineMetric implements ModelInterface, ArrayAccess, \JsonSerial
         'query' => 'getQuery',
         'event' => 'getEvent',
         'aggregation' => 'getAggregation',
-        'value' => 'getValue'
+        'value' => 'getValue',
+        'min_effect_of_interest' => 'getMinEffectOfInterest'
     ];
 
     /**
@@ -297,6 +303,7 @@ class ExperimentInlineMetric implements ModelInterface, ArrayAccess, \JsonSerial
         $this->setIfExists('event', $data ?? [], null);
         $this->setIfExists('aggregation', $data ?? [], null);
         $this->setIfExists('value', $data ?? [], null);
+        $this->setIfExists('min_effect_of_interest', $data ?? [], null);
     }
 
     /**
@@ -551,6 +558,40 @@ class ExperimentInlineMetric implements ModelInterface, ArrayAccess, \JsonSerial
         }
 
         $this->container['value'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Gets min_effect_of_interest
+     *
+     * @return float|null
+     */
+    public function getMinEffectOfInterest()
+    {
+        return $this->container['min_effect_of_interest'];
+    }
+
+    /**
+     * Sets min_effect_of_interest
+     *
+     * @param float|null $min_effect_of_interest Per-experiment override of the metric's default minimum effect of interest (relative, 0–1) — the smallest change worth acting on for this experiment's decision. `null`/omitted inherits the metric default. For a guardrail, the non-inferiority margin.
+     *
+     * @return self
+     */
+    public function setMinEffectOfInterest($min_effect_of_interest)
+    {
+        if (is_null($min_effect_of_interest)) {
+            array_push($this->openAPINullablesSetToNull, 'min_effect_of_interest');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('min_effect_of_interest', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['min_effect_of_interest'] = $min_effect_of_interest;
 
         return $this;
     }

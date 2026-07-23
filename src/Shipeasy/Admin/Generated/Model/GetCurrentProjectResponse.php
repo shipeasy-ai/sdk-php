@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * GetCurrentProjectResponse Class Doc Comment
  *
  * @category Class
- * @description The project the caller&#39;s auth header resolves to. The shape is open — additional project fields may be present.
+ * @description The project the caller&#39;s auth header resolves to. The shape is open — additional project fields may be present. Stripe billing internals (&#x60;stripeCustomerId&#x60;, the &#x60;stripeItemId*&#x60; family) are intentionally undocumented.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -74,6 +74,41 @@ class GetCurrentProjectResponse implements ModelInterface, ArrayAccess, \JsonSer
         'module_gates' => '\Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations',
         'module_experiments' => '\Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations',
         'module_feedback' => '\Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations',
+        'min_sample_size' => 'int',
+        'min_runtime_days' => 'int',
+        'default_power' => 'float',
+        'ci_confidence' => 'float',
+        'default_allocation_pct' => 'int',
+        'default_holdout_bp' => 'int',
+        'default_winsorize_pct' => 'int',
+        'default_mei' => 'float',
+        'cuped_baseline_days' => 'int',
+        'cuped_min_overlap' => 'float',
+        'cuped_min_baseline_users' => 'int',
+        'msprt_tau_mei_factor' => 'float',
+        'msprt_tau_sd_factor' => 'float',
+        'srm_threshold' => 'float',
+        'slug' => 'string',
+        'logo' => 'string',
+        'default_env' => 'string',
+        'timezone' => 'string',
+        'stat_method' => 'string',
+        'sig_threshold' => 'string',
+        'auto_rollback' => 'bool',
+        'min_sample_days' => 'int',
+        'module_user' => '\Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations',
+        'module_events' => '\Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations',
+        'allow_public_tickets' => '\Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations',
+        'stripe_subscription_id' => 'string',
+        'scheduled_interval' => 'string',
+        'spend_limit_enabled' => '\Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations',
+        'spend_limit_usd' => 'int',
+        'spend_alert_email' => 'string',
+        'default_assignee_pending_approval' => 'string',
+        'default_assignee_connector_pending_approval' => 'string',
+        'default_assignee_open' => 'string',
+        'default_assignee_connector_open' => 'string',
+        'deleted_at' => 'string',
         'created_at' => 'string',
         'updated_at' => 'string'
     ];
@@ -102,6 +137,41 @@ class GetCurrentProjectResponse implements ModelInterface, ArrayAccess, \JsonSer
         'module_gates' => null,
         'module_experiments' => null,
         'module_feedback' => null,
+        'min_sample_size' => null,
+        'min_runtime_days' => null,
+        'default_power' => null,
+        'ci_confidence' => null,
+        'default_allocation_pct' => null,
+        'default_holdout_bp' => null,
+        'default_winsorize_pct' => null,
+        'default_mei' => null,
+        'cuped_baseline_days' => null,
+        'cuped_min_overlap' => null,
+        'cuped_min_baseline_users' => null,
+        'msprt_tau_mei_factor' => null,
+        'msprt_tau_sd_factor' => null,
+        'srm_threshold' => null,
+        'slug' => null,
+        'logo' => null,
+        'default_env' => null,
+        'timezone' => null,
+        'stat_method' => null,
+        'sig_threshold' => null,
+        'auto_rollback' => null,
+        'min_sample_days' => null,
+        'module_user' => null,
+        'module_events' => null,
+        'allow_public_tickets' => null,
+        'stripe_subscription_id' => null,
+        'scheduled_interval' => null,
+        'spend_limit_enabled' => null,
+        'spend_limit_usd' => null,
+        'spend_alert_email' => null,
+        'default_assignee_pending_approval' => null,
+        'default_assignee_connector_pending_approval' => null,
+        'default_assignee_open' => null,
+        'default_assignee_connector_open' => null,
+        'deleted_at' => null,
         'created_at' => null,
         'updated_at' => null
     ];
@@ -128,6 +198,41 @@ class GetCurrentProjectResponse implements ModelInterface, ArrayAccess, \JsonSer
         'module_gates' => false,
         'module_experiments' => false,
         'module_feedback' => false,
+        'min_sample_size' => false,
+        'min_runtime_days' => false,
+        'default_power' => false,
+        'ci_confidence' => false,
+        'default_allocation_pct' => false,
+        'default_holdout_bp' => false,
+        'default_winsorize_pct' => false,
+        'default_mei' => true,
+        'cuped_baseline_days' => false,
+        'cuped_min_overlap' => false,
+        'cuped_min_baseline_users' => false,
+        'msprt_tau_mei_factor' => false,
+        'msprt_tau_sd_factor' => false,
+        'srm_threshold' => false,
+        'slug' => true,
+        'logo' => true,
+        'default_env' => false,
+        'timezone' => false,
+        'stat_method' => false,
+        'sig_threshold' => false,
+        'auto_rollback' => false,
+        'min_sample_days' => false,
+        'module_user' => false,
+        'module_events' => false,
+        'allow_public_tickets' => false,
+        'stripe_subscription_id' => true,
+        'scheduled_interval' => true,
+        'spend_limit_enabled' => false,
+        'spend_limit_usd' => true,
+        'spend_alert_email' => true,
+        'default_assignee_pending_approval' => true,
+        'default_assignee_connector_pending_approval' => true,
+        'default_assignee_open' => true,
+        'default_assignee_connector_open' => true,
+        'deleted_at' => true,
         'created_at' => false,
         'updated_at' => false
     ];
@@ -234,6 +339,41 @@ class GetCurrentProjectResponse implements ModelInterface, ArrayAccess, \JsonSer
         'module_gates' => 'moduleGates',
         'module_experiments' => 'moduleExperiments',
         'module_feedback' => 'moduleFeedback',
+        'min_sample_size' => 'minSampleSize',
+        'min_runtime_days' => 'minRuntimeDays',
+        'default_power' => 'defaultPower',
+        'ci_confidence' => 'ciConfidence',
+        'default_allocation_pct' => 'defaultAllocationPct',
+        'default_holdout_bp' => 'defaultHoldoutBp',
+        'default_winsorize_pct' => 'defaultWinsorizePct',
+        'default_mei' => 'defaultMei',
+        'cuped_baseline_days' => 'cupedBaselineDays',
+        'cuped_min_overlap' => 'cupedMinOverlap',
+        'cuped_min_baseline_users' => 'cupedMinBaselineUsers',
+        'msprt_tau_mei_factor' => 'msprtTauMeiFactor',
+        'msprt_tau_sd_factor' => 'msprtTauSdFactor',
+        'srm_threshold' => 'srmThreshold',
+        'slug' => 'slug',
+        'logo' => 'logo',
+        'default_env' => 'defaultEnv',
+        'timezone' => 'timezone',
+        'stat_method' => 'statMethod',
+        'sig_threshold' => 'sigThreshold',
+        'auto_rollback' => 'autoRollback',
+        'min_sample_days' => 'minSampleDays',
+        'module_user' => 'moduleUser',
+        'module_events' => 'moduleEvents',
+        'allow_public_tickets' => 'allowPublicTickets',
+        'stripe_subscription_id' => 'stripeSubscriptionId',
+        'scheduled_interval' => 'scheduledInterval',
+        'spend_limit_enabled' => 'spendLimitEnabled',
+        'spend_limit_usd' => 'spendLimitUsd',
+        'spend_alert_email' => 'spendAlertEmail',
+        'default_assignee_pending_approval' => 'defaultAssigneePendingApproval',
+        'default_assignee_connector_pending_approval' => 'defaultAssigneeConnectorPendingApproval',
+        'default_assignee_open' => 'defaultAssigneeOpen',
+        'default_assignee_connector_open' => 'defaultAssigneeConnectorOpen',
+        'deleted_at' => 'deletedAt',
         'created_at' => 'createdAt',
         'updated_at' => 'updatedAt'
     ];
@@ -260,6 +400,41 @@ class GetCurrentProjectResponse implements ModelInterface, ArrayAccess, \JsonSer
         'module_gates' => 'setModuleGates',
         'module_experiments' => 'setModuleExperiments',
         'module_feedback' => 'setModuleFeedback',
+        'min_sample_size' => 'setMinSampleSize',
+        'min_runtime_days' => 'setMinRuntimeDays',
+        'default_power' => 'setDefaultPower',
+        'ci_confidence' => 'setCiConfidence',
+        'default_allocation_pct' => 'setDefaultAllocationPct',
+        'default_holdout_bp' => 'setDefaultHoldoutBp',
+        'default_winsorize_pct' => 'setDefaultWinsorizePct',
+        'default_mei' => 'setDefaultMei',
+        'cuped_baseline_days' => 'setCupedBaselineDays',
+        'cuped_min_overlap' => 'setCupedMinOverlap',
+        'cuped_min_baseline_users' => 'setCupedMinBaselineUsers',
+        'msprt_tau_mei_factor' => 'setMsprtTauMeiFactor',
+        'msprt_tau_sd_factor' => 'setMsprtTauSdFactor',
+        'srm_threshold' => 'setSrmThreshold',
+        'slug' => 'setSlug',
+        'logo' => 'setLogo',
+        'default_env' => 'setDefaultEnv',
+        'timezone' => 'setTimezone',
+        'stat_method' => 'setStatMethod',
+        'sig_threshold' => 'setSigThreshold',
+        'auto_rollback' => 'setAutoRollback',
+        'min_sample_days' => 'setMinSampleDays',
+        'module_user' => 'setModuleUser',
+        'module_events' => 'setModuleEvents',
+        'allow_public_tickets' => 'setAllowPublicTickets',
+        'stripe_subscription_id' => 'setStripeSubscriptionId',
+        'scheduled_interval' => 'setScheduledInterval',
+        'spend_limit_enabled' => 'setSpendLimitEnabled',
+        'spend_limit_usd' => 'setSpendLimitUsd',
+        'spend_alert_email' => 'setSpendAlertEmail',
+        'default_assignee_pending_approval' => 'setDefaultAssigneePendingApproval',
+        'default_assignee_connector_pending_approval' => 'setDefaultAssigneeConnectorPendingApproval',
+        'default_assignee_open' => 'setDefaultAssigneeOpen',
+        'default_assignee_connector_open' => 'setDefaultAssigneeConnectorOpen',
+        'deleted_at' => 'setDeletedAt',
         'created_at' => 'setCreatedAt',
         'updated_at' => 'setUpdatedAt'
     ];
@@ -286,6 +461,41 @@ class GetCurrentProjectResponse implements ModelInterface, ArrayAccess, \JsonSer
         'module_gates' => 'getModuleGates',
         'module_experiments' => 'getModuleExperiments',
         'module_feedback' => 'getModuleFeedback',
+        'min_sample_size' => 'getMinSampleSize',
+        'min_runtime_days' => 'getMinRuntimeDays',
+        'default_power' => 'getDefaultPower',
+        'ci_confidence' => 'getCiConfidence',
+        'default_allocation_pct' => 'getDefaultAllocationPct',
+        'default_holdout_bp' => 'getDefaultHoldoutBp',
+        'default_winsorize_pct' => 'getDefaultWinsorizePct',
+        'default_mei' => 'getDefaultMei',
+        'cuped_baseline_days' => 'getCupedBaselineDays',
+        'cuped_min_overlap' => 'getCupedMinOverlap',
+        'cuped_min_baseline_users' => 'getCupedMinBaselineUsers',
+        'msprt_tau_mei_factor' => 'getMsprtTauMeiFactor',
+        'msprt_tau_sd_factor' => 'getMsprtTauSdFactor',
+        'srm_threshold' => 'getSrmThreshold',
+        'slug' => 'getSlug',
+        'logo' => 'getLogo',
+        'default_env' => 'getDefaultEnv',
+        'timezone' => 'getTimezone',
+        'stat_method' => 'getStatMethod',
+        'sig_threshold' => 'getSigThreshold',
+        'auto_rollback' => 'getAutoRollback',
+        'min_sample_days' => 'getMinSampleDays',
+        'module_user' => 'getModuleUser',
+        'module_events' => 'getModuleEvents',
+        'allow_public_tickets' => 'getAllowPublicTickets',
+        'stripe_subscription_id' => 'getStripeSubscriptionId',
+        'scheduled_interval' => 'getScheduledInterval',
+        'spend_limit_enabled' => 'getSpendLimitEnabled',
+        'spend_limit_usd' => 'getSpendLimitUsd',
+        'spend_alert_email' => 'getSpendAlertEmail',
+        'default_assignee_pending_approval' => 'getDefaultAssigneePendingApproval',
+        'default_assignee_connector_pending_approval' => 'getDefaultAssigneeConnectorPendingApproval',
+        'default_assignee_open' => 'getDefaultAssigneeOpen',
+        'default_assignee_connector_open' => 'getDefaultAssigneeConnectorOpen',
+        'deleted_at' => 'getDeletedAt',
         'created_at' => 'getCreatedAt',
         'updated_at' => 'getUpdatedAt'
     ];
@@ -332,11 +542,21 @@ class GetCurrentProjectResponse implements ModelInterface, ArrayAccess, \JsonSer
     }
 
     public const PLAN_FREE = 'free';
-    public const PLAN_PAID = 'paid';
+    public const PLAN_PRO = 'pro';
+    public const PLAN_BUSINESS = 'business';
+    public const PLAN_ENTERPRISE = 'enterprise';
     public const STATUS_ACTIVE = 'active';
     public const STATUS_INACTIVE = 'inactive';
     public const BILLING_INTERVAL_MONTHLY = 'monthly';
     public const BILLING_INTERVAL_ANNUAL = 'annual';
+    public const DEFAULT_ENV_DEV = 'dev';
+    public const DEFAULT_ENV_STAGING = 'staging';
+    public const DEFAULT_ENV_PROD = 'prod';
+    public const STAT_METHOD_SEQUENTIAL = 'sequential';
+    public const STAT_METHOD_FIXED = 'fixed';
+    public const STAT_METHOD_BAYESIAN = 'bayesian';
+    public const SCHEDULED_INTERVAL_MONTHLY = 'monthly';
+    public const SCHEDULED_INTERVAL_ANNUAL = 'annual';
 
     /**
      * Gets allowable values of the enum
@@ -347,7 +567,9 @@ class GetCurrentProjectResponse implements ModelInterface, ArrayAccess, \JsonSer
     {
         return [
             self::PLAN_FREE,
-            self::PLAN_PAID,
+            self::PLAN_PRO,
+            self::PLAN_BUSINESS,
+            self::PLAN_ENTERPRISE,
         ];
     }
 
@@ -374,6 +596,47 @@ class GetCurrentProjectResponse implements ModelInterface, ArrayAccess, \JsonSer
         return [
             self::BILLING_INTERVAL_MONTHLY,
             self::BILLING_INTERVAL_ANNUAL,
+        ];
+    }
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getDefaultEnvAllowableValues()
+    {
+        return [
+            self::DEFAULT_ENV_DEV,
+            self::DEFAULT_ENV_STAGING,
+            self::DEFAULT_ENV_PROD,
+        ];
+    }
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getStatMethodAllowableValues()
+    {
+        return [
+            self::STAT_METHOD_SEQUENTIAL,
+            self::STAT_METHOD_FIXED,
+            self::STAT_METHOD_BAYESIAN,
+        ];
+    }
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getScheduledIntervalAllowableValues()
+    {
+        return [
+            self::SCHEDULED_INTERVAL_MONTHLY,
+            self::SCHEDULED_INTERVAL_ANNUAL,
         ];
     }
 
@@ -408,6 +671,41 @@ class GetCurrentProjectResponse implements ModelInterface, ArrayAccess, \JsonSer
         $this->setIfExists('module_gates', $data ?? [], null);
         $this->setIfExists('module_experiments', $data ?? [], null);
         $this->setIfExists('module_feedback', $data ?? [], null);
+        $this->setIfExists('min_sample_size', $data ?? [], null);
+        $this->setIfExists('min_runtime_days', $data ?? [], null);
+        $this->setIfExists('default_power', $data ?? [], null);
+        $this->setIfExists('ci_confidence', $data ?? [], null);
+        $this->setIfExists('default_allocation_pct', $data ?? [], null);
+        $this->setIfExists('default_holdout_bp', $data ?? [], null);
+        $this->setIfExists('default_winsorize_pct', $data ?? [], null);
+        $this->setIfExists('default_mei', $data ?? [], null);
+        $this->setIfExists('cuped_baseline_days', $data ?? [], null);
+        $this->setIfExists('cuped_min_overlap', $data ?? [], null);
+        $this->setIfExists('cuped_min_baseline_users', $data ?? [], null);
+        $this->setIfExists('msprt_tau_mei_factor', $data ?? [], null);
+        $this->setIfExists('msprt_tau_sd_factor', $data ?? [], null);
+        $this->setIfExists('srm_threshold', $data ?? [], null);
+        $this->setIfExists('slug', $data ?? [], null);
+        $this->setIfExists('logo', $data ?? [], null);
+        $this->setIfExists('default_env', $data ?? [], null);
+        $this->setIfExists('timezone', $data ?? [], null);
+        $this->setIfExists('stat_method', $data ?? [], null);
+        $this->setIfExists('sig_threshold', $data ?? [], null);
+        $this->setIfExists('auto_rollback', $data ?? [], null);
+        $this->setIfExists('min_sample_days', $data ?? [], null);
+        $this->setIfExists('module_user', $data ?? [], null);
+        $this->setIfExists('module_events', $data ?? [], null);
+        $this->setIfExists('allow_public_tickets', $data ?? [], null);
+        $this->setIfExists('stripe_subscription_id', $data ?? [], null);
+        $this->setIfExists('scheduled_interval', $data ?? [], null);
+        $this->setIfExists('spend_limit_enabled', $data ?? [], null);
+        $this->setIfExists('spend_limit_usd', $data ?? [], null);
+        $this->setIfExists('spend_alert_email', $data ?? [], null);
+        $this->setIfExists('default_assignee_pending_approval', $data ?? [], null);
+        $this->setIfExists('default_assignee_connector_pending_approval', $data ?? [], null);
+        $this->setIfExists('default_assignee_open', $data ?? [], null);
+        $this->setIfExists('default_assignee_connector_open', $data ?? [], null);
+        $this->setIfExists('deleted_at', $data ?? [], null);
         $this->setIfExists('created_at', $data ?? [], null);
         $this->setIfExists('updated_at', $data ?? [], null);
     }
@@ -513,6 +811,99 @@ class GetCurrentProjectResponse implements ModelInterface, ArrayAccess, \JsonSer
         }
         if ($this->container['module_feedback'] === null) {
             $invalidProperties[] = "'module_feedback' can't be null";
+        }
+        if ($this->container['default_holdout_bp'] === null) {
+            $invalidProperties[] = "'default_holdout_bp' can't be null";
+        }
+        if ($this->container['slug'] === null && !$this->isNullableSetToNull('slug')) {
+            $invalidProperties[] = "'slug' is required";
+        }
+        if ($this->container['logo'] === null && !$this->isNullableSetToNull('logo')) {
+            $invalidProperties[] = "'logo' is required";
+        }
+        if ($this->container['default_env'] === null) {
+            $invalidProperties[] = "'default_env' can't be null";
+        }
+        $allowedValues = $this->getDefaultEnvAllowableValues();
+        if (!is_null($this->container['default_env']) && !in_array($this->container['default_env'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'default_env', must be one of '%s'",
+                $this->container['default_env'],
+                implode("', '", $allowedValues)
+            );
+        }
+
+        if ($this->container['timezone'] === null) {
+            $invalidProperties[] = "'timezone' can't be null";
+        }
+        if ($this->container['stat_method'] === null) {
+            $invalidProperties[] = "'stat_method' can't be null";
+        }
+        $allowedValues = $this->getStatMethodAllowableValues();
+        if (!is_null($this->container['stat_method']) && !in_array($this->container['stat_method'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'stat_method', must be one of '%s'",
+                $this->container['stat_method'],
+                implode("', '", $allowedValues)
+            );
+        }
+
+        if ($this->container['sig_threshold'] === null) {
+            $invalidProperties[] = "'sig_threshold' can't be null";
+        }
+        if ($this->container['auto_rollback'] === null) {
+            $invalidProperties[] = "'auto_rollback' can't be null";
+        }
+        if ($this->container['min_sample_days'] === null) {
+            $invalidProperties[] = "'min_sample_days' can't be null";
+        }
+        if ($this->container['module_user'] === null) {
+            $invalidProperties[] = "'module_user' can't be null";
+        }
+        if ($this->container['module_events'] === null) {
+            $invalidProperties[] = "'module_events' can't be null";
+        }
+        if ($this->container['allow_public_tickets'] === null) {
+            $invalidProperties[] = "'allow_public_tickets' can't be null";
+        }
+        if ($this->container['stripe_subscription_id'] === null && !$this->isNullableSetToNull('stripe_subscription_id')) {
+            $invalidProperties[] = "'stripe_subscription_id' is required";
+        }
+        if ($this->container['scheduled_interval'] === null && !$this->isNullableSetToNull('scheduled_interval')) {
+            $invalidProperties[] = "'scheduled_interval' is required";
+        }
+        $allowedValues = $this->getScheduledIntervalAllowableValues();
+        if (!is_null($this->container['scheduled_interval']) && !in_array($this->container['scheduled_interval'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'scheduled_interval', must be one of '%s'",
+                $this->container['scheduled_interval'],
+                implode("', '", $allowedValues)
+            );
+        }
+
+        if ($this->container['spend_limit_enabled'] === null) {
+            $invalidProperties[] = "'spend_limit_enabled' can't be null";
+        }
+        if ($this->container['spend_limit_usd'] === null && !$this->isNullableSetToNull('spend_limit_usd')) {
+            $invalidProperties[] = "'spend_limit_usd' is required";
+        }
+        if ($this->container['spend_alert_email'] === null && !$this->isNullableSetToNull('spend_alert_email')) {
+            $invalidProperties[] = "'spend_alert_email' is required";
+        }
+        if ($this->container['default_assignee_pending_approval'] === null && !$this->isNullableSetToNull('default_assignee_pending_approval')) {
+            $invalidProperties[] = "'default_assignee_pending_approval' is required";
+        }
+        if ($this->container['default_assignee_connector_pending_approval'] === null && !$this->isNullableSetToNull('default_assignee_connector_pending_approval')) {
+            $invalidProperties[] = "'default_assignee_connector_pending_approval' is required";
+        }
+        if ($this->container['default_assignee_open'] === null && !$this->isNullableSetToNull('default_assignee_open')) {
+            $invalidProperties[] = "'default_assignee_open' is required";
+        }
+        if ($this->container['default_assignee_connector_open'] === null && !$this->isNullableSetToNull('default_assignee_connector_open')) {
+            $invalidProperties[] = "'default_assignee_connector_open' is required";
+        }
+        if ($this->container['deleted_at'] === null && !$this->isNullableSetToNull('deleted_at')) {
+            $invalidProperties[] = "'deleted_at' is required";
         }
         if ($this->container['created_at'] === null) {
             $invalidProperties[] = "'created_at' can't be null";
@@ -1014,6 +1405,1065 @@ class GetCurrentProjectResponse implements ModelInterface, ArrayAccess, \JsonSer
             throw new \InvalidArgumentException('non-nullable module_feedback cannot be null');
         }
         $this->container['module_feedback'] = $module_feedback;
+
+        return $this;
+    }
+
+    /**
+     * Gets min_sample_size
+     *
+     * @return int|null
+     */
+    public function getMinSampleSize()
+    {
+        return $this->container['min_sample_size'];
+    }
+
+    /**
+     * Sets min_sample_size
+     *
+     * @param int|null $min_sample_size Verdict power guard — minimum users per arm before a ship/hold verdict.
+     *
+     * @return self
+     */
+    public function setMinSampleSize($min_sample_size)
+    {
+        if (is_null($min_sample_size)) {
+            throw new \InvalidArgumentException('non-nullable min_sample_size cannot be null');
+        }
+        $this->container['min_sample_size'] = $min_sample_size;
+
+        return $this;
+    }
+
+    /**
+     * Gets min_runtime_days
+     *
+     * @return int|null
+     */
+    public function getMinRuntimeDays()
+    {
+        return $this->container['min_runtime_days'];
+    }
+
+    /**
+     * Sets min_runtime_days
+     *
+     * @param int|null $min_runtime_days Minimum days an experiment must run before a verdict (peeking guard).
+     *
+     * @return self
+     */
+    public function setMinRuntimeDays($min_runtime_days)
+    {
+        if (is_null($min_runtime_days)) {
+            throw new \InvalidArgumentException('non-nullable min_runtime_days cannot be null');
+        }
+        $this->container['min_runtime_days'] = $min_runtime_days;
+
+        return $this;
+    }
+
+    /**
+     * Gets default_power
+     *
+     * @return float|null
+     */
+    public function getDefaultPower()
+    {
+        return $this->container['default_power'];
+    }
+
+    /**
+     * Sets default_power
+     *
+     * @param float|null $default_power Target statistical power (1−β) feeding the realized-MDE calculation.
+     *
+     * @return self
+     */
+    public function setDefaultPower($default_power)
+    {
+        if (is_null($default_power)) {
+            throw new \InvalidArgumentException('non-nullable default_power cannot be null');
+        }
+        $this->container['default_power'] = $default_power;
+
+        return $this;
+    }
+
+    /**
+     * Gets ci_confidence
+     *
+     * @return float|null
+     */
+    public function getCiConfidence()
+    {
+        return $this->container['ci_confidence'];
+    }
+
+    /**
+     * Sets ci_confidence
+     *
+     * @param float|null $ci_confidence Confidence level for the interval surfaced on results.
+     *
+     * @return self
+     */
+    public function setCiConfidence($ci_confidence)
+    {
+        if (is_null($ci_confidence)) {
+            throw new \InvalidArgumentException('non-nullable ci_confidence cannot be null');
+        }
+        $this->container['ci_confidence'] = $ci_confidence;
+
+        return $this;
+    }
+
+    /**
+     * Gets default_allocation_pct
+     *
+     * @return int|null
+     */
+    public function getDefaultAllocationPct()
+    {
+        return $this->container['default_allocation_pct'];
+    }
+
+    /**
+     * Sets default_allocation_pct
+     *
+     * @param int|null $default_allocation_pct Default traffic allocation (basis points) new experiments start with.
+     *
+     * @return self
+     */
+    public function setDefaultAllocationPct($default_allocation_pct)
+    {
+        if (is_null($default_allocation_pct)) {
+            throw new \InvalidArgumentException('non-nullable default_allocation_pct cannot be null');
+        }
+        $this->container['default_allocation_pct'] = $default_allocation_pct;
+
+        return $this;
+    }
+
+    /**
+     * Gets default_holdout_bp
+     *
+     * @return int
+     */
+    public function getDefaultHoldoutBp()
+    {
+        return $this->container['default_holdout_bp'];
+    }
+
+    /**
+     * Sets default_holdout_bp
+     *
+     * @param int $default_holdout_bp Default holdout carve-out (basis points) that seeds each new universe's holdout (0 = none).
+     *
+     * @return self
+     */
+    public function setDefaultHoldoutBp($default_holdout_bp)
+    {
+        if (is_null($default_holdout_bp)) {
+            throw new \InvalidArgumentException('non-nullable default_holdout_bp cannot be null');
+        }
+        $this->container['default_holdout_bp'] = $default_holdout_bp;
+
+        return $this;
+    }
+
+    /**
+     * Gets default_winsorize_pct
+     *
+     * @return int|null
+     */
+    public function getDefaultWinsorizePct()
+    {
+        return $this->container['default_winsorize_pct'];
+    }
+
+    /**
+     * Sets default_winsorize_pct
+     *
+     * @param int|null $default_winsorize_pct Default winsorization percentile new metrics start with.
+     *
+     * @return self
+     */
+    public function setDefaultWinsorizePct($default_winsorize_pct)
+    {
+        if (is_null($default_winsorize_pct)) {
+            throw new \InvalidArgumentException('non-nullable default_winsorize_pct cannot be null');
+        }
+        $this->container['default_winsorize_pct'] = $default_winsorize_pct;
+
+        return $this;
+    }
+
+    /**
+     * Gets default_mei
+     *
+     * @return float|null
+     */
+    public function getDefaultMei()
+    {
+        return $this->container['default_mei'];
+    }
+
+    /**
+     * Sets default_mei
+     *
+     * @param float|null $default_mei Default minimum effect of interest (relative, 0–1) new metrics start with, or null.
+     *
+     * @return self
+     */
+    public function setDefaultMei($default_mei)
+    {
+        if (is_null($default_mei)) {
+            array_push($this->openAPINullablesSetToNull, 'default_mei');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('default_mei', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['default_mei'] = $default_mei;
+
+        return $this;
+    }
+
+    /**
+     * Gets cuped_baseline_days
+     *
+     * @return int|null
+     */
+    public function getCupedBaselineDays()
+    {
+        return $this->container['cuped_baseline_days'];
+    }
+
+    /**
+     * Sets cuped_baseline_days
+     *
+     * @param int|null $cuped_baseline_days CUPED baseline window — days of pre-experiment history, frozen at start.
+     *
+     * @return self
+     */
+    public function setCupedBaselineDays($cuped_baseline_days)
+    {
+        if (is_null($cuped_baseline_days)) {
+            throw new \InvalidArgumentException('non-nullable cuped_baseline_days cannot be null');
+        }
+        $this->container['cuped_baseline_days'] = $cuped_baseline_days;
+
+        return $this;
+    }
+
+    /**
+     * Gets cuped_min_overlap
+     *
+     * @return float|null
+     */
+    public function getCupedMinOverlap()
+    {
+        return $this->container['cuped_min_overlap'];
+    }
+
+    /**
+     * Sets cuped_min_overlap
+     *
+     * @param float|null $cuped_min_overlap CUPED selection-bias guard — min share of users with a baseline, else skip.
+     *
+     * @return self
+     */
+    public function setCupedMinOverlap($cuped_min_overlap)
+    {
+        if (is_null($cuped_min_overlap)) {
+            throw new \InvalidArgumentException('non-nullable cuped_min_overlap cannot be null');
+        }
+        $this->container['cuped_min_overlap'] = $cuped_min_overlap;
+
+        return $this;
+    }
+
+    /**
+     * Gets cuped_min_baseline_users
+     *
+     * @return int|null
+     */
+    public function getCupedMinBaselineUsers()
+    {
+        return $this->container['cuped_min_baseline_users'];
+    }
+
+    /**
+     * Sets cuped_min_baseline_users
+     *
+     * @param int|null $cuped_min_baseline_users CUPED — minimum users with a baseline before it runs at all.
+     *
+     * @return self
+     */
+    public function setCupedMinBaselineUsers($cuped_min_baseline_users)
+    {
+        if (is_null($cuped_min_baseline_users)) {
+            throw new \InvalidArgumentException('non-nullable cuped_min_baseline_users cannot be null');
+        }
+        $this->container['cuped_min_baseline_users'] = $cuped_min_baseline_users;
+
+        return $this;
+    }
+
+    /**
+     * Gets msprt_tau_mei_factor
+     *
+     * @return float|null
+     */
+    public function getMsprtTauMeiFactor()
+    {
+        return $this->container['msprt_tau_mei_factor'];
+    }
+
+    /**
+     * Sets msprt_tau_mei_factor
+     *
+     * @param float|null $msprt_tau_mei_factor mSPRT prior width — τ = minimum effect of interest × this factor.
+     *
+     * @return self
+     */
+    public function setMsprtTauMeiFactor($msprt_tau_mei_factor)
+    {
+        if (is_null($msprt_tau_mei_factor)) {
+            throw new \InvalidArgumentException('non-nullable msprt_tau_mei_factor cannot be null');
+        }
+        $this->container['msprt_tau_mei_factor'] = $msprt_tau_mei_factor;
+
+        return $this;
+    }
+
+    /**
+     * Gets msprt_tau_sd_factor
+     *
+     * @return float|null
+     */
+    public function getMsprtTauSdFactor()
+    {
+        return $this->container['msprt_tau_sd_factor'];
+    }
+
+    /**
+     * Sets msprt_tau_sd_factor
+     *
+     * @param float|null $msprt_tau_sd_factor mSPRT fallback prior width — τ = this × control SD when no MEI is set.
+     *
+     * @return self
+     */
+    public function setMsprtTauSdFactor($msprt_tau_sd_factor)
+    {
+        if (is_null($msprt_tau_sd_factor)) {
+            throw new \InvalidArgumentException('non-nullable msprt_tau_sd_factor cannot be null');
+        }
+        $this->container['msprt_tau_sd_factor'] = $msprt_tau_sd_factor;
+
+        return $this;
+    }
+
+    /**
+     * Gets srm_threshold
+     *
+     * @return float|null
+     */
+    public function getSrmThreshold()
+    {
+        return $this->container['srm_threshold'];
+    }
+
+    /**
+     * Sets srm_threshold
+     *
+     * @param float|null $srm_threshold SRM chi-square p-value below which the run is called invalid.
+     *
+     * @return self
+     */
+    public function setSrmThreshold($srm_threshold)
+    {
+        if (is_null($srm_threshold)) {
+            throw new \InvalidArgumentException('non-nullable srm_threshold cannot be null');
+        }
+        $this->container['srm_threshold'] = $srm_threshold;
+
+        return $this;
+    }
+
+    /**
+     * Gets slug
+     *
+     * @return string|null
+     */
+    public function getSlug()
+    {
+        return $this->container['slug'];
+    }
+
+    /**
+     * Sets slug
+     *
+     * @param string|null $slug URL-safe project identifier used in app URLs and SDK config, or `null` if unset.
+     *
+     * @return self
+     */
+    public function setSlug($slug)
+    {
+        if (is_null($slug)) {
+            array_push($this->openAPINullablesSetToNull, 'slug');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('slug', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['slug'] = $slug;
+
+        return $this;
+    }
+
+    /**
+     * Gets logo
+     *
+     * @return string|null
+     */
+    public function getLogo()
+    {
+        return $this->container['logo'];
+    }
+
+    /**
+     * Sets logo
+     *
+     * @param string|null $logo Cache-busted URL of the project logo (served from the admin logo route), or `null` when no logo is set.
+     *
+     * @return self
+     */
+    public function setLogo($logo)
+    {
+        if (is_null($logo)) {
+            array_push($this->openAPINullablesSetToNull, 'logo');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('logo', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['logo'] = $logo;
+
+        return $this;
+    }
+
+    /**
+     * Gets default_env
+     *
+     * @return string
+     */
+    public function getDefaultEnv()
+    {
+        return $this->container['default_env'];
+    }
+
+    /**
+     * Sets default_env
+     *
+     * @param string $default_env Default environment new resources are scoped to.
+     *
+     * @return self
+     */
+    public function setDefaultEnv($default_env)
+    {
+        if (is_null($default_env)) {
+            throw new \InvalidArgumentException('non-nullable default_env cannot be null');
+        }
+        $allowedValues = $this->getDefaultEnvAllowableValues();
+        if (!in_array($default_env, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'default_env', must be one of '%s'",
+                    $default_env,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['default_env'] = $default_env;
+
+        return $this;
+    }
+
+    /**
+     * Gets timezone
+     *
+     * @return string
+     */
+    public function getTimezone()
+    {
+        return $this->container['timezone'];
+    }
+
+    /**
+     * Sets timezone
+     *
+     * @param string $timezone IANA timezone the project's daily analysis runs in.
+     *
+     * @return self
+     */
+    public function setTimezone($timezone)
+    {
+        if (is_null($timezone)) {
+            throw new \InvalidArgumentException('non-nullable timezone cannot be null');
+        }
+        $this->container['timezone'] = $timezone;
+
+        return $this;
+    }
+
+    /**
+     * Gets stat_method
+     *
+     * @return string
+     */
+    public function getStatMethod()
+    {
+        return $this->container['stat_method'];
+    }
+
+    /**
+     * Sets stat_method
+     *
+     * @param string $stat_method Statistical method the experiment analyzer uses.
+     *
+     * @return self
+     */
+    public function setStatMethod($stat_method)
+    {
+        if (is_null($stat_method)) {
+            throw new \InvalidArgumentException('non-nullable stat_method cannot be null');
+        }
+        $allowedValues = $this->getStatMethodAllowableValues();
+        if (!in_array($stat_method, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'stat_method', must be one of '%s'",
+                    $stat_method,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['stat_method'] = $stat_method;
+
+        return $this;
+    }
+
+    /**
+     * Gets sig_threshold
+     *
+     * @return string
+     */
+    public function getSigThreshold()
+    {
+        return $this->container['sig_threshold'];
+    }
+
+    /**
+     * Sets sig_threshold
+     *
+     * @param string $sig_threshold Significance threshold (alpha) for experiment analysis, as a decimal string (e.g. `\"0.05\"`).
+     *
+     * @return self
+     */
+    public function setSigThreshold($sig_threshold)
+    {
+        if (is_null($sig_threshold)) {
+            throw new \InvalidArgumentException('non-nullable sig_threshold cannot be null');
+        }
+        $this->container['sig_threshold'] = $sig_threshold;
+
+        return $this;
+    }
+
+    /**
+     * Gets auto_rollback
+     *
+     * @return bool
+     */
+    public function getAutoRollback()
+    {
+        return $this->container['auto_rollback'];
+    }
+
+    /**
+     * Sets auto_rollback
+     *
+     * @param bool $auto_rollback Whether a failing guardrail auto-rolls back the experiment.
+     *
+     * @return self
+     */
+    public function setAutoRollback($auto_rollback)
+    {
+        if (is_null($auto_rollback)) {
+            throw new \InvalidArgumentException('non-nullable auto_rollback cannot be null');
+        }
+        $this->container['auto_rollback'] = $auto_rollback;
+
+        return $this;
+    }
+
+    /**
+     * Gets min_sample_days
+     *
+     * @return int
+     */
+    public function getMinSampleDays()
+    {
+        return $this->container['min_sample_days'];
+    }
+
+    /**
+     * Sets min_sample_days
+     *
+     * @param int $min_sample_days Minimum number of days an experiment must run before it can be called.
+     *
+     * @return self
+     */
+    public function setMinSampleDays($min_sample_days)
+    {
+        if (is_null($min_sample_days)) {
+            throw new \InvalidArgumentException('non-nullable min_sample_days cannot be null');
+        }
+        $this->container['min_sample_days'] = $min_sample_days;
+
+        return $this;
+    }
+
+    /**
+     * Gets module_user
+     *
+     * @return \Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations
+     */
+    public function getModuleUser()
+    {
+        return $this->container['module_user'];
+    }
+
+    /**
+     * Sets module_user
+     *
+     * @param \Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations $module_user module_user
+     *
+     * @return self
+     */
+    public function setModuleUser($module_user)
+    {
+        if (is_null($module_user)) {
+            throw new \InvalidArgumentException('non-nullable module_user cannot be null');
+        }
+        $this->container['module_user'] = $module_user;
+
+        return $this;
+    }
+
+    /**
+     * Gets module_events
+     *
+     * @return \Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations
+     */
+    public function getModuleEvents()
+    {
+        return $this->container['module_events'];
+    }
+
+    /**
+     * Sets module_events
+     *
+     * @param \Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations $module_events module_events
+     *
+     * @return self
+     */
+    public function setModuleEvents($module_events)
+    {
+        if (is_null($module_events)) {
+            throw new \InvalidArgumentException('non-nullable module_events cannot be null');
+        }
+        $this->container['module_events'] = $module_events;
+
+        return $this;
+    }
+
+    /**
+     * Gets allow_public_tickets
+     *
+     * @return \Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations
+     */
+    public function getAllowPublicTickets()
+    {
+        return $this->container['allow_public_tickets'];
+    }
+
+    /**
+     * Sets allow_public_tickets
+     *
+     * @param \Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations $allow_public_tickets allow_public_tickets
+     *
+     * @return self
+     */
+    public function setAllowPublicTickets($allow_public_tickets)
+    {
+        if (is_null($allow_public_tickets)) {
+            throw new \InvalidArgumentException('non-nullable allow_public_tickets cannot be null');
+        }
+        $this->container['allow_public_tickets'] = $allow_public_tickets;
+
+        return $this;
+    }
+
+    /**
+     * Gets stripe_subscription_id
+     *
+     * @return string|null
+     */
+    public function getStripeSubscriptionId()
+    {
+        return $this->container['stripe_subscription_id'];
+    }
+
+    /**
+     * Sets stripe_subscription_id
+     *
+     * @param string|null $stripe_subscription_id Stripe subscription id backing the project's billing, or `null` when unsubscribed.
+     *
+     * @return self
+     */
+    public function setStripeSubscriptionId($stripe_subscription_id)
+    {
+        if (is_null($stripe_subscription_id)) {
+            array_push($this->openAPINullablesSetToNull, 'stripe_subscription_id');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('stripe_subscription_id', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['stripe_subscription_id'] = $stripe_subscription_id;
+
+        return $this;
+    }
+
+    /**
+     * Gets scheduled_interval
+     *
+     * @return string|null
+     */
+    public function getScheduledInterval()
+    {
+        return $this->container['scheduled_interval'];
+    }
+
+    /**
+     * Sets scheduled_interval
+     *
+     * @param string|null $scheduled_interval Pending billing-interval change deferred to period end (only the annual→monthly downgrade), or `null` when no switch is pending.
+     *
+     * @return self
+     */
+    public function setScheduledInterval($scheduled_interval)
+    {
+        if (is_null($scheduled_interval)) {
+            array_push($this->openAPINullablesSetToNull, 'scheduled_interval');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('scheduled_interval', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $allowedValues = $this->getScheduledIntervalAllowableValues();
+        if (!is_null($scheduled_interval) && !in_array($scheduled_interval, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'scheduled_interval', must be one of '%s'",
+                    $scheduled_interval,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['scheduled_interval'] = $scheduled_interval;
+
+        return $this;
+    }
+
+    /**
+     * Gets spend_limit_enabled
+     *
+     * @return \Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations
+     */
+    public function getSpendLimitEnabled()
+    {
+        return $this->container['spend_limit_enabled'];
+    }
+
+    /**
+     * Sets spend_limit_enabled
+     *
+     * @param \Shipeasy\Admin\Generated\Model\GetCurrentProjectResponseModuleTranslations $spend_limit_enabled spend_limit_enabled
+     *
+     * @return self
+     */
+    public function setSpendLimitEnabled($spend_limit_enabled)
+    {
+        if (is_null($spend_limit_enabled)) {
+            throw new \InvalidArgumentException('non-nullable spend_limit_enabled cannot be null');
+        }
+        $this->container['spend_limit_enabled'] = $spend_limit_enabled;
+
+        return $this;
+    }
+
+    /**
+     * Gets spend_limit_usd
+     *
+     * @return int|null
+     */
+    public function getSpendLimitUsd()
+    {
+        return $this->container['spend_limit_usd'];
+    }
+
+    /**
+     * Sets spend_limit_usd
+     *
+     * @param int|null $spend_limit_usd Advisory monthly spend limit in whole USD, or `null` if unset.
+     *
+     * @return self
+     */
+    public function setSpendLimitUsd($spend_limit_usd)
+    {
+        if (is_null($spend_limit_usd)) {
+            array_push($this->openAPINullablesSetToNull, 'spend_limit_usd');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('spend_limit_usd', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['spend_limit_usd'] = $spend_limit_usd;
+
+        return $this;
+    }
+
+    /**
+     * Gets spend_alert_email
+     *
+     * @return string|null
+     */
+    public function getSpendAlertEmail()
+    {
+        return $this->container['spend_alert_email'];
+    }
+
+    /**
+     * Sets spend_alert_email
+     *
+     * @param string|null $spend_alert_email Email address the spend alert is sent to, or `null` if unset.
+     *
+     * @return self
+     */
+    public function setSpendAlertEmail($spend_alert_email)
+    {
+        if (is_null($spend_alert_email)) {
+            array_push($this->openAPINullablesSetToNull, 'spend_alert_email');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('spend_alert_email', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['spend_alert_email'] = $spend_alert_email;
+
+        return $this;
+    }
+
+    /**
+     * Gets default_assignee_pending_approval
+     *
+     * @return string|null
+     */
+    public function getDefaultAssigneePendingApproval()
+    {
+        return $this->container['default_assignee_pending_approval'];
+    }
+
+    /**
+     * Sets default_assignee_pending_approval
+     *
+     * @param string|null $default_assignee_pending_approval Default person owner (user id) auto-assigned to new `pending_approval` feedback items, or `null` when unset.
+     *
+     * @return self
+     */
+    public function setDefaultAssigneePendingApproval($default_assignee_pending_approval)
+    {
+        if (is_null($default_assignee_pending_approval)) {
+            array_push($this->openAPINullablesSetToNull, 'default_assignee_pending_approval');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('default_assignee_pending_approval', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['default_assignee_pending_approval'] = $default_assignee_pending_approval;
+
+        return $this;
+    }
+
+    /**
+     * Gets default_assignee_connector_pending_approval
+     *
+     * @return string|null
+     */
+    public function getDefaultAssigneeConnectorPendingApproval()
+    {
+        return $this->container['default_assignee_connector_pending_approval'];
+    }
+
+    /**
+     * Sets default_assignee_connector_pending_approval
+     *
+     * @param string|null $default_assignee_connector_pending_approval Default agent owner (connector id) auto-assigned to new `pending_approval` feedback items, or `null` when unset.
+     *
+     * @return self
+     */
+    public function setDefaultAssigneeConnectorPendingApproval($default_assignee_connector_pending_approval)
+    {
+        if (is_null($default_assignee_connector_pending_approval)) {
+            array_push($this->openAPINullablesSetToNull, 'default_assignee_connector_pending_approval');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('default_assignee_connector_pending_approval', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['default_assignee_connector_pending_approval'] = $default_assignee_connector_pending_approval;
+
+        return $this;
+    }
+
+    /**
+     * Gets default_assignee_open
+     *
+     * @return string|null
+     */
+    public function getDefaultAssigneeOpen()
+    {
+        return $this->container['default_assignee_open'];
+    }
+
+    /**
+     * Sets default_assignee_open
+     *
+     * @param string|null $default_assignee_open Default person owner (user id) auto-assigned to new `open` feedback items, or `null` when unset.
+     *
+     * @return self
+     */
+    public function setDefaultAssigneeOpen($default_assignee_open)
+    {
+        if (is_null($default_assignee_open)) {
+            array_push($this->openAPINullablesSetToNull, 'default_assignee_open');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('default_assignee_open', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['default_assignee_open'] = $default_assignee_open;
+
+        return $this;
+    }
+
+    /**
+     * Gets default_assignee_connector_open
+     *
+     * @return string|null
+     */
+    public function getDefaultAssigneeConnectorOpen()
+    {
+        return $this->container['default_assignee_connector_open'];
+    }
+
+    /**
+     * Sets default_assignee_connector_open
+     *
+     * @param string|null $default_assignee_connector_open Default agent owner (connector id) auto-assigned to new `open` feedback items, or `null` when unset.
+     *
+     * @return self
+     */
+    public function setDefaultAssigneeConnectorOpen($default_assignee_connector_open)
+    {
+        if (is_null($default_assignee_connector_open)) {
+            array_push($this->openAPINullablesSetToNull, 'default_assignee_connector_open');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('default_assignee_connector_open', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['default_assignee_connector_open'] = $default_assignee_connector_open;
+
+        return $this;
+    }
+
+    /**
+     * Gets deleted_at
+     *
+     * @return string|null
+     */
+    public function getDeletedAt()
+    {
+        return $this->container['deleted_at'];
+    }
+
+    /**
+     * Sets deleted_at
+     *
+     * @param string|null $deleted_at ISO-8601 timestamp the project was soft-deleted (purged after a 14-day grace period), or `null` when live.
+     *
+     * @return self
+     */
+    public function setDeletedAt($deleted_at)
+    {
+        if (is_null($deleted_at)) {
+            array_push($this->openAPINullablesSetToNull, 'deleted_at');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('deleted_at', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['deleted_at'] = $deleted_at;
 
         return $this;
     }

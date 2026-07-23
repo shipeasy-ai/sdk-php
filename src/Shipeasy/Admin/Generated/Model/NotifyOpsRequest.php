@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * NotifyOpsRequest Class Doc Comment
  *
  * @category Class
- * @description Body for &#x60;POST /api/admin/notifications&#x60;.
+ * @description Body for &#x60;POST /api/admin/notifications&#x60;. In &#x60;title&#x60;, &#x60;summary&#x60;, and each step, reference admin entities inline with tokens — &#x60;#42&#x60; (feedback item), &#x60;@gate:&lt;name&gt;&#x60; (alias &#x60;@flag:&#x60;), &#x60;@experiment:&lt;name&gt;&#x60; (&#x60;@exp:&#x60;), &#x60;@config:&lt;name&gt;&#x60;, &#x60;@killswitch:&lt;name&gt;&#x60; (&#x60;@ks:&#x60;), &#x60;@metric:&lt;name&gt;&#x60;, &#x60;@universe:&lt;name&gt;&#x60;, &#x60;@alert:&lt;name&gt;&#x60; — where &#x60;&lt;name&gt;&#x60; is the entity&#39;s immutable name/slug (e.g. &#x60;features.checkout&#x60;). The dashboard renders each token as a live hover chip deep-linking to the entity; tokens degrade to plain text elsewhere, so they&#39;re always safe to use.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -89,7 +89,7 @@ class NotifyOpsRequest implements ModelInterface, ArrayAccess, \JsonSerializable
         'title' => false,
         'summary' => false,
         'steps' => false,
-        'href' => false,
+        'href' => true,
         'dedupe_key' => false
     ];
 
@@ -387,7 +387,7 @@ class NotifyOpsRequest implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets summary
      *
-     * @param string $summary One sentence: why it can't be fixed in code.
+     * @param string $summary One sentence: why it can't be fixed in code. Renders markdown.
      *
      * @return self
      */
@@ -421,7 +421,7 @@ class NotifyOpsRequest implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets steps
      *
-     * @param string[]|null $steps Ordered steps the human should take to unblock.
+     * @param string[]|null $steps Ordered steps the human should take to unblock — self-contained (the human reads only this card, not the agent's transcript), 3–6 steps, each naming the exact file, command, env var, or dashboard page. Renders markdown.
      *
      * @return self
      */
@@ -448,14 +448,21 @@ class NotifyOpsRequest implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets href
      *
-     * @param string|null $href Dashboard-relative deep link to the related item.
+     * @param string|null $href Dashboard-relative deep link to the related item. `null` is accepted and treated as \"no link\".
      *
      * @return self
      */
     public function setHref($href)
     {
         if (is_null($href)) {
-            throw new \InvalidArgumentException('non-nullable href cannot be null');
+            array_push($this->openAPINullablesSetToNull, 'href');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('href', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
         }
         $this->container['href'] = $href;
 

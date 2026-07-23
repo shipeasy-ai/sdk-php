@@ -74,7 +74,19 @@ class AttributesApi
 
     /** @var string[] $contentTypes **/
     public const contentTypes = [
+        'createAttribute' => [
+            'application/json',
+        ],
+        'deleteAttribute' => [
+            'application/json',
+        ],
+        'getAttribute' => [
+            'application/json',
+        ],
         'listAttributes' => [
+            'application/json',
+        ],
+        'updateAttribute' => [
             'application/json',
         ],
     ];
@@ -126,20 +138,1130 @@ class AttributesApi
     }
 
     /**
+     * Operation createAttribute
+     *
+     * Declare a targeting attribute
+     *
+     * @param  \Shipeasy\Admin\Generated\Model\CreateAttributeRequest $create_attribute_request create_attribute_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createAttribute'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Shipeasy\Admin\Generated\Model\CreateAttributeResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     */
+    public function createAttribute($create_attribute_request, $x_project_id = null, string $contentType = self::contentTypes['createAttribute'][0])
+    {
+        list($response) = $this->createAttributeWithHttpInfo($create_attribute_request, $x_project_id, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation createAttributeWithHttpInfo
+     *
+     * Declare a targeting attribute
+     *
+     * @param  \Shipeasy\Admin\Generated\Model\CreateAttributeRequest $create_attribute_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createAttribute'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of \Shipeasy\Admin\Generated\Model\CreateAttributeResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function createAttributeWithHttpInfo($create_attribute_request, $x_project_id = null, string $contentType = self::contentTypes['createAttribute'][0])
+    {
+        $request = $this->createAttributeRequest($create_attribute_request, $x_project_id, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch($statusCode) {
+                case 201:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\CreateAttributeResponse',
+                        $request,
+                        $response,
+                    );
+                case 400:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 401:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 409:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Shipeasy\Admin\Generated\Model\CreateAttributeResponse',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 201:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\CreateAttributeResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+        
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation createAttributeAsync
+     *
+     * Declare a targeting attribute
+     *
+     * @param  \Shipeasy\Admin\Generated\Model\CreateAttributeRequest $create_attribute_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createAttribute'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function createAttributeAsync($create_attribute_request, $x_project_id = null, string $contentType = self::contentTypes['createAttribute'][0])
+    {
+        return $this->createAttributeAsyncWithHttpInfo($create_attribute_request, $x_project_id, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation createAttributeAsyncWithHttpInfo
+     *
+     * Declare a targeting attribute
+     *
+     * @param  \Shipeasy\Admin\Generated\Model\CreateAttributeRequest $create_attribute_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createAttribute'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function createAttributeAsyncWithHttpInfo($create_attribute_request, $x_project_id = null, string $contentType = self::contentTypes['createAttribute'][0])
+    {
+        $returnType = '\Shipeasy\Admin\Generated\Model\CreateAttributeResponse';
+        $request = $this->createAttributeRequest($create_attribute_request, $x_project_id, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'createAttribute'
+     *
+     * @param  \Shipeasy\Admin\Generated\Model\CreateAttributeRequest $create_attribute_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createAttribute'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function createAttributeRequest($create_attribute_request, $x_project_id = null, string $contentType = self::contentTypes['createAttribute'][0])
+    {
+
+        // verify the required parameter 'create_attribute_request' is set
+        if ($create_attribute_request === null || (is_array($create_attribute_request) && count($create_attribute_request) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $create_attribute_request when calling createAttribute'
+            );
+        }
+
+
+
+        $resourcePath = '/api/admin/attributes';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // header params
+        if ($x_project_id !== null) {
+            $headerParams['X-Project-Id'] = ObjectSerializer::toHeaderValue($x_project_id);
+        }
+
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (isset($create_attribute_request)) {
+            if (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the body
+                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($create_attribute_request));
+            } else {
+                $httpBody = $create_attribute_request;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (sdk_admin_*) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'POST',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation deleteAttribute
+     *
+     * Archive a targeting attribute
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteAttribute'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Shipeasy\Admin\Generated\Model\DeleteAttributeResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     */
+    public function deleteAttribute($id, $x_project_id = null, string $contentType = self::contentTypes['deleteAttribute'][0])
+    {
+        list($response) = $this->deleteAttributeWithHttpInfo($id, $x_project_id, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation deleteAttributeWithHttpInfo
+     *
+     * Archive a targeting attribute
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteAttribute'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of \Shipeasy\Admin\Generated\Model\DeleteAttributeResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function deleteAttributeWithHttpInfo($id, $x_project_id = null, string $contentType = self::contentTypes['deleteAttribute'][0])
+    {
+        $request = $this->deleteAttributeRequest($id, $x_project_id, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\DeleteAttributeResponse',
+                        $request,
+                        $response,
+                    );
+                case 400:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 401:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 409:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Shipeasy\Admin\Generated\Model\DeleteAttributeResponse',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\DeleteAttributeResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+        
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation deleteAttributeAsync
+     *
+     * Archive a targeting attribute
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteAttribute'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function deleteAttributeAsync($id, $x_project_id = null, string $contentType = self::contentTypes['deleteAttribute'][0])
+    {
+        return $this->deleteAttributeAsyncWithHttpInfo($id, $x_project_id, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation deleteAttributeAsyncWithHttpInfo
+     *
+     * Archive a targeting attribute
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteAttribute'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function deleteAttributeAsyncWithHttpInfo($id, $x_project_id = null, string $contentType = self::contentTypes['deleteAttribute'][0])
+    {
+        $returnType = '\Shipeasy\Admin\Generated\Model\DeleteAttributeResponse';
+        $request = $this->deleteAttributeRequest($id, $x_project_id, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'deleteAttribute'
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteAttribute'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function deleteAttributeRequest($id, $x_project_id = null, string $contentType = self::contentTypes['deleteAttribute'][0])
+    {
+
+        // verify the required parameter 'id' is set
+        if ($id === null || (is_array($id) && count($id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $id when calling deleteAttribute'
+            );
+        }
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling AttributesApi.deleteAttribute, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling AttributesApi.deleteAttribute, must be bigger than or equal to 1.');
+        }
+        
+
+
+        $resourcePath = '/api/admin/attributes/{id}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // header params
+        if ($x_project_id !== null) {
+            $headerParams['X-Project-Id'] = ObjectSerializer::toHeaderValue($x_project_id);
+        }
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{id}',
+                ObjectSerializer::toPathValue($id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (sdk_admin_*) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'DELETE',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation getAttribute
+     *
+     * Get a targeting attribute
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAttribute'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Shipeasy\Admin\Generated\Model\GetAttributeResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     */
+    public function getAttribute($id, $x_project_id = null, string $contentType = self::contentTypes['getAttribute'][0])
+    {
+        list($response) = $this->getAttributeWithHttpInfo($id, $x_project_id, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation getAttributeWithHttpInfo
+     *
+     * Get a targeting attribute
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAttribute'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of \Shipeasy\Admin\Generated\Model\GetAttributeResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function getAttributeWithHttpInfo($id, $x_project_id = null, string $contentType = self::contentTypes['getAttribute'][0])
+    {
+        $request = $this->getAttributeRequest($id, $x_project_id, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\GetAttributeResponse',
+                        $request,
+                        $response,
+                    );
+                case 400:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 401:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 409:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Shipeasy\Admin\Generated\Model\GetAttributeResponse',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\GetAttributeResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+        
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation getAttributeAsync
+     *
+     * Get a targeting attribute
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAttribute'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getAttributeAsync($id, $x_project_id = null, string $contentType = self::contentTypes['getAttribute'][0])
+    {
+        return $this->getAttributeAsyncWithHttpInfo($id, $x_project_id, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation getAttributeAsyncWithHttpInfo
+     *
+     * Get a targeting attribute
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAttribute'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getAttributeAsyncWithHttpInfo($id, $x_project_id = null, string $contentType = self::contentTypes['getAttribute'][0])
+    {
+        $returnType = '\Shipeasy\Admin\Generated\Model\GetAttributeResponse';
+        $request = $this->getAttributeRequest($id, $x_project_id, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getAttribute'
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAttribute'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function getAttributeRequest($id, $x_project_id = null, string $contentType = self::contentTypes['getAttribute'][0])
+    {
+
+        // verify the required parameter 'id' is set
+        if ($id === null || (is_array($id) && count($id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $id when calling getAttribute'
+            );
+        }
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling AttributesApi.getAttribute, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling AttributesApi.getAttribute, must be bigger than or equal to 1.');
+        }
+        
+
+
+        $resourcePath = '/api/admin/attributes/{id}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // header params
+        if ($x_project_id !== null) {
+            $headerParams['X-Project-Id'] = ObjectSerializer::toHeaderValue($x_project_id);
+        }
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{id}',
+                ObjectSerializer::toPathValue($id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (sdk_admin_*) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation listAttributes
      *
      * List targeting attributes
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAttributes'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Shipeasy\Admin\Generated\Model\ListAttributesResponseInner[]|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
-    public function listAttributes($x_project_id = null, string $contentType = self::contentTypes['listAttributes'][0])
+    public function listAttributes($x_project_id = null, $q = null, string $contentType = self::contentTypes['listAttributes'][0])
     {
-        list($response) = $this->listAttributesWithHttpInfo($x_project_id, $contentType);
+        list($response) = $this->listAttributesWithHttpInfo($x_project_id, $q, $contentType);
         return $response;
     }
 
@@ -149,15 +1271,16 @@ class AttributesApi
      * List targeting attributes
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAttributes'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return array of \Shipeasy\Admin\Generated\Model\ListAttributesResponseInner[]|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listAttributesWithHttpInfo($x_project_id = null, string $contentType = self::contentTypes['listAttributes'][0])
+    public function listAttributesWithHttpInfo($x_project_id = null, $q = null, string $contentType = self::contentTypes['listAttributes'][0])
     {
-        $request = $this->listAttributesRequest($x_project_id, $contentType);
+        $request = $this->listAttributesRequest($x_project_id, $q, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -318,14 +1441,15 @@ class AttributesApi
      * List targeting attributes
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAttributes'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listAttributesAsync($x_project_id = null, string $contentType = self::contentTypes['listAttributes'][0])
+    public function listAttributesAsync($x_project_id = null, $q = null, string $contentType = self::contentTypes['listAttributes'][0])
     {
-        return $this->listAttributesAsyncWithHttpInfo($x_project_id, $contentType)
+        return $this->listAttributesAsyncWithHttpInfo($x_project_id, $q, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -339,15 +1463,16 @@ class AttributesApi
      * List targeting attributes
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAttributes'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listAttributesAsyncWithHttpInfo($x_project_id = null, string $contentType = self::contentTypes['listAttributes'][0])
+    public function listAttributesAsyncWithHttpInfo($x_project_id = null, $q = null, string $contentType = self::contentTypes['listAttributes'][0])
     {
         $returnType = '\Shipeasy\Admin\Generated\Model\ListAttributesResponseInner[]';
-        $request = $this->listAttributesRequest($x_project_id, $contentType);
+        $request = $this->listAttributesRequest($x_project_id, $q, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -389,15 +1514,20 @@ class AttributesApi
      * Create request for operation 'listAttributes'
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAttributes'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listAttributesRequest($x_project_id = null, string $contentType = self::contentTypes['listAttributes'][0])
+    public function listAttributesRequest($x_project_id = null, $q = null, string $contentType = self::contentTypes['listAttributes'][0])
     {
 
 
+        if ($q !== null && strlen($q) > 100) {
+            throw new \InvalidArgumentException('invalid length for "$q" when calling AttributesApi.listAttributes, must be smaller than or equal to 100.');
+        }
+        
 
         $resourcePath = '/api/admin/attributes';
         $formParams = [];
@@ -406,6 +1536,15 @@ class AttributesApi
         $httpBody = '';
         $multipart = false;
 
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $q,
+            'q', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
 
         // header params
         if ($x_project_id !== null) {
@@ -465,6 +1604,397 @@ class AttributesApi
         $query = ObjectSerializer::buildQuery($queryParams);
         return new Request(
             'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation updateAttribute
+     *
+     * Update a targeting attribute
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\UpdateAttributeRequest $update_attribute_request update_attribute_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateAttribute'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Shipeasy\Admin\Generated\Model\UpdateAttributeResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     */
+    public function updateAttribute($id, $update_attribute_request, $x_project_id = null, string $contentType = self::contentTypes['updateAttribute'][0])
+    {
+        list($response) = $this->updateAttributeWithHttpInfo($id, $update_attribute_request, $x_project_id, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation updateAttributeWithHttpInfo
+     *
+     * Update a targeting attribute
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\UpdateAttributeRequest $update_attribute_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateAttribute'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of \Shipeasy\Admin\Generated\Model\UpdateAttributeResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function updateAttributeWithHttpInfo($id, $update_attribute_request, $x_project_id = null, string $contentType = self::contentTypes['updateAttribute'][0])
+    {
+        $request = $this->updateAttributeRequest($id, $update_attribute_request, $x_project_id, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\UpdateAttributeResponse',
+                        $request,
+                        $response,
+                    );
+                case 400:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 401:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 409:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Shipeasy\Admin\Generated\Model\UpdateAttributeResponse',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\UpdateAttributeResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+        
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation updateAttributeAsync
+     *
+     * Update a targeting attribute
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\UpdateAttributeRequest $update_attribute_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateAttribute'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function updateAttributeAsync($id, $update_attribute_request, $x_project_id = null, string $contentType = self::contentTypes['updateAttribute'][0])
+    {
+        return $this->updateAttributeAsyncWithHttpInfo($id, $update_attribute_request, $x_project_id, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation updateAttributeAsyncWithHttpInfo
+     *
+     * Update a targeting attribute
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\UpdateAttributeRequest $update_attribute_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateAttribute'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function updateAttributeAsyncWithHttpInfo($id, $update_attribute_request, $x_project_id = null, string $contentType = self::contentTypes['updateAttribute'][0])
+    {
+        $returnType = '\Shipeasy\Admin\Generated\Model\UpdateAttributeResponse';
+        $request = $this->updateAttributeRequest($id, $update_attribute_request, $x_project_id, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'updateAttribute'
+     *
+     * @param  string $id The attribute id. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\UpdateAttributeRequest $update_attribute_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateAttribute'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function updateAttributeRequest($id, $update_attribute_request, $x_project_id = null, string $contentType = self::contentTypes['updateAttribute'][0])
+    {
+
+        // verify the required parameter 'id' is set
+        if ($id === null || (is_array($id) && count($id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $id when calling updateAttribute'
+            );
+        }
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling AttributesApi.updateAttribute, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling AttributesApi.updateAttribute, must be bigger than or equal to 1.');
+        }
+        
+        // verify the required parameter 'update_attribute_request' is set
+        if ($update_attribute_request === null || (is_array($update_attribute_request) && count($update_attribute_request) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $update_attribute_request when calling updateAttribute'
+            );
+        }
+
+
+
+        $resourcePath = '/api/admin/attributes/{id}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // header params
+        if ($x_project_id !== null) {
+            $headerParams['X-Project-Id'] = ObjectSerializer::toHeaderValue($x_project_id);
+        }
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{id}',
+                ObjectSerializer::toPathValue($id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (isset($update_attribute_request)) {
+            if (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the body
+                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($update_attribute_request));
+            } else {
+                $httpBody = $update_attribute_request;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (sdk_admin_*) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'PATCH',
             $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
             $headers,
             $httpBody

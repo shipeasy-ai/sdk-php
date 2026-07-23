@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * ListAttributesResponseInner Class Doc Comment
  *
  * @category Class
- * @description One auto-inferred targeting attribute.
+ * @description One declared or auto-inferred targeting attribute row.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -58,8 +58,17 @@ class ListAttributesResponseInner implements ModelInterface, ArrayAccess, \JsonS
      * @var string[]
      */
     protected static $openAPITypes = [
+        'id' => 'string',
         'name' => 'string',
-        'type' => 'string'
+        'type' => '\Shipeasy\Admin\Generated\Model\AttributeType',
+        'enum_values' => 'string[]',
+        'required' => 'int',
+        'description' => 'string',
+        'sdk_path' => 'string',
+        'created_at' => 'string',
+        'source' => 'string',
+        'last_seen_at' => 'string',
+        'deprecated' => 'int'
     ];
 
     /**
@@ -70,8 +79,17 @@ class ListAttributesResponseInner implements ModelInterface, ArrayAccess, \JsonS
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
+        'id' => null,
         'name' => null,
-        'type' => null
+        'type' => null,
+        'enum_values' => null,
+        'required' => null,
+        'description' => null,
+        'sdk_path' => null,
+        'created_at' => null,
+        'source' => null,
+        'last_seen_at' => null,
+        'deprecated' => null
     ];
 
     /**
@@ -80,8 +98,17 @@ class ListAttributesResponseInner implements ModelInterface, ArrayAccess, \JsonS
      * @var boolean[]
      */
     protected static array $openAPINullables = [
+        'id' => false,
         'name' => false,
-        'type' => false
+        'type' => false,
+        'enum_values' => true,
+        'required' => false,
+        'description' => true,
+        'sdk_path' => true,
+        'created_at' => false,
+        'source' => false,
+        'last_seen_at' => true,
+        'deprecated' => false
     ];
 
     /**
@@ -170,8 +197,17 @@ class ListAttributesResponseInner implements ModelInterface, ArrayAccess, \JsonS
      * @var string[]
      */
     protected static $attributeMap = [
+        'id' => 'id',
         'name' => 'name',
-        'type' => 'type'
+        'type' => 'type',
+        'enum_values' => 'enumValues',
+        'required' => 'required',
+        'description' => 'description',
+        'sdk_path' => 'sdkPath',
+        'created_at' => 'createdAt',
+        'source' => 'source',
+        'last_seen_at' => 'lastSeenAt',
+        'deprecated' => 'deprecated'
     ];
 
     /**
@@ -180,8 +216,17 @@ class ListAttributesResponseInner implements ModelInterface, ArrayAccess, \JsonS
      * @var string[]
      */
     protected static $setters = [
+        'id' => 'setId',
         'name' => 'setName',
-        'type' => 'setType'
+        'type' => 'setType',
+        'enum_values' => 'setEnumValues',
+        'required' => 'setRequired',
+        'description' => 'setDescription',
+        'sdk_path' => 'setSdkPath',
+        'created_at' => 'setCreatedAt',
+        'source' => 'setSource',
+        'last_seen_at' => 'setLastSeenAt',
+        'deprecated' => 'setDeprecated'
     ];
 
     /**
@@ -190,8 +235,17 @@ class ListAttributesResponseInner implements ModelInterface, ArrayAccess, \JsonS
      * @var string[]
      */
     protected static $getters = [
+        'id' => 'getId',
         'name' => 'getName',
-        'type' => 'getType'
+        'type' => 'getType',
+        'enum_values' => 'getEnumValues',
+        'required' => 'getRequired',
+        'description' => 'getDescription',
+        'sdk_path' => 'getSdkPath',
+        'created_at' => 'getCreatedAt',
+        'source' => 'getSource',
+        'last_seen_at' => 'getLastSeenAt',
+        'deprecated' => 'getDeprecated'
     ];
 
     /**
@@ -235,6 +289,51 @@ class ListAttributesResponseInner implements ModelInterface, ArrayAccess, \JsonS
         return self::$openAPIModelName;
     }
 
+    public const REQUIRED_NUMBER_0 = 0;
+    public const REQUIRED_NUMBER_1 = 1;
+    public const SOURCE_AUTO = 'auto';
+    public const SOURCE_MANUAL = 'manual';
+    public const DEPRECATED_NUMBER_0 = 0;
+    public const DEPRECATED_NUMBER_1 = 1;
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getRequiredAllowableValues()
+    {
+        return [
+            self::REQUIRED_NUMBER_0,
+            self::REQUIRED_NUMBER_1,
+        ];
+    }
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getSourceAllowableValues()
+    {
+        return [
+            self::SOURCE_AUTO,
+            self::SOURCE_MANUAL,
+        ];
+    }
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getDeprecatedAllowableValues()
+    {
+        return [
+            self::DEPRECATED_NUMBER_0,
+            self::DEPRECATED_NUMBER_1,
+        ];
+    }
 
     /**
      * Associative array for storing property values
@@ -251,8 +350,17 @@ class ListAttributesResponseInner implements ModelInterface, ArrayAccess, \JsonS
      */
     public function __construct(?array $data = null)
     {
+        $this->setIfExists('id', $data ?? [], null);
         $this->setIfExists('name', $data ?? [], null);
         $this->setIfExists('type', $data ?? [], null);
+        $this->setIfExists('enum_values', $data ?? [], null);
+        $this->setIfExists('required', $data ?? [], null);
+        $this->setIfExists('description', $data ?? [], null);
+        $this->setIfExists('sdk_path', $data ?? [], null);
+        $this->setIfExists('created_at', $data ?? [], null);
+        $this->setIfExists('source', $data ?? [], null);
+        $this->setIfExists('last_seen_at', $data ?? [], null);
+        $this->setIfExists('deprecated', $data ?? [], null);
     }
 
     /**
@@ -282,9 +390,42 @@ class ListAttributesResponseInner implements ModelInterface, ArrayAccess, \JsonS
     {
         $invalidProperties = [];
 
+        if ($this->container['id'] === null) {
+            $invalidProperties[] = "'id' can't be null";
+        }
         if ($this->container['name'] === null) {
             $invalidProperties[] = "'name' can't be null";
         }
+        if ($this->container['type'] === null) {
+            $invalidProperties[] = "'type' can't be null";
+        }
+        $allowedValues = $this->getRequiredAllowableValues();
+        if (!is_null($this->container['required']) && !in_array($this->container['required'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'required', must be one of '%s'",
+                $this->container['required'],
+                implode("', '", $allowedValues)
+            );
+        }
+
+        $allowedValues = $this->getSourceAllowableValues();
+        if (!is_null($this->container['source']) && !in_array($this->container['source'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'source', must be one of '%s'",
+                $this->container['source'],
+                implode("', '", $allowedValues)
+            );
+        }
+
+        $allowedValues = $this->getDeprecatedAllowableValues();
+        if (!is_null($this->container['deprecated']) && !in_array($this->container['deprecated'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'deprecated', must be one of '%s'",
+                $this->container['deprecated'],
+                implode("', '", $allowedValues)
+            );
+        }
+
         return $invalidProperties;
     }
 
@@ -299,6 +440,33 @@ class ListAttributesResponseInner implements ModelInterface, ArrayAccess, \JsonS
         return count($this->listInvalidProperties()) === 0;
     }
 
+
+    /**
+     * Gets id
+     *
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->container['id'];
+    }
+
+    /**
+     * Sets id
+     *
+     * @param string $id Stable opaque attribute id.
+     *
+     * @return self
+     */
+    public function setId($id)
+    {
+        if (is_null($id)) {
+            throw new \InvalidArgumentException('non-nullable id cannot be null');
+        }
+        $this->container['id'] = $id;
+
+        return $this;
+    }
 
     /**
      * Gets name
@@ -330,7 +498,7 @@ class ListAttributesResponseInner implements ModelInterface, ArrayAccess, \JsonS
     /**
      * Gets type
      *
-     * @return string|null
+     * @return \Shipeasy\Admin\Generated\Model\AttributeType
      */
     public function getType()
     {
@@ -340,7 +508,7 @@ class ListAttributesResponseInner implements ModelInterface, ArrayAccess, \JsonS
     /**
      * Sets type
      *
-     * @param string|null $type Inferred value type (`string`, `number`, `boolean`, …) when known.
+     * @param \Shipeasy\Admin\Generated\Model\AttributeType $type type
      *
      * @return self
      */
@@ -350,6 +518,280 @@ class ListAttributesResponseInner implements ModelInterface, ArrayAccess, \JsonS
             throw new \InvalidArgumentException('non-nullable type cannot be null');
         }
         $this->container['type'] = $type;
+
+        return $this;
+    }
+
+    /**
+     * Gets enum_values
+     *
+     * @return string[]|null
+     */
+    public function getEnumValues()
+    {
+        return $this->container['enum_values'];
+    }
+
+    /**
+     * Sets enum_values
+     *
+     * @param string[]|null $enum_values Allowed values for `enum` attributes, else `null`.
+     *
+     * @return self
+     */
+    public function setEnumValues($enum_values)
+    {
+        if (is_null($enum_values)) {
+            array_push($this->openAPINullablesSetToNull, 'enum_values');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('enum_values', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['enum_values'] = $enum_values;
+
+        return $this;
+    }
+
+    /**
+     * Gets required
+     *
+     * @return int|null
+     */
+    public function getRequired()
+    {
+        return $this->container['required'];
+    }
+
+    /**
+     * Sets required
+     *
+     * @param int|null $required Whether the attribute must be present on the evaluation context (D1 stores the flag as `0`/`1`).
+     *
+     * @return self
+     */
+    public function setRequired($required)
+    {
+        if (is_null($required)) {
+            throw new \InvalidArgumentException('non-nullable required cannot be null');
+        }
+        $allowedValues = $this->getRequiredAllowableValues();
+        if (!in_array($required, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'required', must be one of '%s'",
+                    $required,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['required'] = $required;
+
+        return $this;
+    }
+
+    /**
+     * Gets description
+     *
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->container['description'];
+    }
+
+    /**
+     * Sets description
+     *
+     * @param string|null $description Human note shown in the dashboard, or `null`.
+     *
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        if (is_null($description)) {
+            array_push($this->openAPINullablesSetToNull, 'description');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('description', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['description'] = $description;
+
+        return $this;
+    }
+
+    /**
+     * Gets sdk_path
+     *
+     * @return string|null
+     */
+    public function getSdkPath()
+    {
+        return $this->container['sdk_path'];
+    }
+
+    /**
+     * Sets sdk_path
+     *
+     * @param string|null $sdk_path Dotted path the SDK reads the value from, or `null`.
+     *
+     * @return self
+     */
+    public function setSdkPath($sdk_path)
+    {
+        if (is_null($sdk_path)) {
+            array_push($this->openAPINullablesSetToNull, 'sdk_path');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('sdk_path', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['sdk_path'] = $sdk_path;
+
+        return $this;
+    }
+
+    /**
+     * Gets created_at
+     *
+     * @return string|null
+     */
+    public function getCreatedAt()
+    {
+        return $this->container['created_at'];
+    }
+
+    /**
+     * Sets created_at
+     *
+     * @param string|null $created_at ISO-8601 creation timestamp.
+     *
+     * @return self
+     */
+    public function setCreatedAt($created_at)
+    {
+        if (is_null($created_at)) {
+            throw new \InvalidArgumentException('non-nullable created_at cannot be null');
+        }
+        $this->container['created_at'] = $created_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets source
+     *
+     * @return string|null
+     */
+    public function getSource()
+    {
+        return $this->container['source'];
+    }
+
+    /**
+     * Sets source
+     *
+     * @param string|null $source How the attribute came to exist — `auto` (inferred by the `/sdk/evaluate` sampler) or `manual` (declared via the UI/API).
+     *
+     * @return self
+     */
+    public function setSource($source)
+    {
+        if (is_null($source)) {
+            throw new \InvalidArgumentException('non-nullable source cannot be null');
+        }
+        $allowedValues = $this->getSourceAllowableValues();
+        if (!in_array($source, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'source', must be one of '%s'",
+                    $source,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['source'] = $source;
+
+        return $this;
+    }
+
+    /**
+     * Gets last_seen_at
+     *
+     * @return string|null
+     */
+    public function getLastSeenAt()
+    {
+        return $this->container['last_seen_at'];
+    }
+
+    /**
+     * Sets last_seen_at
+     *
+     * @param string|null $last_seen_at ISO-8601 timestamp of the most recent SDK sample that carried this attribute, or `null` when never sampled.
+     *
+     * @return self
+     */
+    public function setLastSeenAt($last_seen_at)
+    {
+        if (is_null($last_seen_at)) {
+            array_push($this->openAPINullablesSetToNull, 'last_seen_at');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('last_seen_at', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['last_seen_at'] = $last_seen_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets deprecated
+     *
+     * @return int|null
+     */
+    public function getDeprecated()
+    {
+        return $this->container['deprecated'];
+    }
+
+    /**
+     * Sets deprecated
+     *
+     * @param int|null $deprecated `1` when an auto-discovered attribute has stopped appearing in samples. Deprecated attributes stay listed; pickers may hide or de-rank them.
+     *
+     * @return self
+     */
+    public function setDeprecated($deprecated)
+    {
+        if (is_null($deprecated)) {
+            throw new \InvalidArgumentException('non-nullable deprecated cannot be null');
+        }
+        $allowedValues = $this->getDeprecatedAllowableValues();
+        if (!in_array($deprecated, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'deprecated', must be one of '%s'",
+                    $deprecated,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['deprecated'] = $deprecated;
 
         return $this;
     }

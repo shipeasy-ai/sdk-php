@@ -262,6 +262,7 @@ class CreateKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializable
     public const SCOPES_EVENTS_WRITE = 'events:write';
     public const SCOPES_CONFIGS_WRITE = 'configs:write';
     public const SCOPES_EXPERIMENTS_WRITE = 'experiments:write';
+    public const SCOPES_TICKETS_PUBLIC_CREATE = 'tickets:public_create';
     public const ENV_DEV = 'dev';
     public const ENV_STAGING = 'staging';
     public const ENV_PROD = 'prod';
@@ -294,6 +295,7 @@ class CreateKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializable
             self::SCOPES_EVENTS_WRITE,
             self::SCOPES_CONFIGS_WRITE,
             self::SCOPES_EXPERIMENTS_WRITE,
+            self::SCOPES_TICKETS_PUBLIC_CREATE,
         ];
     }
 
@@ -388,6 +390,9 @@ class CreateKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializable
             $invalidProperties[] = "invalid value for 'expires_in_days', must be bigger than or equal to 1.";
         }
 
+        if ($this->container['env'] === null) {
+            $invalidProperties[] = "'env' can't be null";
+        }
         $allowedValues = $this->getEnvAllowableValues();
         if (!is_null($this->container['env']) && !in_array($this->container['env'], $allowedValues, true)) {
             $invalidProperties[] = sprintf(
@@ -496,7 +501,7 @@ class CreateKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets scopes
      *
-     * @param string[]|null $scopes Optional permission strings recorded on the key for audit/display.
+     * @param string[]|null $scopes Optional permission strings recorded on the key. `tickets:public_create` is enforced: a client key needs it (plus the project's `allowPublicTickets` setting) to file a `pending_approval` bug via the public `POST /cli/report` endpoint. The rest are audit/display only.
      *
      * @return self
      */
@@ -564,7 +569,7 @@ class CreateKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets env
      *
-     * @return string|null
+     * @return string
      */
     public function getEnv()
     {
@@ -574,7 +579,7 @@ class CreateKeyRequest implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets env
      *
-     * @param string|null $env Environment to bind the key to. Required for `server`/`client` keys; ignored for `admin`/`ops` (pinned to `prod`).
+     * @param string $env Environment to bind the key to. Always required. For `server`/`client` keys it is the isolation boundary the worker reads from; `admin`/`ops` keys are env-agnostic and pinned to `prod` by the handler regardless of the value sent.
      *
      * @return self
      */

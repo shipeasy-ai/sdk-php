@@ -794,7 +794,13 @@ class KillswitchApi
                 'Missing the required parameter $id when calling deleteKillswitch'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KillswitchApi.deleteKillswitch, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KillswitchApi.deleteKillswitch, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/killswitches/{id}';
@@ -882,7 +888,7 @@ class KillswitchApi
      *
      * Get one killswitch
      *
-     * @param  string|null $id Stable opaque killswitch id (&#x60;ksw_…&#x60;) or the killswitch&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque killswitch id (&#x60;ksw_…&#x60;) or the killswitch&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getKillswitch'] to see the possible values for this operation
      *
@@ -901,7 +907,7 @@ class KillswitchApi
      *
      * Get one killswitch
      *
-     * @param  string|null $id Stable opaque killswitch id (&#x60;ksw_…&#x60;) or the killswitch&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque killswitch id (&#x60;ksw_…&#x60;) or the killswitch&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getKillswitch'] to see the possible values for this operation
      *
@@ -1071,7 +1077,7 @@ class KillswitchApi
      *
      * Get one killswitch
      *
-     * @param  string|null $id Stable opaque killswitch id (&#x60;ksw_…&#x60;) or the killswitch&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque killswitch id (&#x60;ksw_…&#x60;) or the killswitch&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getKillswitch'] to see the possible values for this operation
      *
@@ -1093,7 +1099,7 @@ class KillswitchApi
      *
      * Get one killswitch
      *
-     * @param  string|null $id Stable opaque killswitch id (&#x60;ksw_…&#x60;) or the killswitch&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque killswitch id (&#x60;ksw_…&#x60;) or the killswitch&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getKillswitch'] to see the possible values for this operation
      *
@@ -1144,7 +1150,7 @@ class KillswitchApi
     /**
      * Create request for operation 'getKillswitch'
      *
-     * @param  string|null $id Stable opaque killswitch id (&#x60;ksw_…&#x60;) or the killswitch&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque killswitch id (&#x60;ksw_…&#x60;) or the killswitch&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getKillswitch'] to see the possible values for this operation
      *
@@ -1160,7 +1166,13 @@ class KillswitchApi
                 'Missing the required parameter $id when calling getKillswitch'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KillswitchApi.getKillswitch, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KillswitchApi.getKillswitch, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/killswitches/{id}';
@@ -1251,15 +1263,16 @@ class KillswitchApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listKillswitches'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Shipeasy\Admin\Generated\Model\ListKillswitchesResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
-    public function listKillswitches($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listKillswitches'][0])
+    public function listKillswitches($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listKillswitches'][0])
     {
-        list($response) = $this->listKillswitchesWithHttpInfo($x_project_id, $limit, $cursor, $contentType);
+        list($response) = $this->listKillswitchesWithHttpInfo($x_project_id, $limit, $cursor, $q, $contentType);
         return $response;
     }
 
@@ -1271,15 +1284,16 @@ class KillswitchApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listKillswitches'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return array of \Shipeasy\Admin\Generated\Model\ListKillswitchesResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listKillswitchesWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listKillswitches'][0])
+    public function listKillswitchesWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listKillswitches'][0])
     {
-        $request = $this->listKillswitchesRequest($x_project_id, $limit, $cursor, $contentType);
+        $request = $this->listKillswitchesRequest($x_project_id, $limit, $cursor, $q, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1442,14 +1456,15 @@ class KillswitchApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listKillswitches'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listKillswitchesAsync($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listKillswitches'][0])
+    public function listKillswitchesAsync($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listKillswitches'][0])
     {
-        return $this->listKillswitchesAsyncWithHttpInfo($x_project_id, $limit, $cursor, $contentType)
+        return $this->listKillswitchesAsyncWithHttpInfo($x_project_id, $limit, $cursor, $q, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1465,15 +1480,16 @@ class KillswitchApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listKillswitches'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listKillswitchesAsyncWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listKillswitches'][0])
+    public function listKillswitchesAsyncWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listKillswitches'][0])
     {
         $returnType = '\Shipeasy\Admin\Generated\Model\ListKillswitchesResponse';
-        $request = $this->listKillswitchesRequest($x_project_id, $limit, $cursor, $contentType);
+        $request = $this->listKillswitchesRequest($x_project_id, $limit, $cursor, $q, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1517,12 +1533,13 @@ class KillswitchApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listKillswitches'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listKillswitchesRequest($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listKillswitches'][0])
+    public function listKillswitchesRequest($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listKillswitches'][0])
     {
 
 
@@ -1534,6 +1551,10 @@ class KillswitchApi
         }
         
 
+        if ($q !== null && strlen($q) > 100) {
+            throw new \InvalidArgumentException('invalid length for "$q" when calling KillswitchApi.listKillswitches, must be smaller than or equal to 100.');
+        }
+        
 
         $resourcePath = '/api/admin/killswitches';
         $formParams = [];
@@ -1555,6 +1576,15 @@ class KillswitchApi
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $cursor,
             'cursor', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $q,
+            'q', // param base name
             'string', // openApiType
             'form', // style
             true, // explode
@@ -1913,7 +1943,13 @@ class KillswitchApi
                 'Missing the required parameter $id when calling setKillswitchSwitch'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KillswitchApi.setKillswitchSwitch, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KillswitchApi.setKillswitchSwitch, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'set_killswitch_switch_request' is set
         if ($set_killswitch_switch_request === null || (is_array($set_killswitch_switch_request) && count($set_killswitch_switch_request) === 0)) {
             throw new \InvalidArgumentException(
@@ -2298,7 +2334,13 @@ class KillswitchApi
                 'Missing the required parameter $id when calling setKillswitchValue'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KillswitchApi.setKillswitchValue, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KillswitchApi.setKillswitchValue, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'set_killswitch_value_request' is set
         if ($set_killswitch_value_request === null || (is_array($set_killswitch_value_request) && count($set_killswitch_value_request) === 0)) {
             throw new \InvalidArgumentException(
@@ -2683,7 +2725,13 @@ class KillswitchApi
                 'Missing the required parameter $id when calling unsetKillswitchSwitch'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KillswitchApi.unsetKillswitchSwitch, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KillswitchApi.unsetKillswitchSwitch, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'unset_killswitch_switch_request' is set
         if ($unset_killswitch_switch_request === null || (is_array($unset_killswitch_switch_request) && count($unset_killswitch_switch_request) === 0)) {
             throw new \InvalidArgumentException(
@@ -3068,7 +3116,13 @@ class KillswitchApi
                 'Missing the required parameter $id when calling updateKillswitch'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KillswitchApi.updateKillswitch, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KillswitchApi.updateKillswitch, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'update_killswitch_request' is set
         if ($update_killswitch_request === null || (is_array($update_killswitch_request) && count($update_killswitch_request) === 0)) {
             throw new \InvalidArgumentException(

@@ -507,7 +507,7 @@ class AlertsApi
      *
      * Delete an alert rule
      *
-     * @param  string|null $id Stable opaque alert-rule id (&#x60;ar_…&#x60;) or the rule&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque alert-rule id (&#x60;ar_…&#x60;) or the rule&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteAlertRule'] to see the possible values for this operation
      *
@@ -526,7 +526,7 @@ class AlertsApi
      *
      * Delete an alert rule
      *
-     * @param  string|null $id Stable opaque alert-rule id (&#x60;ar_…&#x60;) or the rule&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque alert-rule id (&#x60;ar_…&#x60;) or the rule&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteAlertRule'] to see the possible values for this operation
      *
@@ -696,7 +696,7 @@ class AlertsApi
      *
      * Delete an alert rule
      *
-     * @param  string|null $id Stable opaque alert-rule id (&#x60;ar_…&#x60;) or the rule&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque alert-rule id (&#x60;ar_…&#x60;) or the rule&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteAlertRule'] to see the possible values for this operation
      *
@@ -718,7 +718,7 @@ class AlertsApi
      *
      * Delete an alert rule
      *
-     * @param  string|null $id Stable opaque alert-rule id (&#x60;ar_…&#x60;) or the rule&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque alert-rule id (&#x60;ar_…&#x60;) or the rule&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteAlertRule'] to see the possible values for this operation
      *
@@ -769,7 +769,7 @@ class AlertsApi
     /**
      * Create request for operation 'deleteAlertRule'
      *
-     * @param  string|null $id Stable opaque alert-rule id (&#x60;ar_…&#x60;) or the rule&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque alert-rule id (&#x60;ar_…&#x60;) or the rule&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteAlertRule'] to see the possible values for this operation
      *
@@ -785,7 +785,13 @@ class AlertsApi
                 'Missing the required parameter $id when calling deleteAlertRule'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling AlertsApi.deleteAlertRule, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling AlertsApi.deleteAlertRule, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/alert-rules/{id}';
@@ -874,15 +880,16 @@ class AlertsApi
      * List alert rules
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAlertRules'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Shipeasy\Admin\Generated\Model\ListAlertRulesResponseInner[]|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
-    public function listAlertRules($x_project_id = null, string $contentType = self::contentTypes['listAlertRules'][0])
+    public function listAlertRules($x_project_id = null, $q = null, string $contentType = self::contentTypes['listAlertRules'][0])
     {
-        list($response) = $this->listAlertRulesWithHttpInfo($x_project_id, $contentType);
+        list($response) = $this->listAlertRulesWithHttpInfo($x_project_id, $q, $contentType);
         return $response;
     }
 
@@ -892,15 +899,16 @@ class AlertsApi
      * List alert rules
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAlertRules'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return array of \Shipeasy\Admin\Generated\Model\ListAlertRulesResponseInner[]|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listAlertRulesWithHttpInfo($x_project_id = null, string $contentType = self::contentTypes['listAlertRules'][0])
+    public function listAlertRulesWithHttpInfo($x_project_id = null, $q = null, string $contentType = self::contentTypes['listAlertRules'][0])
     {
-        $request = $this->listAlertRulesRequest($x_project_id, $contentType);
+        $request = $this->listAlertRulesRequest($x_project_id, $q, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1061,14 +1069,15 @@ class AlertsApi
      * List alert rules
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAlertRules'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listAlertRulesAsync($x_project_id = null, string $contentType = self::contentTypes['listAlertRules'][0])
+    public function listAlertRulesAsync($x_project_id = null, $q = null, string $contentType = self::contentTypes['listAlertRules'][0])
     {
-        return $this->listAlertRulesAsyncWithHttpInfo($x_project_id, $contentType)
+        return $this->listAlertRulesAsyncWithHttpInfo($x_project_id, $q, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1082,15 +1091,16 @@ class AlertsApi
      * List alert rules
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAlertRules'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listAlertRulesAsyncWithHttpInfo($x_project_id = null, string $contentType = self::contentTypes['listAlertRules'][0])
+    public function listAlertRulesAsyncWithHttpInfo($x_project_id = null, $q = null, string $contentType = self::contentTypes['listAlertRules'][0])
     {
         $returnType = '\Shipeasy\Admin\Generated\Model\ListAlertRulesResponseInner[]';
-        $request = $this->listAlertRulesRequest($x_project_id, $contentType);
+        $request = $this->listAlertRulesRequest($x_project_id, $q, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1132,15 +1142,20 @@ class AlertsApi
      * Create request for operation 'listAlertRules'
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAlertRules'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listAlertRulesRequest($x_project_id = null, string $contentType = self::contentTypes['listAlertRules'][0])
+    public function listAlertRulesRequest($x_project_id = null, $q = null, string $contentType = self::contentTypes['listAlertRules'][0])
     {
 
 
+        if ($q !== null && strlen($q) > 100) {
+            throw new \InvalidArgumentException('invalid length for "$q" when calling AlertsApi.listAlertRules, must be smaller than or equal to 100.');
+        }
+        
 
         $resourcePath = '/api/admin/alert-rules';
         $formParams = [];
@@ -1149,6 +1164,15 @@ class AlertsApi
         $httpBody = '';
         $multipart = false;
 
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $q,
+            'q', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
 
         // header params
         if ($x_project_id !== null) {
@@ -1848,7 +1872,13 @@ class AlertsApi
                 'Missing the required parameter $id when calling updateAlertRule'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling AlertsApi.updateAlertRule, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling AlertsApi.updateAlertRule, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'update_alert_rule_request' is set
         if ($update_alert_rule_request === null || (is_array($update_alert_rule_request) && count($update_alert_rule_request) === 0)) {
             throw new \InvalidArgumentException(

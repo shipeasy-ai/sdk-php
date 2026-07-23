@@ -59,8 +59,11 @@ class ListUniversesResponseDataInner implements ModelInterface, ArrayAccess, \Js
     protected static $openAPITypes = [
         'id' => 'string',
         'name' => 'string',
+        'description' => 'string',
         'unit_type' => 'string',
         'holdout_range' => 'float[]',
+        'recommended_headroom' => 'int',
+        'param_schema' => '\Shipeasy\Admin\Generated\Model\UniverseParam[]',
         'created_at' => 'string'
     ];
 
@@ -74,8 +77,11 @@ class ListUniversesResponseDataInner implements ModelInterface, ArrayAccess, \Js
     protected static $openAPIFormats = [
         'id' => null,
         'name' => null,
+        'description' => null,
         'unit_type' => null,
         'holdout_range' => null,
+        'recommended_headroom' => null,
+        'param_schema' => null,
         'created_at' => null
     ];
 
@@ -87,8 +93,11 @@ class ListUniversesResponseDataInner implements ModelInterface, ArrayAccess, \Js
     protected static array $openAPINullables = [
         'id' => false,
         'name' => false,
+        'description' => true,
         'unit_type' => false,
         'holdout_range' => true,
+        'recommended_headroom' => false,
+        'param_schema' => true,
         'created_at' => false
     ];
 
@@ -180,8 +189,11 @@ class ListUniversesResponseDataInner implements ModelInterface, ArrayAccess, \Js
     protected static $attributeMap = [
         'id' => 'id',
         'name' => 'name',
+        'description' => 'description',
         'unit_type' => 'unitType',
         'holdout_range' => 'holdoutRange',
+        'recommended_headroom' => 'recommendedHeadroom',
+        'param_schema' => 'paramSchema',
         'created_at' => 'createdAt'
     ];
 
@@ -193,8 +205,11 @@ class ListUniversesResponseDataInner implements ModelInterface, ArrayAccess, \Js
     protected static $setters = [
         'id' => 'setId',
         'name' => 'setName',
+        'description' => 'setDescription',
         'unit_type' => 'setUnitType',
         'holdout_range' => 'setHoldoutRange',
+        'recommended_headroom' => 'setRecommendedHeadroom',
+        'param_schema' => 'setParamSchema',
         'created_at' => 'setCreatedAt'
     ];
 
@@ -206,8 +221,11 @@ class ListUniversesResponseDataInner implements ModelInterface, ArrayAccess, \Js
     protected static $getters = [
         'id' => 'getId',
         'name' => 'getName',
+        'description' => 'getDescription',
         'unit_type' => 'getUnitType',
         'holdout_range' => 'getHoldoutRange',
+        'recommended_headroom' => 'getRecommendedHeadroom',
+        'param_schema' => 'getParamSchema',
         'created_at' => 'getCreatedAt'
     ];
 
@@ -270,8 +288,11 @@ class ListUniversesResponseDataInner implements ModelInterface, ArrayAccess, \Js
     {
         $this->setIfExists('id', $data ?? [], null);
         $this->setIfExists('name', $data ?? [], null);
+        $this->setIfExists('description', $data ?? [], null);
         $this->setIfExists('unit_type', $data ?? [], null);
         $this->setIfExists('holdout_range', $data ?? [], null);
+        $this->setIfExists('recommended_headroom', $data ?? [], null);
+        $this->setIfExists('param_schema', $data ?? [], null);
         $this->setIfExists('created_at', $data ?? [], null);
     }
 
@@ -328,6 +349,14 @@ class ListUniversesResponseDataInner implements ModelInterface, ArrayAccess, \Js
 
         if ((count($this->container['holdout_range']) < 2)) {
             $invalidProperties[] = "invalid value for 'holdout_range', number of items must be greater than or equal to 2.";
+        }
+
+        if (!is_null($this->container['recommended_headroom']) && ($this->container['recommended_headroom'] > 10000)) {
+            $invalidProperties[] = "invalid value for 'recommended_headroom', must be smaller than or equal to 10000.";
+        }
+
+        if (!is_null($this->container['recommended_headroom']) && ($this->container['recommended_headroom'] < 0)) {
+            $invalidProperties[] = "invalid value for 'recommended_headroom', must be bigger than or equal to 0.";
         }
 
         if ($this->container['created_at'] === null) {
@@ -410,6 +439,40 @@ class ListUniversesResponseDataInner implements ModelInterface, ArrayAccess, \Js
     }
 
     /**
+     * Gets description
+     *
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->container['description'];
+    }
+
+    /**
+     * Sets description
+     *
+     * @param string|null $description Human-readable blurb shown in the universe picker/hovercard.
+     *
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        if (is_null($description)) {
+            array_push($this->openAPINullablesSetToNull, 'description');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('description', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['description'] = $description;
+
+        return $this;
+    }
+
+    /**
      * Gets unit_type
      *
      * @return string
@@ -473,6 +536,75 @@ class ListUniversesResponseDataInner implements ModelInterface, ArrayAccess, \Js
             throw new \InvalidArgumentException('invalid length for $holdout_range when calling ListUniversesResponseDataInner., number of items must be greater than or equal to 2.');
         }
         $this->container['holdout_range'] = $holdout_range;
+
+        return $this;
+    }
+
+    /**
+     * Gets recommended_headroom
+     *
+     * @return int|null
+     */
+    public function getRecommendedHeadroom()
+    {
+        return $this->container['recommended_headroom'];
+    }
+
+    /**
+     * Sets recommended_headroom
+     *
+     * @param int|null $recommended_headroom Basis points of headroom seeded into each new experiment's reserved tail (0 = none).
+     *
+     * @return self
+     */
+    public function setRecommendedHeadroom($recommended_headroom)
+    {
+        if (is_null($recommended_headroom)) {
+            throw new \InvalidArgumentException('non-nullable recommended_headroom cannot be null');
+        }
+
+        if (($recommended_headroom > 10000)) {
+            throw new \InvalidArgumentException('invalid value for $recommended_headroom when calling ListUniversesResponseDataInner., must be smaller than or equal to 10000.');
+        }
+        if (($recommended_headroom < 0)) {
+            throw new \InvalidArgumentException('invalid value for $recommended_headroom when calling ListUniversesResponseDataInner., must be bigger than or equal to 0.');
+        }
+
+        $this->container['recommended_headroom'] = $recommended_headroom;
+
+        return $this;
+    }
+
+    /**
+     * Gets param_schema
+     *
+     * @return \Shipeasy\Admin\Generated\Model\UniverseParam[]|null
+     */
+    public function getParamSchema()
+    {
+        return $this->container['param_schema'];
+    }
+
+    /**
+     * Sets param_schema
+     *
+     * @param \Shipeasy\Admin\Generated\Model\UniverseParam[]|null $param_schema The universe-owned config schema, or `null` on pre-rework universes not yet seeded.
+     *
+     * @return self
+     */
+    public function setParamSchema($param_schema)
+    {
+        if (is_null($param_schema)) {
+            array_push($this->openAPINullablesSetToNull, 'param_schema');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('param_schema', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['param_schema'] = $param_schema;
 
         return $this;
     }

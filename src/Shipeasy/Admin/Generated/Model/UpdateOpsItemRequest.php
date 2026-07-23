@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * UpdateOpsItemRequest Class Doc Comment
  *
  * @category Class
- * @description Body for &#x60;PATCH /api/admin/ops/{handle}&#x60;. Pass at least one of &#x60;status&#x60; / &#x60;priority&#x60;.
+ * @description Body for &#x60;PATCH /api/admin/ops/{handle}&#x60;. The body is type-less — the server validates it against the stored item&#39;s type: a &#x60;bug&#x60; accepts the bug content fields, a &#x60;feature_request&#x60; the feature fields, and &#x60;error&#x60;/&#x60;alert&#x60;/&#x60;measure_plan&#x60; only &#x60;status&#x60;/&#x60;priority&#x60;/&#x60;notify&#x60;. Pass at least one field.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -58,8 +58,16 @@ class UpdateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
      * @var string[]
      */
     protected static $openAPITypes = [
-        'status' => 'string',
-        'priority' => 'string'
+        'title' => 'string',
+        'steps_to_reproduce' => 'string',
+        'actual_result' => 'string',
+        'expected_result' => 'string',
+        'status' => '\Shipeasy\Admin\Generated\Model\OpsItemStatus',
+        'priority' => '\Shipeasy\Admin\Generated\Model\OpsItemPriorityOrNull',
+        'github_pr_number' => 'int',
+        'notify' => '\Shipeasy\Admin\Generated\Model\OpsItemNotifyOrNull',
+        'description' => 'string',
+        'use_case' => 'string'
     ];
 
     /**
@@ -70,8 +78,16 @@ class UpdateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
+        'title' => null,
+        'steps_to_reproduce' => null,
+        'actual_result' => null,
+        'expected_result' => null,
         'status' => null,
-        'priority' => null
+        'priority' => null,
+        'github_pr_number' => null,
+        'notify' => null,
+        'description' => null,
+        'use_case' => null
     ];
 
     /**
@@ -80,8 +96,16 @@ class UpdateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
      * @var boolean[]
      */
     protected static array $openAPINullables = [
+        'title' => false,
+        'steps_to_reproduce' => false,
+        'actual_result' => false,
+        'expected_result' => false,
         'status' => false,
-        'priority' => false
+        'priority' => true,
+        'github_pr_number' => false,
+        'notify' => true,
+        'description' => false,
+        'use_case' => false
     ];
 
     /**
@@ -170,8 +194,16 @@ class UpdateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
      * @var string[]
      */
     protected static $attributeMap = [
+        'title' => 'title',
+        'steps_to_reproduce' => 'stepsToReproduce',
+        'actual_result' => 'actualResult',
+        'expected_result' => 'expectedResult',
         'status' => 'status',
-        'priority' => 'priority'
+        'priority' => 'priority',
+        'github_pr_number' => 'githubPrNumber',
+        'notify' => 'notify',
+        'description' => 'description',
+        'use_case' => 'useCase'
     ];
 
     /**
@@ -180,8 +212,16 @@ class UpdateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
      * @var string[]
      */
     protected static $setters = [
+        'title' => 'setTitle',
+        'steps_to_reproduce' => 'setStepsToReproduce',
+        'actual_result' => 'setActualResult',
+        'expected_result' => 'setExpectedResult',
         'status' => 'setStatus',
-        'priority' => 'setPriority'
+        'priority' => 'setPriority',
+        'github_pr_number' => 'setGithubPrNumber',
+        'notify' => 'setNotify',
+        'description' => 'setDescription',
+        'use_case' => 'setUseCase'
     ];
 
     /**
@@ -190,8 +230,16 @@ class UpdateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
      * @var string[]
      */
     protected static $getters = [
+        'title' => 'getTitle',
+        'steps_to_reproduce' => 'getStepsToReproduce',
+        'actual_result' => 'getActualResult',
+        'expected_result' => 'getExpectedResult',
         'status' => 'getStatus',
-        'priority' => 'getPriority'
+        'priority' => 'getPriority',
+        'github_pr_number' => 'getGithubPrNumber',
+        'notify' => 'getNotify',
+        'description' => 'getDescription',
+        'use_case' => 'getUseCase'
     ];
 
     /**
@@ -235,48 +283,6 @@ class UpdateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
         return self::$openAPIModelName;
     }
 
-    public const STATUS_OPEN = 'open';
-    public const STATUS_TRIAGED = 'triaged';
-    public const STATUS_IN_PROGRESS = 'in_progress';
-    public const STATUS_READY_FOR_QA = 'ready_for_qa';
-    public const STATUS_RESOLVED = 'resolved';
-    public const STATUS_WONT_FIX = 'wont_fix';
-    public const PRIORITY_NICE_TO_HAVE = 'nice_to_have';
-    public const PRIORITY_MEDIUM = 'medium';
-    public const PRIORITY_HIGH = 'high';
-    public const PRIORITY_CRITICAL = 'critical';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getStatusAllowableValues()
-    {
-        return [
-            self::STATUS_OPEN,
-            self::STATUS_TRIAGED,
-            self::STATUS_IN_PROGRESS,
-            self::STATUS_READY_FOR_QA,
-            self::STATUS_RESOLVED,
-            self::STATUS_WONT_FIX,
-        ];
-    }
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getPriorityAllowableValues()
-    {
-        return [
-            self::PRIORITY_NICE_TO_HAVE,
-            self::PRIORITY_MEDIUM,
-            self::PRIORITY_HIGH,
-            self::PRIORITY_CRITICAL,
-        ];
-    }
 
     /**
      * Associative array for storing property values
@@ -293,8 +299,16 @@ class UpdateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
      */
     public function __construct(?array $data = null)
     {
+        $this->setIfExists('title', $data ?? [], null);
+        $this->setIfExists('steps_to_reproduce', $data ?? [], null);
+        $this->setIfExists('actual_result', $data ?? [], null);
+        $this->setIfExists('expected_result', $data ?? [], null);
         $this->setIfExists('status', $data ?? [], null);
         $this->setIfExists('priority', $data ?? [], null);
+        $this->setIfExists('github_pr_number', $data ?? [], null);
+        $this->setIfExists('notify', $data ?? [], null);
+        $this->setIfExists('description', $data ?? [], null);
+        $this->setIfExists('use_case', $data ?? [], null);
     }
 
     /**
@@ -324,22 +338,40 @@ class UpdateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     {
         $invalidProperties = [];
 
-        $allowedValues = $this->getStatusAllowableValues();
-        if (!is_null($this->container['status']) && !in_array($this->container['status'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'status', must be one of '%s'",
-                $this->container['status'],
-                implode("', '", $allowedValues)
-            );
+        if (!is_null($this->container['title']) && (mb_strlen($this->container['title']) > 200)) {
+            $invalidProperties[] = "invalid value for 'title', the character length must be smaller than or equal to 200.";
         }
 
-        $allowedValues = $this->getPriorityAllowableValues();
-        if (!is_null($this->container['priority']) && !in_array($this->container['priority'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'priority', must be one of '%s'",
-                $this->container['priority'],
-                implode("', '", $allowedValues)
-            );
+        if (!is_null($this->container['title']) && (mb_strlen($this->container['title']) < 1)) {
+            $invalidProperties[] = "invalid value for 'title', the character length must be bigger than or equal to 1.";
+        }
+
+        if (!is_null($this->container['title']) && !preg_match("/^\\S(.*\\S)?$/", $this->container['title'])) {
+            $invalidProperties[] = "invalid value for 'title', must be conform to the pattern /^\\S(.*\\S)?$/.";
+        }
+
+        if (!is_null($this->container['steps_to_reproduce']) && (mb_strlen($this->container['steps_to_reproduce']) > 8000)) {
+            $invalidProperties[] = "invalid value for 'steps_to_reproduce', the character length must be smaller than or equal to 8000.";
+        }
+
+        if (!is_null($this->container['actual_result']) && (mb_strlen($this->container['actual_result']) > 8000)) {
+            $invalidProperties[] = "invalid value for 'actual_result', the character length must be smaller than or equal to 8000.";
+        }
+
+        if (!is_null($this->container['expected_result']) && (mb_strlen($this->container['expected_result']) > 8000)) {
+            $invalidProperties[] = "invalid value for 'expected_result', the character length must be smaller than or equal to 8000.";
+        }
+
+        if (!is_null($this->container['github_pr_number']) && ($this->container['github_pr_number'] < 1)) {
+            $invalidProperties[] = "invalid value for 'github_pr_number', must be bigger than or equal to 1.";
+        }
+
+        if (!is_null($this->container['description']) && (mb_strlen($this->container['description']) > 8000)) {
+            $invalidProperties[] = "invalid value for 'description', the character length must be smaller than or equal to 8000.";
+        }
+
+        if (!is_null($this->container['use_case']) && (mb_strlen($this->container['use_case']) > 8000)) {
+            $invalidProperties[] = "invalid value for 'use_case', the character length must be smaller than or equal to 8000.";
         }
 
         return $invalidProperties;
@@ -358,9 +390,139 @@ class UpdateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
 
 
     /**
-     * Gets status
+     * Gets title
      *
      * @return string|null
+     */
+    public function getTitle()
+    {
+        return $this->container['title'];
+    }
+
+    /**
+     * Sets title
+     *
+     * @param string|null $title New feature-request title (no leading/trailing whitespace).
+     *
+     * @return self
+     */
+    public function setTitle($title)
+    {
+        if (is_null($title)) {
+            throw new \InvalidArgumentException('non-nullable title cannot be null');
+        }
+        if ((mb_strlen($title) > 200)) {
+            throw new \InvalidArgumentException('invalid length for $title when calling UpdateOpsItemRequest., must be smaller than or equal to 200.');
+        }
+        if ((mb_strlen($title) < 1)) {
+            throw new \InvalidArgumentException('invalid length for $title when calling UpdateOpsItemRequest., must be bigger than or equal to 1.');
+        }
+        if ((!preg_match("/^\\S(.*\\S)?$/", ObjectSerializer::toString($title)))) {
+            throw new \InvalidArgumentException("invalid value for \$title when calling UpdateOpsItemRequest., must conform to the pattern /^\\S(.*\\S)?$/.");
+        }
+
+        $this->container['title'] = $title;
+
+        return $this;
+    }
+
+    /**
+     * Gets steps_to_reproduce
+     *
+     * @return string|null
+     */
+    public function getStepsToReproduce()
+    {
+        return $this->container['steps_to_reproduce'];
+    }
+
+    /**
+     * Sets steps_to_reproduce
+     *
+     * @param string|null $steps_to_reproduce Updated reproduction steps.
+     *
+     * @return self
+     */
+    public function setStepsToReproduce($steps_to_reproduce)
+    {
+        if (is_null($steps_to_reproduce)) {
+            throw new \InvalidArgumentException('non-nullable steps_to_reproduce cannot be null');
+        }
+        if ((mb_strlen($steps_to_reproduce) > 8000)) {
+            throw new \InvalidArgumentException('invalid length for $steps_to_reproduce when calling UpdateOpsItemRequest., must be smaller than or equal to 8000.');
+        }
+
+        $this->container['steps_to_reproduce'] = $steps_to_reproduce;
+
+        return $this;
+    }
+
+    /**
+     * Gets actual_result
+     *
+     * @return string|null
+     */
+    public function getActualResult()
+    {
+        return $this->container['actual_result'];
+    }
+
+    /**
+     * Sets actual_result
+     *
+     * @param string|null $actual_result Updated actual result.
+     *
+     * @return self
+     */
+    public function setActualResult($actual_result)
+    {
+        if (is_null($actual_result)) {
+            throw new \InvalidArgumentException('non-nullable actual_result cannot be null');
+        }
+        if ((mb_strlen($actual_result) > 8000)) {
+            throw new \InvalidArgumentException('invalid length for $actual_result when calling UpdateOpsItemRequest., must be smaller than or equal to 8000.');
+        }
+
+        $this->container['actual_result'] = $actual_result;
+
+        return $this;
+    }
+
+    /**
+     * Gets expected_result
+     *
+     * @return string|null
+     */
+    public function getExpectedResult()
+    {
+        return $this->container['expected_result'];
+    }
+
+    /**
+     * Sets expected_result
+     *
+     * @param string|null $expected_result Updated expected result.
+     *
+     * @return self
+     */
+    public function setExpectedResult($expected_result)
+    {
+        if (is_null($expected_result)) {
+            throw new \InvalidArgumentException('non-nullable expected_result cannot be null');
+        }
+        if ((mb_strlen($expected_result) > 8000)) {
+            throw new \InvalidArgumentException('invalid length for $expected_result when calling UpdateOpsItemRequest., must be smaller than or equal to 8000.');
+        }
+
+        $this->container['expected_result'] = $expected_result;
+
+        return $this;
+    }
+
+    /**
+     * Gets status
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemStatus|null
      */
     public function getStatus()
     {
@@ -370,7 +532,7 @@ class UpdateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     /**
      * Sets status
      *
-     * @param string|null $status New lifecycle status.
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemStatus|null $status status
      *
      * @return self
      */
@@ -378,16 +540,6 @@ class UpdateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     {
         if (is_null($status)) {
             throw new \InvalidArgumentException('non-nullable status cannot be null');
-        }
-        $allowedValues = $this->getStatusAllowableValues();
-        if (!in_array($status, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'status', must be one of '%s'",
-                    $status,
-                    implode("', '", $allowedValues)
-                )
-            );
         }
         $this->container['status'] = $status;
 
@@ -397,7 +549,7 @@ class UpdateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     /**
      * Gets priority
      *
-     * @return string|null
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemPriorityOrNull|null
      */
     public function getPriority()
     {
@@ -407,26 +559,151 @@ class UpdateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     /**
      * Sets priority
      *
-     * @param string|null $priority New triage priority.
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemPriorityOrNull|null $priority priority
      *
      * @return self
      */
     public function setPriority($priority)
     {
         if (is_null($priority)) {
-            throw new \InvalidArgumentException('non-nullable priority cannot be null');
-        }
-        $allowedValues = $this->getPriorityAllowableValues();
-        if (!in_array($priority, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'priority', must be one of '%s'",
-                    $priority,
-                    implode("', '", $allowedValues)
-                )
-            );
+            array_push($this->openAPINullablesSetToNull, 'priority');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('priority', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
         }
         $this->container['priority'] = $priority;
+
+        return $this;
+    }
+
+    /**
+     * Gets github_pr_number
+     *
+     * @return int|null
+     */
+    public function getGithubPrNumber()
+    {
+        return $this->container['github_pr_number'];
+    }
+
+    /**
+     * Sets github_pr_number
+     *
+     * @param int|null $github_pr_number Link (or, when `null`, unlink) a GitHub pull request to this request.
+     *
+     * @return self
+     */
+    public function setGithubPrNumber($github_pr_number)
+    {
+        if (is_null($github_pr_number)) {
+            throw new \InvalidArgumentException('non-nullable github_pr_number cannot be null');
+        }
+
+        if (($github_pr_number < 1)) {
+            throw new \InvalidArgumentException('invalid value for $github_pr_number when calling UpdateOpsItemRequest., must be bigger than or equal to 1.');
+        }
+
+        $this->container['github_pr_number'] = $github_pr_number;
+
+        return $this;
+    }
+
+    /**
+     * Gets notify
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemNotifyOrNull|null
+     */
+    public function getNotify()
+    {
+        return $this->container['notify'];
+    }
+
+    /**
+     * Sets notify
+     *
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemNotifyOrNull|null $notify notify
+     *
+     * @return self
+     */
+    public function setNotify($notify)
+    {
+        if (is_null($notify)) {
+            array_push($this->openAPINullablesSetToNull, 'notify');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('notify', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['notify'] = $notify;
+
+        return $this;
+    }
+
+    /**
+     * Gets description
+     *
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->container['description'];
+    }
+
+    /**
+     * Sets description
+     *
+     * @param string|null $description Updated description.
+     *
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        if (is_null($description)) {
+            throw new \InvalidArgumentException('non-nullable description cannot be null');
+        }
+        if ((mb_strlen($description) > 8000)) {
+            throw new \InvalidArgumentException('invalid length for $description when calling UpdateOpsItemRequest., must be smaller than or equal to 8000.');
+        }
+
+        $this->container['description'] = $description;
+
+        return $this;
+    }
+
+    /**
+     * Gets use_case
+     *
+     * @return string|null
+     */
+    public function getUseCase()
+    {
+        return $this->container['use_case'];
+    }
+
+    /**
+     * Sets use_case
+     *
+     * @param string|null $use_case Updated use case.
+     *
+     * @return self
+     */
+    public function setUseCase($use_case)
+    {
+        if (is_null($use_case)) {
+            throw new \InvalidArgumentException('non-nullable use_case cannot be null');
+        }
+        if ((mb_strlen($use_case) > 8000)) {
+            throw new \InvalidArgumentException('invalid length for $use_case when calling UpdateOpsItemRequest., must be smaller than or equal to 8000.');
+        }
+
+        $this->container['use_case'] = $use_case;
 
         return $this;
     }

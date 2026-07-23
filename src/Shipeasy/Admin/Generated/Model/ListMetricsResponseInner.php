@@ -62,13 +62,18 @@ class ListMetricsResponseInner implements ModelInterface, ArrayAccess, \JsonSeri
         'name' => 'string',
         'folder' => 'string',
         'event_name' => 'string',
-        'aggregation' => 'string',
-        'value_path' => 'string',
         'query' => 'string',
-        'query_ir' => '\Shipeasy\Admin\Generated\Model\ListMetricsResponseInnerQueryIr',
+        'query_ir' => '\Shipeasy\Admin\Generated\Model\QueryIr',
+        'display_name' => 'string',
+        'preset_id' => 'string',
+        'unit' => 'string',
+        'version' => 'int',
+        'deleted_at' => 'string',
+        'creator_email' => 'string',
+        'updater_email' => 'string',
         'direction' => 'string',
         'winsorize_pct' => 'float',
-        'min_detectable_effect' => 'float',
+        'default_min_effect_of_interest' => 'float',
         'created_at' => 'string',
         'updated_at' => 'string'
     ];
@@ -85,13 +90,18 @@ class ListMetricsResponseInner implements ModelInterface, ArrayAccess, \JsonSeri
         'name' => null,
         'folder' => null,
         'event_name' => null,
-        'aggregation' => null,
-        'value_path' => null,
         'query' => null,
         'query_ir' => null,
+        'display_name' => null,
+        'preset_id' => null,
+        'unit' => null,
+        'version' => null,
+        'deleted_at' => null,
+        'creator_email' => null,
+        'updater_email' => null,
         'direction' => null,
         'winsorize_pct' => null,
-        'min_detectable_effect' => null,
+        'default_min_effect_of_interest' => null,
         'created_at' => null,
         'updated_at' => null
     ];
@@ -106,14 +116,19 @@ class ListMetricsResponseInner implements ModelInterface, ArrayAccess, \JsonSeri
         'name' => false,
         'folder' => true,
         'event_name' => false,
-        'aggregation' => false,
-        'value_path' => true,
         'query' => true,
-        'query_ir' => false,
+        'query_ir' => true,
+        'display_name' => true,
+        'preset_id' => true,
+        'unit' => true,
+        'version' => false,
+        'deleted_at' => true,
+        'creator_email' => true,
+        'updater_email' => true,
         'direction' => false,
         'winsorize_pct' => false,
-        'min_detectable_effect' => true,
-        'created_at' => false,
+        'default_min_effect_of_interest' => true,
+        'created_at' => true,
         'updated_at' => false
     ];
 
@@ -207,13 +222,18 @@ class ListMetricsResponseInner implements ModelInterface, ArrayAccess, \JsonSeri
         'name' => 'name',
         'folder' => 'folder',
         'event_name' => 'eventName',
-        'aggregation' => 'aggregation',
-        'value_path' => 'valuePath',
         'query' => 'query',
         'query_ir' => 'queryIr',
+        'display_name' => 'displayName',
+        'preset_id' => 'presetId',
+        'unit' => 'unit',
+        'version' => 'version',
+        'deleted_at' => 'deletedAt',
+        'creator_email' => 'creatorEmail',
+        'updater_email' => 'updaterEmail',
         'direction' => 'direction',
         'winsorize_pct' => 'winsorizePct',
-        'min_detectable_effect' => 'minDetectableEffect',
+        'default_min_effect_of_interest' => 'defaultMinEffectOfInterest',
         'created_at' => 'createdAt',
         'updated_at' => 'updatedAt'
     ];
@@ -228,13 +248,18 @@ class ListMetricsResponseInner implements ModelInterface, ArrayAccess, \JsonSeri
         'name' => 'setName',
         'folder' => 'setFolder',
         'event_name' => 'setEventName',
-        'aggregation' => 'setAggregation',
-        'value_path' => 'setValuePath',
         'query' => 'setQuery',
         'query_ir' => 'setQueryIr',
+        'display_name' => 'setDisplayName',
+        'preset_id' => 'setPresetId',
+        'unit' => 'setUnit',
+        'version' => 'setVersion',
+        'deleted_at' => 'setDeletedAt',
+        'creator_email' => 'setCreatorEmail',
+        'updater_email' => 'setUpdaterEmail',
         'direction' => 'setDirection',
         'winsorize_pct' => 'setWinsorizePct',
-        'min_detectable_effect' => 'setMinDetectableEffect',
+        'default_min_effect_of_interest' => 'setDefaultMinEffectOfInterest',
         'created_at' => 'setCreatedAt',
         'updated_at' => 'setUpdatedAt'
     ];
@@ -249,13 +274,18 @@ class ListMetricsResponseInner implements ModelInterface, ArrayAccess, \JsonSeri
         'name' => 'getName',
         'folder' => 'getFolder',
         'event_name' => 'getEventName',
-        'aggregation' => 'getAggregation',
-        'value_path' => 'getValuePath',
         'query' => 'getQuery',
         'query_ir' => 'getQueryIr',
+        'display_name' => 'getDisplayName',
+        'preset_id' => 'getPresetId',
+        'unit' => 'getUnit',
+        'version' => 'getVersion',
+        'deleted_at' => 'getDeletedAt',
+        'creator_email' => 'getCreatorEmail',
+        'updater_email' => 'getUpdaterEmail',
         'direction' => 'getDirection',
         'winsorize_pct' => 'getWinsorizePct',
-        'min_detectable_effect' => 'getMinDetectableEffect',
+        'default_min_effect_of_interest' => 'getDefaultMinEffectOfInterest',
         'created_at' => 'getCreatedAt',
         'updated_at' => 'getUpdatedAt'
     ];
@@ -338,13 +368,18 @@ class ListMetricsResponseInner implements ModelInterface, ArrayAccess, \JsonSeri
         $this->setIfExists('name', $data ?? [], null);
         $this->setIfExists('folder', $data ?? [], null);
         $this->setIfExists('event_name', $data ?? [], null);
-        $this->setIfExists('aggregation', $data ?? [], null);
-        $this->setIfExists('value_path', $data ?? [], null);
         $this->setIfExists('query', $data ?? [], null);
         $this->setIfExists('query_ir', $data ?? [], null);
+        $this->setIfExists('display_name', $data ?? [], null);
+        $this->setIfExists('preset_id', $data ?? [], null);
+        $this->setIfExists('unit', $data ?? [], null);
+        $this->setIfExists('version', $data ?? [], null);
+        $this->setIfExists('deleted_at', $data ?? [], null);
+        $this->setIfExists('creator_email', $data ?? [], null);
+        $this->setIfExists('updater_email', $data ?? [], null);
         $this->setIfExists('direction', $data ?? [], null);
         $this->setIfExists('winsorize_pct', $data ?? [], null);
-        $this->setIfExists('min_detectable_effect', $data ?? [], null);
+        $this->setIfExists('default_min_effect_of_interest', $data ?? [], null);
         $this->setIfExists('created_at', $data ?? [], null);
         $this->setIfExists('updated_at', $data ?? [], null);
     }
@@ -388,11 +423,26 @@ class ListMetricsResponseInner implements ModelInterface, ArrayAccess, \JsonSeri
         if ($this->container['event_name'] === null) {
             $invalidProperties[] = "'event_name' can't be null";
         }
-        if ($this->container['aggregation'] === null) {
-            $invalidProperties[] = "'aggregation' can't be null";
+        if ($this->container['query'] === null && !$this->isNullableSetToNull('query')) {
+            $invalidProperties[] = "'query' is required";
         }
-        if ($this->container['value_path'] === null && !$this->isNullableSetToNull('value_path')) {
-            $invalidProperties[] = "'value_path' is required";
+        if ($this->container['query_ir'] === null && !$this->isNullableSetToNull('query_ir')) {
+            $invalidProperties[] = "'query_ir' is required";
+        }
+        if ($this->container['display_name'] === null && !$this->isNullableSetToNull('display_name')) {
+            $invalidProperties[] = "'display_name' is required";
+        }
+        if ($this->container['preset_id'] === null && !$this->isNullableSetToNull('preset_id')) {
+            $invalidProperties[] = "'preset_id' is required";
+        }
+        if ($this->container['unit'] === null && !$this->isNullableSetToNull('unit')) {
+            $invalidProperties[] = "'unit' is required";
+        }
+        if ($this->container['version'] === null) {
+            $invalidProperties[] = "'version' can't be null";
+        }
+        if ($this->container['deleted_at'] === null && !$this->isNullableSetToNull('deleted_at')) {
+            $invalidProperties[] = "'deleted_at' is required";
         }
         $allowedValues = $this->getDirectionAllowableValues();
         if (!is_null($this->container['direction']) && !in_array($this->container['direction'], $allowedValues, true)) {
@@ -534,67 +584,6 @@ class ListMetricsResponseInner implements ModelInterface, ArrayAccess, \JsonSeri
     }
 
     /**
-     * Gets aggregation
-     *
-     * @return string
-     */
-    public function getAggregation()
-    {
-        return $this->container['aggregation'];
-    }
-
-    /**
-     * Sets aggregation
-     *
-     * @param string $aggregation Legacy aggregation enum derived from the IR (`count_users`, `sum`, `ratio`, …).
-     *
-     * @return self
-     */
-    public function setAggregation($aggregation)
-    {
-        if (is_null($aggregation)) {
-            throw new \InvalidArgumentException('non-nullable aggregation cannot be null');
-        }
-        $this->container['aggregation'] = $aggregation;
-
-        return $this;
-    }
-
-    /**
-     * Gets value_path
-     *
-     * @return string|null
-     */
-    public function getValuePath()
-    {
-        return $this->container['value_path'];
-    }
-
-    /**
-     * Sets value_path
-     *
-     * @param string|null $value_path Numeric value label for sum/avg metrics, or `null`.
-     *
-     * @return self
-     */
-    public function setValuePath($value_path)
-    {
-        if (is_null($value_path)) {
-            array_push($this->openAPINullablesSetToNull, 'value_path');
-        } else {
-            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
-            $index = array_search('value_path', $nullablesSetToNull);
-            if ($index !== FALSE) {
-                unset($nullablesSetToNull[$index]);
-                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
-            }
-        }
-        $this->container['value_path'] = $value_path;
-
-        return $this;
-    }
-
-    /**
      * Gets query
      *
      * @return string|null
@@ -631,7 +620,7 @@ class ListMetricsResponseInner implements ModelInterface, ArrayAccess, \JsonSeri
     /**
      * Gets query_ir
      *
-     * @return \Shipeasy\Admin\Generated\Model\ListMetricsResponseInnerQueryIr|null
+     * @return \Shipeasy\Admin\Generated\Model\QueryIr|null
      */
     public function getQueryIr()
     {
@@ -641,16 +630,254 @@ class ListMetricsResponseInner implements ModelInterface, ArrayAccess, \JsonSeri
     /**
      * Sets query_ir
      *
-     * @param \Shipeasy\Admin\Generated\Model\ListMetricsResponseInnerQueryIr|null $query_ir query_ir
+     * @param \Shipeasy\Admin\Generated\Model\QueryIr|null $query_ir Typed query IR, or `null` for a metric whose IR was never populated (re-save it to backfill).
      *
      * @return self
      */
     public function setQueryIr($query_ir)
     {
         if (is_null($query_ir)) {
-            throw new \InvalidArgumentException('non-nullable query_ir cannot be null');
+            array_push($this->openAPINullablesSetToNull, 'query_ir');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('query_ir', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
         }
         $this->container['query_ir'] = $query_ir;
+
+        return $this;
+    }
+
+    /**
+     * Gets display_name
+     *
+     * @return string|null
+     */
+    public function getDisplayName()
+    {
+        return $this->container['display_name'];
+    }
+
+    /**
+     * Sets display_name
+     *
+     * @param string|null $display_name Human-friendly display name shown in the dashboard, or `null` to fall back to `name`.
+     *
+     * @return self
+     */
+    public function setDisplayName($display_name)
+    {
+        if (is_null($display_name)) {
+            array_push($this->openAPINullablesSetToNull, 'display_name');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('display_name', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['display_name'] = $display_name;
+
+        return $this;
+    }
+
+    /**
+     * Gets preset_id
+     *
+     * @return string|null
+     */
+    public function getPresetId()
+    {
+        return $this->container['preset_id'];
+    }
+
+    /**
+     * Sets preset_id
+     *
+     * @param string|null $preset_id Id of the metric preset this metric was created from, or `null` for a custom metric.
+     *
+     * @return self
+     */
+    public function setPresetId($preset_id)
+    {
+        if (is_null($preset_id)) {
+            array_push($this->openAPINullablesSetToNull, 'preset_id');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('preset_id', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['preset_id'] = $preset_id;
+
+        return $this;
+    }
+
+    /**
+     * Gets unit
+     *
+     * @return string|null
+     */
+    public function getUnit()
+    {
+        return $this->container['unit'];
+    }
+
+    /**
+     * Sets unit
+     *
+     * @param string|null $unit Display unit (e.g. `ms`, `%`, `$`), or `null` when unitless.
+     *
+     * @return self
+     */
+    public function setUnit($unit)
+    {
+        if (is_null($unit)) {
+            array_push($this->openAPINullablesSetToNull, 'unit');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('unit', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['unit'] = $unit;
+
+        return $this;
+    }
+
+    /**
+     * Gets version
+     *
+     * @return int
+     */
+    public function getVersion()
+    {
+        return $this->container['version'];
+    }
+
+    /**
+     * Sets version
+     *
+     * @param int $version Monotonic save counter — incremented on every update.
+     *
+     * @return self
+     */
+    public function setVersion($version)
+    {
+        if (is_null($version)) {
+            throw new \InvalidArgumentException('non-nullable version cannot be null');
+        }
+        $this->container['version'] = $version;
+
+        return $this;
+    }
+
+    /**
+     * Gets deleted_at
+     *
+     * @return string|null
+     */
+    public function getDeletedAt()
+    {
+        return $this->container['deleted_at'];
+    }
+
+    /**
+     * Sets deleted_at
+     *
+     * @param string|null $deleted_at ISO-8601 soft-delete (archive) timestamp, or `null` while the metric is live.
+     *
+     * @return self
+     */
+    public function setDeletedAt($deleted_at)
+    {
+        if (is_null($deleted_at)) {
+            array_push($this->openAPINullablesSetToNull, 'deleted_at');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('deleted_at', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['deleted_at'] = $deleted_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets creator_email
+     *
+     * @return string|null
+     */
+    public function getCreatorEmail()
+    {
+        return $this->container['creator_email'];
+    }
+
+    /**
+     * Sets creator_email
+     *
+     * @param string|null $creator_email Email of the user who created the metric, or `null` when unknown. List responses only.
+     *
+     * @return self
+     */
+    public function setCreatorEmail($creator_email)
+    {
+        if (is_null($creator_email)) {
+            array_push($this->openAPINullablesSetToNull, 'creator_email');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('creator_email', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['creator_email'] = $creator_email;
+
+        return $this;
+    }
+
+    /**
+     * Gets updater_email
+     *
+     * @return string|null
+     */
+    public function getUpdaterEmail()
+    {
+        return $this->container['updater_email'];
+    }
+
+    /**
+     * Sets updater_email
+     *
+     * @param string|null $updater_email Email of the user who last edited the metric, or `null` when unknown. List responses only.
+     *
+     * @return self
+     */
+    public function setUpdaterEmail($updater_email)
+    {
+        if (is_null($updater_email)) {
+            array_push($this->openAPINullablesSetToNull, 'updater_email');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('updater_email', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['updater_email'] = $updater_email;
 
         return $this;
     }
@@ -720,35 +947,35 @@ class ListMetricsResponseInner implements ModelInterface, ArrayAccess, \JsonSeri
     }
 
     /**
-     * Gets min_detectable_effect
+     * Gets default_min_effect_of_interest
      *
      * @return float|null
      */
-    public function getMinDetectableEffect()
+    public function getDefaultMinEffectOfInterest()
     {
-        return $this->container['min_detectable_effect'];
+        return $this->container['default_min_effect_of_interest'];
     }
 
     /**
-     * Sets min_detectable_effect
+     * Sets default_min_effect_of_interest
      *
-     * @param float|null $min_detectable_effect Configured MDE, or `null`.
+     * @param float|null $default_min_effect_of_interest Metric-level default minimum effect of interest (relative, 0–1), or `null`.
      *
      * @return self
      */
-    public function setMinDetectableEffect($min_detectable_effect)
+    public function setDefaultMinEffectOfInterest($default_min_effect_of_interest)
     {
-        if (is_null($min_detectable_effect)) {
-            array_push($this->openAPINullablesSetToNull, 'min_detectable_effect');
+        if (is_null($default_min_effect_of_interest)) {
+            array_push($this->openAPINullablesSetToNull, 'default_min_effect_of_interest');
         } else {
             $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
-            $index = array_search('min_detectable_effect', $nullablesSetToNull);
+            $index = array_search('default_min_effect_of_interest', $nullablesSetToNull);
             if ($index !== FALSE) {
                 unset($nullablesSetToNull[$index]);
                 $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
             }
         }
-        $this->container['min_detectable_effect'] = $min_detectable_effect;
+        $this->container['default_min_effect_of_interest'] = $default_min_effect_of_interest;
 
         return $this;
     }
@@ -766,14 +993,21 @@ class ListMetricsResponseInner implements ModelInterface, ArrayAccess, \JsonSeri
     /**
      * Sets created_at
      *
-     * @param string|null $created_at ISO-8601 creation timestamp.
+     * @param string|null $created_at ISO-8601 creation timestamp, or `null` on legacy rows created before the column existed.
      *
      * @return self
      */
     public function setCreatedAt($created_at)
     {
         if (is_null($created_at)) {
-            throw new \InvalidArgumentException('non-nullable created_at cannot be null');
+            array_push($this->openAPINullablesSetToNull, 'created_at');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('created_at', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
         }
         $this->container['created_at'] = $created_at;
 

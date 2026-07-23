@@ -58,11 +58,12 @@ class UpdateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var string[]
      */
     protected static $openAPITypes = [
+        'type' => 'string',
         'rollout_pct' => 'int',
         'rollout_percent' => 'float',
-        'rules' => '\Shipeasy\Admin\Generated\Model\ListGatesResponseDataInnerRulesInner[]',
+        'rules' => '\Shipeasy\Admin\Generated\Model\GateApiRowRulesInner[]',
         'enabled' => 'bool',
-        'stack' => '\Shipeasy\Admin\Generated\Model\ListGatesResponseDataInnerStackInner[]',
+        'stack' => '\Shipeasy\Admin\Generated\Model\GateApiRowStackInner[]',
         'title' => 'string',
         'description' => 'string',
         'folder' => 'string',
@@ -78,6 +79,7 @@ class UpdateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
+        'type' => null,
         'rollout_pct' => null,
         'rollout_percent' => null,
         'rules' => null,
@@ -96,6 +98,7 @@ class UpdateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var boolean[]
      */
     protected static array $openAPINullables = [
+        'type' => false,
         'rollout_pct' => false,
         'rollout_percent' => false,
         'rules' => false,
@@ -194,6 +197,7 @@ class UpdateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var string[]
      */
     protected static $attributeMap = [
+        'type' => 'type',
         'rollout_pct' => 'rollout_pct',
         'rollout_percent' => 'rollout_percent',
         'rules' => 'rules',
@@ -212,6 +216,7 @@ class UpdateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var string[]
      */
     protected static $setters = [
+        'type' => 'setType',
         'rollout_pct' => 'setRolloutPct',
         'rollout_percent' => 'setRolloutPercent',
         'rules' => 'setRules',
@@ -230,6 +235,7 @@ class UpdateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var string[]
      */
     protected static $getters = [
+        'type' => 'getType',
         'rollout_pct' => 'getRolloutPct',
         'rollout_percent' => 'getRolloutPercent',
         'rules' => 'getRules',
@@ -283,6 +289,21 @@ class UpdateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
         return self::$openAPIModelName;
     }
 
+    public const TYPE_TARGETING = 'targeting';
+    public const TYPE_HOLDOUT = 'holdout';
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getTypeAllowableValues()
+    {
+        return [
+            self::TYPE_TARGETING,
+            self::TYPE_HOLDOUT,
+        ];
+    }
 
     /**
      * Associative array for storing property values
@@ -299,6 +320,7 @@ class UpdateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
      */
     public function __construct(?array $data = null)
     {
+        $this->setIfExists('type', $data ?? [], null);
         $this->setIfExists('rollout_pct', $data ?? [], null);
         $this->setIfExists('rollout_percent', $data ?? [], null);
         $this->setIfExists('rules', $data ?? [], null);
@@ -337,6 +359,15 @@ class UpdateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
     public function listInvalidProperties()
     {
         $invalidProperties = [];
+
+        $allowedValues = $this->getTypeAllowableValues();
+        if (!is_null($this->container['type']) && !in_array($this->container['type'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'type', must be one of '%s'",
+                $this->container['type'],
+                implode("', '", $allowedValues)
+            );
+        }
 
         if (!is_null($this->container['rollout_pct']) && ($this->container['rollout_pct'] > 10000)) {
             $invalidProperties[] = "invalid value for 'rollout_pct', must be smaller than or equal to 10000.";
@@ -392,6 +423,43 @@ class UpdateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
         return count($this->listInvalidProperties()) === 0;
     }
 
+
+    /**
+     * Gets type
+     *
+     * @return string|null
+     */
+    public function getType()
+    {
+        return $this->container['type'];
+    }
+
+    /**
+     * Sets type
+     *
+     * @param string|null $type Gate kind. Switching to `holdout` requires the gate carry only a public rollout % + whitelist (attribute rules / stack are rejected).
+     *
+     * @return self
+     */
+    public function setType($type)
+    {
+        if (is_null($type)) {
+            throw new \InvalidArgumentException('non-nullable type cannot be null');
+        }
+        $allowedValues = $this->getTypeAllowableValues();
+        if (!in_array($type, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'type', must be one of '%s'",
+                    $type,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['type'] = $type;
+
+        return $this;
+    }
 
     /**
      * Gets rollout_pct
@@ -466,7 +534,7 @@ class UpdateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Gets rules
      *
-     * @return \Shipeasy\Admin\Generated\Model\ListGatesResponseDataInnerRulesInner[]|null
+     * @return \Shipeasy\Admin\Generated\Model\GateApiRowRulesInner[]|null
      */
     public function getRules()
     {
@@ -476,7 +544,7 @@ class UpdateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets rules
      *
-     * @param \Shipeasy\Admin\Generated\Model\ListGatesResponseDataInnerRulesInner[]|null $rules Replaces the rule list wholesale. To add a value to an `in` rule, send the full new `rules` array with the augmented `value` (e.g. previous `['US','CA']` → `['US','CA','GB']`).
+     * @param \Shipeasy\Admin\Generated\Model\GateApiRowRulesInner[]|null $rules Replaces the rule list wholesale. To add a value to an `in` rule, send the full new `rules` array with the augmented `value` (e.g. previous `['US','CA']` → `['US','CA','GB']`).
      *
      * @return self
      */
@@ -520,7 +588,7 @@ class UpdateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Gets stack
      *
-     * @return \Shipeasy\Admin\Generated\Model\ListGatesResponseDataInnerStackInner[]|null
+     * @return \Shipeasy\Admin\Generated\Model\GateApiRowStackInner[]|null
      */
     public function getStack()
     {
@@ -530,7 +598,7 @@ class UpdateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets stack
      *
-     * @param \Shipeasy\Admin\Generated\Model\ListGatesResponseDataInnerStackInner[]|null $stack Replaces the gatekeeper stack wholesale. Send `null` to revert to flat `rules` + `rollout_pct` evaluation.
+     * @param \Shipeasy\Admin\Generated\Model\GateApiRowStackInner[]|null $stack Replaces the gatekeeper stack wholesale. Send `null` to revert to flat `rules` + `rollout_pct` evaluation.
      *
      * @return self
      */

@@ -361,7 +361,7 @@ class GetExperimentResultsResponseExperiment implements ModelInterface, ArrayAcc
     /**
      * Sets id
      *
-     * @param string|null $id Optional gate name. Only callers that pass the gate are enrolled in the experiment.
+     * @param string|null $id Optional gate name (a `targeting`-type flag). Only callers that pass the gate are enrolled in the experiment.
      *
      * @return self
      */

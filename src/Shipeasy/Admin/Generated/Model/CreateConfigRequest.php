@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * CreateConfigRequest Class Doc Comment
  *
  * @category Class
- * @description Body for &#x60;POST /api/admin/configs&#x60;. &#x60;name&#x60; + &#x60;schema&#x60; required.
+ * @description Body for &#x60;POST /api/admin/configs&#x60;. &#x60;name&#x60; + &#x60;schema&#x60; required. Per-env &#x60;dev&#x60;/&#x60;staging&#x60;/&#x60;prod&#x60; values are published to that env at version 1 (overriding &#x60;value&#x60;).
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -62,7 +62,10 @@ class CreateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         'description' => 'string',
         'folder' => 'string',
         'schema' => 'array<string,mixed>',
-        'value' => 'mixed'
+        'value' => 'array<string,mixed>',
+        'dev' => 'array<string,mixed>',
+        'staging' => 'array<string,mixed>',
+        'prod' => 'array<string,mixed>'
     ];
 
     /**
@@ -77,7 +80,10 @@ class CreateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         'description' => null,
         'folder' => null,
         'schema' => null,
-        'value' => null
+        'value' => null,
+        'dev' => null,
+        'staging' => null,
+        'prod' => null
     ];
 
     /**
@@ -90,7 +96,10 @@ class CreateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         'description' => false,
         'folder' => true,
         'schema' => false,
-        'value' => true
+        'value' => false,
+        'dev' => false,
+        'staging' => false,
+        'prod' => false
     ];
 
     /**
@@ -183,7 +192,10 @@ class CreateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         'description' => 'description',
         'folder' => 'folder',
         'schema' => 'schema',
-        'value' => 'value'
+        'value' => 'value',
+        'dev' => 'dev',
+        'staging' => 'staging',
+        'prod' => 'prod'
     ];
 
     /**
@@ -196,7 +208,10 @@ class CreateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         'description' => 'setDescription',
         'folder' => 'setFolder',
         'schema' => 'setSchema',
-        'value' => 'setValue'
+        'value' => 'setValue',
+        'dev' => 'setDev',
+        'staging' => 'setStaging',
+        'prod' => 'setProd'
     ];
 
     /**
@@ -209,7 +224,10 @@ class CreateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         'description' => 'getDescription',
         'folder' => 'getFolder',
         'schema' => 'getSchema',
-        'value' => 'getValue'
+        'value' => 'getValue',
+        'dev' => 'getDev',
+        'staging' => 'getStaging',
+        'prod' => 'getProd'
     ];
 
     /**
@@ -274,6 +292,9 @@ class CreateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         $this->setIfExists('folder', $data ?? [], null);
         $this->setIfExists('schema', $data ?? [], null);
         $this->setIfExists('value', $data ?? [], null);
+        $this->setIfExists('dev', $data ?? [], null);
+        $this->setIfExists('staging', $data ?? [], null);
+        $this->setIfExists('prod', $data ?? [], null);
     }
 
     /**
@@ -480,7 +501,7 @@ class CreateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Gets value
      *
-     * @return mixed|null
+     * @return array<string,mixed>|null
      */
     public function getValue()
     {
@@ -490,23 +511,97 @@ class CreateConfigRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Sets value
      *
-     * @param mixed|null $value value
+     * @param array<string,mixed>|null $value Initial config value. Either a single JSON object applied to every env, or a `{ env: value }` map seeding per-env values. Must match `schema`. Defaults to `{}` on every env when omitted.
      *
      * @return self
      */
     public function setValue($value)
     {
         if (is_null($value)) {
-            array_push($this->openAPINullablesSetToNull, 'value');
-        } else {
-            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
-            $index = array_search('value', $nullablesSetToNull);
-            if ($index !== FALSE) {
-                unset($nullablesSetToNull[$index]);
-                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
-            }
+            throw new \InvalidArgumentException('non-nullable value cannot be null');
         }
         $this->container['value'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Gets dev
+     *
+     * @return array<string,mixed>|null
+     */
+    public function getDev()
+    {
+        return $this->container['dev'];
+    }
+
+    /**
+     * Sets dev
+     *
+     * @param array<string,mixed>|null $dev Seed the **dev** env's initial value (version 1), overriding `value` for dev. Published immediately. Must match `schema`.
+     *
+     * @return self
+     */
+    public function setDev($dev)
+    {
+        if (is_null($dev)) {
+            throw new \InvalidArgumentException('non-nullable dev cannot be null');
+        }
+        $this->container['dev'] = $dev;
+
+        return $this;
+    }
+
+    /**
+     * Gets staging
+     *
+     * @return array<string,mixed>|null
+     */
+    public function getStaging()
+    {
+        return $this->container['staging'];
+    }
+
+    /**
+     * Sets staging
+     *
+     * @param array<string,mixed>|null $staging Seed the **staging** env's initial value (version 1), overriding `value` for staging. Published immediately. Must match `schema`.
+     *
+     * @return self
+     */
+    public function setStaging($staging)
+    {
+        if (is_null($staging)) {
+            throw new \InvalidArgumentException('non-nullable staging cannot be null');
+        }
+        $this->container['staging'] = $staging;
+
+        return $this;
+    }
+
+    /**
+     * Gets prod
+     *
+     * @return array<string,mixed>|null
+     */
+    public function getProd()
+    {
+        return $this->container['prod'];
+    }
+
+    /**
+     * Sets prod
+     *
+     * @param array<string,mixed>|null $prod Seed the **prod** env's initial value (version 1), overriding `value` for prod. Published immediately. Must match `schema`.
+     *
+     * @return self
+     */
+    public function setProd($prod)
+    {
+        if (is_null($prod)) {
+            throw new \InvalidArgumentException('non-nullable prod cannot be null');
+        }
+        $this->container['prod'] = $prod;
 
         return $this;
     }

@@ -81,7 +81,7 @@ class FileErrorTicketResponse implements ModelInterface, ArrayAccess, \JsonSeria
      */
     protected static array $openAPINullables = [
         'id' => false,
-        'number' => false
+        'number' => true
     ];
 
     /**
@@ -285,8 +285,8 @@ class FileErrorTicketResponse implements ModelInterface, ArrayAccess, \JsonSeria
         if ($this->container['id'] === null) {
             $invalidProperties[] = "'id' can't be null";
         }
-        if ($this->container['number'] === null) {
-            $invalidProperties[] = "'number' can't be null";
+        if ($this->container['number'] === null && !$this->isNullableSetToNull('number')) {
+            $invalidProperties[] = "'number' is required";
         }
         return $invalidProperties;
     }
@@ -333,7 +333,7 @@ class FileErrorTicketResponse implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Gets number
      *
-     * @return int
+     * @return int|null
      */
     public function getNumber()
     {
@@ -343,14 +343,21 @@ class FileErrorTicketResponse implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Sets number
      *
-     * @param int $number Human-facing per-project ticket number.
+     * @param int|null $number Human-facing per-project ticket number. `null` only on the idempotent dedupe path when the pre-existing ticket is a legacy row created before per-project numbering.
      *
      * @return self
      */
     public function setNumber($number)
     {
         if (is_null($number)) {
-            throw new \InvalidArgumentException('non-nullable number cannot be null');
+            array_push($this->openAPINullablesSetToNull, 'number');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('number', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
         }
         $this->container['number'] = $number;
 

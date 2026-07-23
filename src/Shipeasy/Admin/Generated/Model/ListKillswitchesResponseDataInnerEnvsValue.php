@@ -60,7 +60,8 @@ class ListKillswitchesResponseDataInnerEnvsValue implements ModelInterface, Arra
         'value' => 'bool',
         'switches' => 'array<string,bool>',
         'version' => 'int',
-        'published_at' => 'string'
+        'published_at' => 'string',
+        'published_by' => 'string'
     ];
 
     /**
@@ -74,7 +75,8 @@ class ListKillswitchesResponseDataInnerEnvsValue implements ModelInterface, Arra
         'value' => null,
         'switches' => null,
         'version' => null,
-        'published_at' => null
+        'published_at' => null,
+        'published_by' => null
     ];
 
     /**
@@ -86,7 +88,8 @@ class ListKillswitchesResponseDataInnerEnvsValue implements ModelInterface, Arra
         'value' => false,
         'switches' => false,
         'version' => false,
-        'published_at' => false
+        'published_at' => false,
+        'published_by' => true
     ];
 
     /**
@@ -178,7 +181,8 @@ class ListKillswitchesResponseDataInnerEnvsValue implements ModelInterface, Arra
         'value' => 'value',
         'switches' => 'switches',
         'version' => 'version',
-        'published_at' => 'publishedAt'
+        'published_at' => 'publishedAt',
+        'published_by' => 'publishedBy'
     ];
 
     /**
@@ -190,7 +194,8 @@ class ListKillswitchesResponseDataInnerEnvsValue implements ModelInterface, Arra
         'value' => 'setValue',
         'switches' => 'setSwitches',
         'version' => 'setVersion',
-        'published_at' => 'setPublishedAt'
+        'published_at' => 'setPublishedAt',
+        'published_by' => 'setPublishedBy'
     ];
 
     /**
@@ -202,7 +207,8 @@ class ListKillswitchesResponseDataInnerEnvsValue implements ModelInterface, Arra
         'value' => 'getValue',
         'switches' => 'getSwitches',
         'version' => 'getVersion',
-        'published_at' => 'getPublishedAt'
+        'published_at' => 'getPublishedAt',
+        'published_by' => 'getPublishedBy'
     ];
 
     /**
@@ -266,6 +272,7 @@ class ListKillswitchesResponseDataInnerEnvsValue implements ModelInterface, Arra
         $this->setIfExists('switches', $data ?? [], null);
         $this->setIfExists('version', $data ?? [], null);
         $this->setIfExists('published_at', $data ?? [], null);
+        $this->setIfExists('published_by', $data ?? [], null);
     }
 
     /**
@@ -439,6 +446,40 @@ class ListKillswitchesResponseDataInnerEnvsValue implements ModelInterface, Arra
             throw new \InvalidArgumentException('non-nullable published_at cannot be null');
         }
         $this->container['published_at'] = $published_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets published_by
+     *
+     * @return string|null
+     */
+    public function getPublishedBy()
+    {
+        return $this->container['published_by'];
+    }
+
+    /**
+     * Sets published_by
+     *
+     * @param string|null $published_by Email/id of the actor who published this version.
+     *
+     * @return self
+     */
+    public function setPublishedBy($published_by)
+    {
+        if (is_null($published_by)) {
+            array_push($this->openAPINullablesSetToNull, 'published_by');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('published_by', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['published_by'] = $published_by;
 
         return $this;
     }

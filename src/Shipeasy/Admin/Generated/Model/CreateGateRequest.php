@@ -59,12 +59,13 @@ class CreateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
      */
     protected static $openAPITypes = [
         'name' => 'string',
+        'type' => 'string',
         'enabled' => 'bool',
         'rollout_pct' => 'int',
         'rollout_percent' => 'float',
-        'rules' => '\Shipeasy\Admin\Generated\Model\ListGatesResponseDataInnerRulesInner[]',
+        'rules' => '\Shipeasy\Admin\Generated\Model\GateApiRowRulesInner[]',
         'salt' => 'string',
-        'stack' => '\Shipeasy\Admin\Generated\Model\ListGatesResponseDataInnerStackInner[]',
+        'stack' => '\Shipeasy\Admin\Generated\Model\GateApiRowStackInner[]',
         'title' => 'string',
         'description' => 'string',
         'folder' => 'string',
@@ -81,6 +82,7 @@ class CreateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
      */
     protected static $openAPIFormats = [
         'name' => null,
+        'type' => null,
         'enabled' => null,
         'rollout_pct' => null,
         'rollout_percent' => null,
@@ -101,6 +103,7 @@ class CreateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
      */
     protected static array $openAPINullables = [
         'name' => false,
+        'type' => false,
         'enabled' => false,
         'rollout_pct' => false,
         'rollout_percent' => false,
@@ -201,6 +204,7 @@ class CreateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
      */
     protected static $attributeMap = [
         'name' => 'name',
+        'type' => 'type',
         'enabled' => 'enabled',
         'rollout_pct' => 'rollout_pct',
         'rollout_percent' => 'rollout_percent',
@@ -221,6 +225,7 @@ class CreateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
      */
     protected static $setters = [
         'name' => 'setName',
+        'type' => 'setType',
         'enabled' => 'setEnabled',
         'rollout_pct' => 'setRolloutPct',
         'rollout_percent' => 'setRolloutPercent',
@@ -241,6 +246,7 @@ class CreateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
      */
     protected static $getters = [
         'name' => 'getName',
+        'type' => 'getType',
         'enabled' => 'getEnabled',
         'rollout_pct' => 'getRolloutPct',
         'rollout_percent' => 'getRolloutPercent',
@@ -295,6 +301,21 @@ class CreateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
         return self::$openAPIModelName;
     }
 
+    public const TYPE_TARGETING = 'targeting';
+    public const TYPE_HOLDOUT = 'holdout';
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getTypeAllowableValues()
+    {
+        return [
+            self::TYPE_TARGETING,
+            self::TYPE_HOLDOUT,
+        ];
+    }
 
     /**
      * Associative array for storing property values
@@ -312,6 +333,7 @@ class CreateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
     public function __construct(?array $data = null)
     {
         $this->setIfExists('name', $data ?? [], null);
+        $this->setIfExists('type', $data ?? [], 'targeting');
         $this->setIfExists('enabled', $data ?? [], true);
         $this->setIfExists('rollout_pct', $data ?? [], 0);
         $this->setIfExists('rollout_percent', $data ?? [], null);
@@ -361,6 +383,15 @@ class CreateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
 
         if (!preg_match("/^[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?)?$/", $this->container['name'])) {
             $invalidProperties[] = "invalid value for 'name', must be conform to the pattern /^[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?)?$/.";
+        }
+
+        $allowedValues = $this->getTypeAllowableValues();
+        if (!is_null($this->container['type']) && !in_array($this->container['type'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'type', must be one of '%s'",
+                $this->container['type'],
+                implode("', '", $allowedValues)
+            );
         }
 
         if (!is_null($this->container['rollout_pct']) && ($this->container['rollout_pct'] > 10000)) {
@@ -456,6 +487,43 @@ class CreateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
         }
 
         $this->container['name'] = $name;
+
+        return $this;
+    }
+
+    /**
+     * Gets type
+     *
+     * @return string|null
+     */
+    public function getType()
+    {
+        return $this->container['type'];
+    }
+
+    /**
+     * Sets type
+     *
+     * @param string|null $type Gate kind. `targeting` (default) is a normal flag with the full builder. `holdout` is a **restricted** flag — only a public rollout % and a whitelist are allowed; attribute rules and a gatekeeper stack are rejected. Used as an experiment's `holdout_gate`.
+     *
+     * @return self
+     */
+    public function setType($type)
+    {
+        if (is_null($type)) {
+            throw new \InvalidArgumentException('non-nullable type cannot be null');
+        }
+        $allowedValues = $this->getTypeAllowableValues();
+        if (!in_array($type, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'type', must be one of '%s'",
+                    $type,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['type'] = $type;
 
         return $this;
     }
@@ -560,7 +628,7 @@ class CreateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Gets rules
      *
-     * @return \Shipeasy\Admin\Generated\Model\ListGatesResponseDataInnerRulesInner[]|null
+     * @return \Shipeasy\Admin\Generated\Model\GateApiRowRulesInner[]|null
      */
     public function getRules()
     {
@@ -570,7 +638,7 @@ class CreateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets rules
      *
-     * @param \Shipeasy\Admin\Generated\Model\ListGatesResponseDataInnerRulesInner[]|null $rules Targeting predicates. AND-combined. If non-empty, the gate returns `true` only for callers that satisfy every rule **and** fall under `rollout_pct`.
+     * @param \Shipeasy\Admin\Generated\Model\GateApiRowRulesInner[]|null $rules Targeting predicates. AND-combined. If non-empty, the gate returns `true` only for callers that satisfy every rule **and** fall under `rollout_pct`.
      *
      * @return self
      */
@@ -621,7 +689,7 @@ class CreateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Gets stack
      *
-     * @return \Shipeasy\Admin\Generated\Model\ListGatesResponseDataInnerStackInner[]|null
+     * @return \Shipeasy\Admin\Generated\Model\GateApiRowStackInner[]|null
      */
     public function getStack()
     {
@@ -631,7 +699,7 @@ class CreateGateRequest implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets stack
      *
-     * @param \Shipeasy\Admin\Generated\Model\ListGatesResponseDataInnerStackInner[]|null $stack Optional gatekeeper stack. When provided, takes precedence over `rules` + `rollout_pct` at evaluation time. Omit (or pass `null`) for a flat gate.
+     * @param \Shipeasy\Admin\Generated\Model\GateApiRowStackInner[]|null $stack Optional gatekeeper stack. When provided, takes precedence over `rules` + `rollout_pct` at evaluation time. Omit (or pass `null`) for a flat gate.
      *
      * @return self
      */

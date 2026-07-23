@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * TestConnectorResponse Class Doc Comment
  *
  * @category Class
- * @description Result of testing a connector. &#x60;{ ok: true, issueUrl }&#x60; on success; &#x60;{ ok: false, issueUrl: null, error }&#x60; when the dispatch fails (the request still returns HTTP 200).
+ * @description Result of a successful connector test: &#x60;{ ok: true, issueUrl }&#x60;. When the downstream dispatch fails the endpoint returns HTTP 502 (see the &#x60;Error&#x60; response), never &#x60;ok: false&#x60;.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -59,8 +59,7 @@ class TestConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     protected static $openAPITypes = [
         'ok' => 'bool',
-        'issue_url' => 'string',
-        'error' => 'string'
+        'issue_url' => 'string'
     ];
 
     /**
@@ -72,8 +71,7 @@ class TestConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     protected static $openAPIFormats = [
         'ok' => null,
-        'issue_url' => null,
-        'error' => null
+        'issue_url' => null
     ];
 
     /**
@@ -83,8 +81,7 @@ class TestConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     protected static array $openAPINullables = [
         'ok' => false,
-        'issue_url' => true,
-        'error' => false
+        'issue_url' => true
     ];
 
     /**
@@ -174,8 +171,7 @@ class TestConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     protected static $attributeMap = [
         'ok' => 'ok',
-        'issue_url' => 'issueUrl',
-        'error' => 'error'
+        'issue_url' => 'issueUrl'
     ];
 
     /**
@@ -185,8 +181,7 @@ class TestConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     protected static $setters = [
         'ok' => 'setOk',
-        'issue_url' => 'setIssueUrl',
-        'error' => 'setError'
+        'issue_url' => 'setIssueUrl'
     ];
 
     /**
@@ -196,8 +191,7 @@ class TestConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     protected static $getters = [
         'ok' => 'getOk',
-        'issue_url' => 'getIssueUrl',
-        'error' => 'getError'
+        'issue_url' => 'getIssueUrl'
     ];
 
     /**
@@ -259,7 +253,6 @@ class TestConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
     {
         $this->setIfExists('ok', $data ?? [], null);
         $this->setIfExists('issue_url', $data ?? [], null);
-        $this->setIfExists('error', $data ?? [], null);
     }
 
     /**
@@ -323,7 +316,7 @@ class TestConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
     /**
      * Sets ok
      *
-     * @param bool $ok `true` when the test dispatch reached the destination; `false` when the dispatch itself failed (still HTTP 200, with `error` set).
+     * @param bool $ok Always `true` — a successful test returns HTTP 200. A dispatch failure returns HTTP 502 with the `Error` envelope, not this body.
      *
      * @return self
      */
@@ -350,7 +343,7 @@ class TestConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
     /**
      * Sets issue_url
      *
-     * @param string|null $issue_url URL of the artifact the test produced (e.g. the GitHub Issue created by a `github` connector), or `null` when the provider produces no linkable artifact (or the dispatch failed).
+     * @param string|null $issue_url URL of the artifact the test produced (e.g. the GitHub Issue created by a `github` connector), or `null` when the provider produces no linkable artifact.
      *
      * @return self
      */
@@ -367,33 +360,6 @@ class TestConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
             }
         }
         $this->container['issue_url'] = $issue_url;
-
-        return $this;
-    }
-
-    /**
-     * Gets error
-     *
-     * @return string|null
-     */
-    public function getError()
-    {
-        return $this->container['error'];
-    }
-
-    /**
-     * Sets error
-     *
-     * @param string|null $error Failure reason. Present only when `ok` is `false` — the test reached the handler but the underlying dispatch to the provider failed.
-     *
-     * @return self
-     */
-    public function setError($error)
-    {
-        if (is_null($error)) {
-            throw new \InvalidArgumentException('non-nullable error cannot be null');
-        }
-        $this->container['error'] = $error;
 
         return $this;
     }

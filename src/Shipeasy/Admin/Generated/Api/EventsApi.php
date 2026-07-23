@@ -202,7 +202,7 @@ class EventsApi
 
 
             switch($statusCode) {
-                case 201:
+                case 200:
                     return $this->handleResponseWithDataType(
                         '\Shipeasy\Admin\Generated\Model\ApproveEventResponse',
                         $request,
@@ -268,7 +268,7 @@ class EventsApi
             );
         } catch (ApiException $e) {
             switch ($e->getCode()) {
-                case 201:
+                case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Shipeasy\Admin\Generated\Model\ApproveEventResponse',
@@ -428,7 +428,13 @@ class EventsApi
                 'Missing the required parameter $id when calling approveEvent'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling EventsApi.approveEvent, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling EventsApi.approveEvent, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'approve_event_request' is set
         if ($approve_event_request === null || (is_array($approve_event_request) && count($approve_event_request) === 0)) {
             throw new \InvalidArgumentException(
@@ -1173,7 +1179,13 @@ class EventsApi
                 'Missing the required parameter $id when calling deleteEvent'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling EventsApi.deleteEvent, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling EventsApi.deleteEvent, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/events/{id}';
@@ -1261,7 +1273,7 @@ class EventsApi
      *
      * Get an event
      *
-     * @param  string|null $id Stable opaque event id (&#x60;evt_…&#x60;) or the event&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque event id (&#x60;evt_…&#x60;) or the event&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getEvent'] to see the possible values for this operation
      *
@@ -1280,7 +1292,7 @@ class EventsApi
      *
      * Get an event
      *
-     * @param  string|null $id Stable opaque event id (&#x60;evt_…&#x60;) or the event&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque event id (&#x60;evt_…&#x60;) or the event&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getEvent'] to see the possible values for this operation
      *
@@ -1450,7 +1462,7 @@ class EventsApi
      *
      * Get an event
      *
-     * @param  string|null $id Stable opaque event id (&#x60;evt_…&#x60;) or the event&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque event id (&#x60;evt_…&#x60;) or the event&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getEvent'] to see the possible values for this operation
      *
@@ -1472,7 +1484,7 @@ class EventsApi
      *
      * Get an event
      *
-     * @param  string|null $id Stable opaque event id (&#x60;evt_…&#x60;) or the event&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque event id (&#x60;evt_…&#x60;) or the event&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getEvent'] to see the possible values for this operation
      *
@@ -1523,7 +1535,7 @@ class EventsApi
     /**
      * Create request for operation 'getEvent'
      *
-     * @param  string|null $id Stable opaque event id (&#x60;evt_…&#x60;) or the event&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque event id (&#x60;evt_…&#x60;) or the event&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getEvent'] to see the possible values for this operation
      *
@@ -1539,7 +1551,13 @@ class EventsApi
                 'Missing the required parameter $id when calling getEvent'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling EventsApi.getEvent, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling EventsApi.getEvent, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/events/{id}';
@@ -1628,16 +1646,16 @@ class EventsApi
      * List events
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
-     * @param  bool|null $pending When &#x60;true&#x60;, return only pending (auto-discovered, unapproved) events. Omit to return the full catalog. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listEvents'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Shipeasy\Admin\Generated\Model\ListEventsResponseInner[]|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
-    public function listEvents($x_project_id = null, $pending = null, string $contentType = self::contentTypes['listEvents'][0])
+    public function listEvents($x_project_id = null, $q = null, string $contentType = self::contentTypes['listEvents'][0])
     {
-        list($response) = $this->listEventsWithHttpInfo($x_project_id, $pending, $contentType);
+        list($response) = $this->listEventsWithHttpInfo($x_project_id, $q, $contentType);
         return $response;
     }
 
@@ -1647,16 +1665,16 @@ class EventsApi
      * List events
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
-     * @param  bool|null $pending When &#x60;true&#x60;, return only pending (auto-discovered, unapproved) events. Omit to return the full catalog. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listEvents'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return array of \Shipeasy\Admin\Generated\Model\ListEventsResponseInner[]|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listEventsWithHttpInfo($x_project_id = null, $pending = null, string $contentType = self::contentTypes['listEvents'][0])
+    public function listEventsWithHttpInfo($x_project_id = null, $q = null, string $contentType = self::contentTypes['listEvents'][0])
     {
-        $request = $this->listEventsRequest($x_project_id, $pending, $contentType);
+        $request = $this->listEventsRequest($x_project_id, $q, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1817,15 +1835,15 @@ class EventsApi
      * List events
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
-     * @param  bool|null $pending When &#x60;true&#x60;, return only pending (auto-discovered, unapproved) events. Omit to return the full catalog. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listEvents'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listEventsAsync($x_project_id = null, $pending = null, string $contentType = self::contentTypes['listEvents'][0])
+    public function listEventsAsync($x_project_id = null, $q = null, string $contentType = self::contentTypes['listEvents'][0])
     {
-        return $this->listEventsAsyncWithHttpInfo($x_project_id, $pending, $contentType)
+        return $this->listEventsAsyncWithHttpInfo($x_project_id, $q, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1839,16 +1857,16 @@ class EventsApi
      * List events
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
-     * @param  bool|null $pending When &#x60;true&#x60;, return only pending (auto-discovered, unapproved) events. Omit to return the full catalog. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listEvents'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listEventsAsyncWithHttpInfo($x_project_id = null, $pending = null, string $contentType = self::contentTypes['listEvents'][0])
+    public function listEventsAsyncWithHttpInfo($x_project_id = null, $q = null, string $contentType = self::contentTypes['listEvents'][0])
     {
         $returnType = '\Shipeasy\Admin\Generated\Model\ListEventsResponseInner[]';
-        $request = $this->listEventsRequest($x_project_id, $pending, $contentType);
+        $request = $this->listEventsRequest($x_project_id, $q, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1890,17 +1908,20 @@ class EventsApi
      * Create request for operation 'listEvents'
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
-     * @param  bool|null $pending When &#x60;true&#x60;, return only pending (auto-discovered, unapproved) events. Omit to return the full catalog. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listEvents'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listEventsRequest($x_project_id = null, $pending = null, string $contentType = self::contentTypes['listEvents'][0])
+    public function listEventsRequest($x_project_id = null, $q = null, string $contentType = self::contentTypes['listEvents'][0])
     {
 
 
-
+        if ($q !== null && strlen($q) > 100) {
+            throw new \InvalidArgumentException('invalid length for "$q" when calling EventsApi.listEvents, must be smaller than or equal to 100.');
+        }
+        
 
         $resourcePath = '/api/admin/events';
         $formParams = [];
@@ -1911,9 +1932,9 @@ class EventsApi
 
         // query params
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $pending,
-            'pending', // param base name
-            'boolean', // openApiType
+            $q,
+            'q', // param base name
+            'string', // openApiType
             'form', // style
             true, // explode
             false // required
@@ -2271,7 +2292,13 @@ class EventsApi
                 'Missing the required parameter $id when calling updateEvent'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling EventsApi.updateEvent, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling EventsApi.updateEvent, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'update_event_request' is set
         if ($update_event_request === null || (is_array($update_event_request) && count($update_event_request) === 0)) {
             throw new \InvalidArgumentException(

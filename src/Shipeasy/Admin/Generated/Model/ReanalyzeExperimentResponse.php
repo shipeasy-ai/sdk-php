@@ -234,19 +234,6 @@ class ReanalyzeExperimentResponse implements ModelInterface, ArrayAccess, \JsonS
         return self::$openAPIModelName;
     }
 
-    public const QUEUED_TRUE = 'true';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getQueuedAllowableValues()
-    {
-        return [
-            self::QUEUED_TRUE,
-        ];
-    }
 
     /**
      * Associative array for storing property values
@@ -300,15 +287,6 @@ class ReanalyzeExperimentResponse implements ModelInterface, ArrayAccess, \JsonS
         if ($this->container['queued'] === null) {
             $invalidProperties[] = "'queued' can't be null";
         }
-        $allowedValues = $this->getQueuedAllowableValues();
-        if (!is_null($this->container['queued']) && !in_array($this->container['queued'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'queued', must be one of '%s'",
-                $this->container['queued'],
-                implode("', '", $allowedValues)
-            );
-        }
-
         return $invalidProperties;
     }
 
@@ -364,7 +342,7 @@ class ReanalyzeExperimentResponse implements ModelInterface, ArrayAccess, \JsonS
     /**
      * Sets queued
      *
-     * @param bool $queued queued
+     * @param bool $queued `true` when the analysis job was enqueued; `false` when the worker enqueue failed or the analysis queue is not configured (retry later).
      *
      * @return self
      */
@@ -372,16 +350,6 @@ class ReanalyzeExperimentResponse implements ModelInterface, ArrayAccess, \JsonS
     {
         if (is_null($queued)) {
             throw new \InvalidArgumentException('non-nullable queued cannot be null');
-        }
-        $allowedValues = $this->getQueuedAllowableValues();
-        if (!in_array($queued, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'queued', must be one of '%s'",
-                    $queued,
-                    implode("', '", $allowedValues)
-                )
-            );
         }
         $this->container['queued'] = $queued;
 

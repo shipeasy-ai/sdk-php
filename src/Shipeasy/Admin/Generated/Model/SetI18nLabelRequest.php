@@ -299,9 +299,25 @@ class SetI18nLabelRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         if ($this->container['key'] === null) {
             $invalidProperties[] = "'key' can't be null";
         }
+        if ((mb_strlen($this->container['key']) > 256)) {
+            $invalidProperties[] = "invalid value for 'key', the character length must be smaller than or equal to 256.";
+        }
+
+        if ((mb_strlen($this->container['key']) < 1)) {
+            $invalidProperties[] = "invalid value for 'key', the character length must be bigger than or equal to 1.";
+        }
+
         if ($this->container['value'] === null) {
             $invalidProperties[] = "'value' can't be null";
         }
+        if (!is_null($this->container['profile']) && (mb_strlen($this->container['profile']) > 64)) {
+            $invalidProperties[] = "invalid value for 'profile', the character length must be smaller than or equal to 64.";
+        }
+
+        if (!is_null($this->container['profile']) && (mb_strlen($this->container['profile']) < 1)) {
+            $invalidProperties[] = "invalid value for 'profile', the character length must be bigger than or equal to 1.";
+        }
+
         return $invalidProperties;
     }
 
@@ -339,6 +355,13 @@ class SetI18nLabelRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         if (is_null($key)) {
             throw new \InvalidArgumentException('non-nullable key cannot be null');
         }
+        if ((mb_strlen($key) > 256)) {
+            throw new \InvalidArgumentException('invalid length for $key when calling SetI18nLabelRequest., must be smaller than or equal to 256.');
+        }
+        if ((mb_strlen($key) < 1)) {
+            throw new \InvalidArgumentException('invalid length for $key when calling SetI18nLabelRequest., must be bigger than or equal to 1.');
+        }
+
         $this->container['key'] = $key;
 
         return $this;
@@ -393,6 +416,13 @@ class SetI18nLabelRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         if (is_null($profile)) {
             throw new \InvalidArgumentException('non-nullable profile cannot be null');
         }
+        if ((mb_strlen($profile) > 64)) {
+            throw new \InvalidArgumentException('invalid length for $profile when calling SetI18nLabelRequest., must be smaller than or equal to 64.');
+        }
+        if ((mb_strlen($profile) < 1)) {
+            throw new \InvalidArgumentException('invalid length for $profile when calling SetI18nLabelRequest., must be bigger than or equal to 1.');
+        }
+
         $this->container['profile'] = $profile;
 
         return $this;

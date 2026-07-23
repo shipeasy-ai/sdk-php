@@ -77,6 +77,9 @@ class ProfilesApi
         'createI18nProfile' => [
             'application/json',
         ],
+        'deleteI18nProfile' => [
+            'application/json',
+        ],
         'listI18nProfiles' => [
             'application/json',
         ],
@@ -497,6 +500,378 @@ class ProfilesApi
     }
 
     /**
+     * Operation deleteI18nProfile
+     *
+     * Delete an i18n profile
+     *
+     * @param  string $profile_id The profile id to delete. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteI18nProfile'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Shipeasy\Admin\Generated\Model\OkResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     */
+    public function deleteI18nProfile($profile_id, $x_project_id = null, string $contentType = self::contentTypes['deleteI18nProfile'][0])
+    {
+        list($response) = $this->deleteI18nProfileWithHttpInfo($profile_id, $x_project_id, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation deleteI18nProfileWithHttpInfo
+     *
+     * Delete an i18n profile
+     *
+     * @param  string $profile_id The profile id to delete. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteI18nProfile'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of \Shipeasy\Admin\Generated\Model\OkResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function deleteI18nProfileWithHttpInfo($profile_id, $x_project_id = null, string $contentType = self::contentTypes['deleteI18nProfile'][0])
+    {
+        $request = $this->deleteI18nProfileRequest($profile_id, $x_project_id, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\OkResponse',
+                        $request,
+                        $response,
+                    );
+                case 400:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 401:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 409:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Shipeasy\Admin\Generated\Model\OkResponse',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\OkResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+        
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation deleteI18nProfileAsync
+     *
+     * Delete an i18n profile
+     *
+     * @param  string $profile_id The profile id to delete. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteI18nProfile'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function deleteI18nProfileAsync($profile_id, $x_project_id = null, string $contentType = self::contentTypes['deleteI18nProfile'][0])
+    {
+        return $this->deleteI18nProfileAsyncWithHttpInfo($profile_id, $x_project_id, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation deleteI18nProfileAsyncWithHttpInfo
+     *
+     * Delete an i18n profile
+     *
+     * @param  string $profile_id The profile id to delete. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteI18nProfile'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function deleteI18nProfileAsyncWithHttpInfo($profile_id, $x_project_id = null, string $contentType = self::contentTypes['deleteI18nProfile'][0])
+    {
+        $returnType = '\Shipeasy\Admin\Generated\Model\OkResponse';
+        $request = $this->deleteI18nProfileRequest($profile_id, $x_project_id, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'deleteI18nProfile'
+     *
+     * @param  string $profile_id The profile id to delete. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteI18nProfile'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function deleteI18nProfileRequest($profile_id, $x_project_id = null, string $contentType = self::contentTypes['deleteI18nProfile'][0])
+    {
+
+        // verify the required parameter 'profile_id' is set
+        if ($profile_id === null || (is_array($profile_id) && count($profile_id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $profile_id when calling deleteI18nProfile'
+            );
+        }
+        if (strlen($profile_id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$profile_id" when calling ProfilesApi.deleteI18nProfile, must be smaller than or equal to 128.');
+        }
+        if (strlen($profile_id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$profile_id" when calling ProfilesApi.deleteI18nProfile, must be bigger than or equal to 1.');
+        }
+        
+
+
+        $resourcePath = '/api/admin/i18n/profiles/{profileId}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // header params
+        if ($x_project_id !== null) {
+            $headerParams['X-Project-Id'] = ObjectSerializer::toHeaderValue($x_project_id);
+        }
+
+        // path params
+        if ($profile_id !== null) {
+            $resourcePath = str_replace(
+                '{profileId}',
+                ObjectSerializer::toPathValue($profile_id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (sdk_admin_*) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'DELETE',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation listI18nProfiles
      *
      * List i18n profiles
@@ -847,7 +1222,7 @@ class ProfilesApi
      *
      * Publish a profile live
      *
-     * @param  string|null $profile_id The profile id to publish. (required)
+     * @param  string $profile_id The profile id to publish. (required)
      * @param  \Shipeasy\Admin\Generated\Model\PublishI18nProfileRequest $publish_i18n_profile_request publish_i18n_profile_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['publishI18nProfile'] to see the possible values for this operation
@@ -867,7 +1242,7 @@ class ProfilesApi
      *
      * Publish a profile live
      *
-     * @param  string|null $profile_id The profile id to publish. (required)
+     * @param  string $profile_id The profile id to publish. (required)
      * @param  \Shipeasy\Admin\Generated\Model\PublishI18nProfileRequest $publish_i18n_profile_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['publishI18nProfile'] to see the possible values for this operation
@@ -904,7 +1279,7 @@ class ProfilesApi
 
 
             switch($statusCode) {
-                case 201:
+                case 200:
                     return $this->handleResponseWithDataType(
                         '\Shipeasy\Admin\Generated\Model\PublishI18nProfileResponse',
                         $request,
@@ -970,7 +1345,7 @@ class ProfilesApi
             );
         } catch (ApiException $e) {
             switch ($e->getCode()) {
-                case 201:
+                case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Shipeasy\Admin\Generated\Model\PublishI18nProfileResponse',
@@ -1038,7 +1413,7 @@ class ProfilesApi
      *
      * Publish a profile live
      *
-     * @param  string|null $profile_id The profile id to publish. (required)
+     * @param  string $profile_id The profile id to publish. (required)
      * @param  \Shipeasy\Admin\Generated\Model\PublishI18nProfileRequest $publish_i18n_profile_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['publishI18nProfile'] to see the possible values for this operation
@@ -1061,7 +1436,7 @@ class ProfilesApi
      *
      * Publish a profile live
      *
-     * @param  string|null $profile_id The profile id to publish. (required)
+     * @param  string $profile_id The profile id to publish. (required)
      * @param  \Shipeasy\Admin\Generated\Model\PublishI18nProfileRequest $publish_i18n_profile_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['publishI18nProfile'] to see the possible values for this operation
@@ -1113,7 +1488,7 @@ class ProfilesApi
     /**
      * Create request for operation 'publishI18nProfile'
      *
-     * @param  string|null $profile_id The profile id to publish. (required)
+     * @param  string $profile_id The profile id to publish. (required)
      * @param  \Shipeasy\Admin\Generated\Model\PublishI18nProfileRequest $publish_i18n_profile_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['publishI18nProfile'] to see the possible values for this operation
@@ -1130,7 +1505,13 @@ class ProfilesApi
                 'Missing the required parameter $profile_id when calling publishI18nProfile'
             );
         }
-
+        if (strlen($profile_id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$profile_id" when calling ProfilesApi.publishI18nProfile, must be smaller than or equal to 128.');
+        }
+        if (strlen($profile_id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$profile_id" when calling ProfilesApi.publishI18nProfile, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'publish_i18n_profile_request' is set
         if ($publish_i18n_profile_request === null || (is_array($publish_i18n_profile_request) && count($publish_i18n_profile_request) === 0)) {
             throw new \InvalidArgumentException(

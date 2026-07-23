@@ -74,6 +74,9 @@ class KeysApi
 
     /** @var string[] $contentTypes **/
     public const contentTypes = [
+        'deleteI18nKey' => [
+            'application/json',
+        ],
         'listI18nKeys' => [
             'application/json',
         ],
@@ -84,6 +87,9 @@ class KeysApi
             'application/json',
         ],
         'updateI18nKey' => [
+            'application/json',
+        ],
+        'upsertI18nKeys' => [
             'application/json',
         ],
     ];
@@ -135,6 +141,378 @@ class KeysApi
     }
 
     /**
+     * Operation deleteI18nKey
+     *
+     * Delete one i18n key
+     *
+     * @param  string $id The key&#39;s id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteI18nKey'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Shipeasy\Admin\Generated\Model\OkResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     */
+    public function deleteI18nKey($id, $x_project_id = null, string $contentType = self::contentTypes['deleteI18nKey'][0])
+    {
+        list($response) = $this->deleteI18nKeyWithHttpInfo($id, $x_project_id, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation deleteI18nKeyWithHttpInfo
+     *
+     * Delete one i18n key
+     *
+     * @param  string $id The key&#39;s id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteI18nKey'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of \Shipeasy\Admin\Generated\Model\OkResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function deleteI18nKeyWithHttpInfo($id, $x_project_id = null, string $contentType = self::contentTypes['deleteI18nKey'][0])
+    {
+        $request = $this->deleteI18nKeyRequest($id, $x_project_id, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\OkResponse',
+                        $request,
+                        $response,
+                    );
+                case 400:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 401:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 409:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Shipeasy\Admin\Generated\Model\OkResponse',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\OkResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+        
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation deleteI18nKeyAsync
+     *
+     * Delete one i18n key
+     *
+     * @param  string $id The key&#39;s id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteI18nKey'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function deleteI18nKeyAsync($id, $x_project_id = null, string $contentType = self::contentTypes['deleteI18nKey'][0])
+    {
+        return $this->deleteI18nKeyAsyncWithHttpInfo($id, $x_project_id, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation deleteI18nKeyAsyncWithHttpInfo
+     *
+     * Delete one i18n key
+     *
+     * @param  string $id The key&#39;s id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteI18nKey'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function deleteI18nKeyAsyncWithHttpInfo($id, $x_project_id = null, string $contentType = self::contentTypes['deleteI18nKey'][0])
+    {
+        $returnType = '\Shipeasy\Admin\Generated\Model\OkResponse';
+        $request = $this->deleteI18nKeyRequest($id, $x_project_id, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'deleteI18nKey'
+     *
+     * @param  string $id The key&#39;s id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteI18nKey'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function deleteI18nKeyRequest($id, $x_project_id = null, string $contentType = self::contentTypes['deleteI18nKey'][0])
+    {
+
+        // verify the required parameter 'id' is set
+        if ($id === null || (is_array($id) && count($id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $id when calling deleteI18nKey'
+            );
+        }
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KeysApi.deleteI18nKey, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KeysApi.deleteI18nKey, must be bigger than or equal to 1.');
+        }
+        
+
+
+        $resourcePath = '/api/admin/i18n/keys/{id}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // header params
+        if ($x_project_id !== null) {
+            $headerParams['X-Project-Id'] = ObjectSerializer::toHeaderValue($x_project_id);
+        }
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{id}',
+                ObjectSerializer::toPathValue($id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (sdk_admin_*) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'DELETE',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation listI18nKeys
      *
      * List i18n keys
@@ -142,17 +520,18 @@ class KeysApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string|null $profile_id Profile id to list keys for. (optional)
      * @param  string|null $prefix Only keys whose name starts with this. (optional)
-     * @param  string|null $q Free-text search — matches keys whose name OR value contains this substring (case-insensitive). Use it to find the key behind a piece of on-screen copy. (optional)
+     * @param  string|null $q Free-text search — matches keys whose name, value, OR description contains this substring (case-insensitive). Use it to find the key behind a piece of on-screen copy. (optional)
      * @param  int|null $limit Max keys to return (1–500). (optional)
+     * @param  int|null $offset Number of keys to skip before returning &#x60;limit&#x60; rows (offset pagination). (optional, default to 0)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listI18nKeys'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Shipeasy\Admin\Generated\Model\ListI18nKeysResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
-    public function listI18nKeys($x_project_id = null, $profile_id = null, $prefix = null, $q = null, $limit = null, string $contentType = self::contentTypes['listI18nKeys'][0])
+    public function listI18nKeys($x_project_id = null, $profile_id = null, $prefix = null, $q = null, $limit = null, $offset = 0, string $contentType = self::contentTypes['listI18nKeys'][0])
     {
-        list($response) = $this->listI18nKeysWithHttpInfo($x_project_id, $profile_id, $prefix, $q, $limit, $contentType);
+        list($response) = $this->listI18nKeysWithHttpInfo($x_project_id, $profile_id, $prefix, $q, $limit, $offset, $contentType);
         return $response;
     }
 
@@ -164,17 +543,18 @@ class KeysApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string|null $profile_id Profile id to list keys for. (optional)
      * @param  string|null $prefix Only keys whose name starts with this. (optional)
-     * @param  string|null $q Free-text search — matches keys whose name OR value contains this substring (case-insensitive). Use it to find the key behind a piece of on-screen copy. (optional)
+     * @param  string|null $q Free-text search — matches keys whose name, value, OR description contains this substring (case-insensitive). Use it to find the key behind a piece of on-screen copy. (optional)
      * @param  int|null $limit Max keys to return (1–500). (optional)
+     * @param  int|null $offset Number of keys to skip before returning &#x60;limit&#x60; rows (offset pagination). (optional, default to 0)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listI18nKeys'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return array of \Shipeasy\Admin\Generated\Model\ListI18nKeysResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listI18nKeysWithHttpInfo($x_project_id = null, $profile_id = null, $prefix = null, $q = null, $limit = null, string $contentType = self::contentTypes['listI18nKeys'][0])
+    public function listI18nKeysWithHttpInfo($x_project_id = null, $profile_id = null, $prefix = null, $q = null, $limit = null, $offset = 0, string $contentType = self::contentTypes['listI18nKeys'][0])
     {
-        $request = $this->listI18nKeysRequest($x_project_id, $profile_id, $prefix, $q, $limit, $contentType);
+        $request = $this->listI18nKeysRequest($x_project_id, $profile_id, $prefix, $q, $limit, $offset, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -337,16 +717,17 @@ class KeysApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string|null $profile_id Profile id to list keys for. (optional)
      * @param  string|null $prefix Only keys whose name starts with this. (optional)
-     * @param  string|null $q Free-text search — matches keys whose name OR value contains this substring (case-insensitive). Use it to find the key behind a piece of on-screen copy. (optional)
+     * @param  string|null $q Free-text search — matches keys whose name, value, OR description contains this substring (case-insensitive). Use it to find the key behind a piece of on-screen copy. (optional)
      * @param  int|null $limit Max keys to return (1–500). (optional)
+     * @param  int|null $offset Number of keys to skip before returning &#x60;limit&#x60; rows (offset pagination). (optional, default to 0)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listI18nKeys'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listI18nKeysAsync($x_project_id = null, $profile_id = null, $prefix = null, $q = null, $limit = null, string $contentType = self::contentTypes['listI18nKeys'][0])
+    public function listI18nKeysAsync($x_project_id = null, $profile_id = null, $prefix = null, $q = null, $limit = null, $offset = 0, string $contentType = self::contentTypes['listI18nKeys'][0])
     {
-        return $this->listI18nKeysAsyncWithHttpInfo($x_project_id, $profile_id, $prefix, $q, $limit, $contentType)
+        return $this->listI18nKeysAsyncWithHttpInfo($x_project_id, $profile_id, $prefix, $q, $limit, $offset, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -362,17 +743,18 @@ class KeysApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string|null $profile_id Profile id to list keys for. (optional)
      * @param  string|null $prefix Only keys whose name starts with this. (optional)
-     * @param  string|null $q Free-text search — matches keys whose name OR value contains this substring (case-insensitive). Use it to find the key behind a piece of on-screen copy. (optional)
+     * @param  string|null $q Free-text search — matches keys whose name, value, OR description contains this substring (case-insensitive). Use it to find the key behind a piece of on-screen copy. (optional)
      * @param  int|null $limit Max keys to return (1–500). (optional)
+     * @param  int|null $offset Number of keys to skip before returning &#x60;limit&#x60; rows (offset pagination). (optional, default to 0)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listI18nKeys'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listI18nKeysAsyncWithHttpInfo($x_project_id = null, $profile_id = null, $prefix = null, $q = null, $limit = null, string $contentType = self::contentTypes['listI18nKeys'][0])
+    public function listI18nKeysAsyncWithHttpInfo($x_project_id = null, $profile_id = null, $prefix = null, $q = null, $limit = null, $offset = 0, string $contentType = self::contentTypes['listI18nKeys'][0])
     {
         $returnType = '\Shipeasy\Admin\Generated\Model\ListI18nKeysResponse';
-        $request = $this->listI18nKeysRequest($x_project_id, $profile_id, $prefix, $q, $limit, $contentType);
+        $request = $this->listI18nKeysRequest($x_project_id, $profile_id, $prefix, $q, $limit, $offset, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -416,25 +798,33 @@ class KeysApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string|null $profile_id Profile id to list keys for. (optional)
      * @param  string|null $prefix Only keys whose name starts with this. (optional)
-     * @param  string|null $q Free-text search — matches keys whose name OR value contains this substring (case-insensitive). Use it to find the key behind a piece of on-screen copy. (optional)
+     * @param  string|null $q Free-text search — matches keys whose name, value, OR description contains this substring (case-insensitive). Use it to find the key behind a piece of on-screen copy. (optional)
      * @param  int|null $limit Max keys to return (1–500). (optional)
+     * @param  int|null $offset Number of keys to skip before returning &#x60;limit&#x60; rows (offset pagination). (optional, default to 0)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listI18nKeys'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listI18nKeysRequest($x_project_id = null, $profile_id = null, $prefix = null, $q = null, $limit = null, string $contentType = self::contentTypes['listI18nKeys'][0])
+    public function listI18nKeysRequest($x_project_id = null, $profile_id = null, $prefix = null, $q = null, $limit = null, $offset = 0, string $contentType = self::contentTypes['listI18nKeys'][0])
     {
 
 
 
 
-
+        if ($q !== null && strlen($q) > 100) {
+            throw new \InvalidArgumentException('invalid length for "$q" when calling KeysApi.listI18nKeys, must be smaller than or equal to 100.');
+        }
+        
         if ($limit !== null && $limit > 500) {
             throw new \InvalidArgumentException('invalid value for "$limit" when calling KeysApi.listI18nKeys, must be smaller than or equal to 500.');
         }
         if ($limit !== null && $limit < 1) {
             throw new \InvalidArgumentException('invalid value for "$limit" when calling KeysApi.listI18nKeys, must be bigger than or equal to 1.');
+        }
+        
+        if ($offset !== null && $offset < 0) {
+            throw new \InvalidArgumentException('invalid value for "$offset" when calling KeysApi.listI18nKeys, must be bigger than or equal to 0.');
         }
         
 
@@ -476,6 +866,15 @@ class KeysApi
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $limit,
             'limit', // param base name
+            'integer', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $offset,
+            'offset', // param base name
             'integer', // openApiType
             'form', // style
             true, // explode
@@ -1281,7 +1680,7 @@ class KeysApi
      *
      * Update one i18n key
      *
-     * @param  string|null $id The key&#39;s id. (required)
+     * @param  string $id The key&#39;s id. (required)
      * @param  \Shipeasy\Admin\Generated\Model\UpdateI18nKeyRequest $update_i18n_key_request update_i18n_key_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateI18nKey'] to see the possible values for this operation
@@ -1301,7 +1700,7 @@ class KeysApi
      *
      * Update one i18n key
      *
-     * @param  string|null $id The key&#39;s id. (required)
+     * @param  string $id The key&#39;s id. (required)
      * @param  \Shipeasy\Admin\Generated\Model\UpdateI18nKeyRequest $update_i18n_key_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateI18nKey'] to see the possible values for this operation
@@ -1472,7 +1871,7 @@ class KeysApi
      *
      * Update one i18n key
      *
-     * @param  string|null $id The key&#39;s id. (required)
+     * @param  string $id The key&#39;s id. (required)
      * @param  \Shipeasy\Admin\Generated\Model\UpdateI18nKeyRequest $update_i18n_key_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateI18nKey'] to see the possible values for this operation
@@ -1495,7 +1894,7 @@ class KeysApi
      *
      * Update one i18n key
      *
-     * @param  string|null $id The key&#39;s id. (required)
+     * @param  string $id The key&#39;s id. (required)
      * @param  \Shipeasy\Admin\Generated\Model\UpdateI18nKeyRequest $update_i18n_key_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateI18nKey'] to see the possible values for this operation
@@ -1547,7 +1946,7 @@ class KeysApi
     /**
      * Create request for operation 'updateI18nKey'
      *
-     * @param  string|null $id The key&#39;s id. (required)
+     * @param  string $id The key&#39;s id. (required)
      * @param  \Shipeasy\Admin\Generated\Model\UpdateI18nKeyRequest $update_i18n_key_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateI18nKey'] to see the possible values for this operation
@@ -1564,7 +1963,13 @@ class KeysApi
                 'Missing the required parameter $id when calling updateI18nKey'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KeysApi.updateI18nKey, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling KeysApi.updateI18nKey, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'update_i18n_key_request' is set
         if ($update_i18n_key_request === null || (is_array($update_i18n_key_request) && count($update_i18n_key_request) === 0)) {
             throw new \InvalidArgumentException(
@@ -1610,6 +2015,371 @@ class KeysApi
                 $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($update_i18n_key_request));
             } else {
                 $httpBody = $update_i18n_key_request;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (sdk_admin_*) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'PUT',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation upsertI18nKeys
+     *
+     * Bulk upsert i18n keys (overwrite)
+     *
+     * @param  \Shipeasy\Admin\Generated\Model\UpsertI18nKeysRequest $upsert_i18n_keys_request upsert_i18n_keys_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['upsertI18nKeys'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Shipeasy\Admin\Generated\Model\UpsertI18nKeysResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     */
+    public function upsertI18nKeys($upsert_i18n_keys_request, $x_project_id = null, string $contentType = self::contentTypes['upsertI18nKeys'][0])
+    {
+        list($response) = $this->upsertI18nKeysWithHttpInfo($upsert_i18n_keys_request, $x_project_id, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation upsertI18nKeysWithHttpInfo
+     *
+     * Bulk upsert i18n keys (overwrite)
+     *
+     * @param  \Shipeasy\Admin\Generated\Model\UpsertI18nKeysRequest $upsert_i18n_keys_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['upsertI18nKeys'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of \Shipeasy\Admin\Generated\Model\UpsertI18nKeysResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function upsertI18nKeysWithHttpInfo($upsert_i18n_keys_request, $x_project_id = null, string $contentType = self::contentTypes['upsertI18nKeys'][0])
+    {
+        $request = $this->upsertI18nKeysRequest($upsert_i18n_keys_request, $x_project_id, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\UpsertI18nKeysResponse',
+                        $request,
+                        $response,
+                    );
+                case 400:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 401:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 409:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Shipeasy\Admin\Generated\Model\UpsertI18nKeysResponse',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\UpsertI18nKeysResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+        
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation upsertI18nKeysAsync
+     *
+     * Bulk upsert i18n keys (overwrite)
+     *
+     * @param  \Shipeasy\Admin\Generated\Model\UpsertI18nKeysRequest $upsert_i18n_keys_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['upsertI18nKeys'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function upsertI18nKeysAsync($upsert_i18n_keys_request, $x_project_id = null, string $contentType = self::contentTypes['upsertI18nKeys'][0])
+    {
+        return $this->upsertI18nKeysAsyncWithHttpInfo($upsert_i18n_keys_request, $x_project_id, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation upsertI18nKeysAsyncWithHttpInfo
+     *
+     * Bulk upsert i18n keys (overwrite)
+     *
+     * @param  \Shipeasy\Admin\Generated\Model\UpsertI18nKeysRequest $upsert_i18n_keys_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['upsertI18nKeys'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function upsertI18nKeysAsyncWithHttpInfo($upsert_i18n_keys_request, $x_project_id = null, string $contentType = self::contentTypes['upsertI18nKeys'][0])
+    {
+        $returnType = '\Shipeasy\Admin\Generated\Model\UpsertI18nKeysResponse';
+        $request = $this->upsertI18nKeysRequest($upsert_i18n_keys_request, $x_project_id, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'upsertI18nKeys'
+     *
+     * @param  \Shipeasy\Admin\Generated\Model\UpsertI18nKeysRequest $upsert_i18n_keys_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['upsertI18nKeys'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function upsertI18nKeysRequest($upsert_i18n_keys_request, $x_project_id = null, string $contentType = self::contentTypes['upsertI18nKeys'][0])
+    {
+
+        // verify the required parameter 'upsert_i18n_keys_request' is set
+        if ($upsert_i18n_keys_request === null || (is_array($upsert_i18n_keys_request) && count($upsert_i18n_keys_request) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $upsert_i18n_keys_request when calling upsertI18nKeys'
+            );
+        }
+
+
+
+        $resourcePath = '/api/admin/i18n/keys';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // header params
+        if ($x_project_id !== null) {
+            $headerParams['X-Project-Id'] = ObjectSerializer::toHeaderValue($x_project_id);
+        }
+
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (isset($upsert_i18n_keys_request)) {
+            if (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the body
+                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($upsert_i18n_keys_request));
+            } else {
+                $httpBody = $upsert_i18n_keys_request;
             }
         } elseif (count($formParams) > 0) {
             if ($multipart) {

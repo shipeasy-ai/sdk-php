@@ -57,7 +57,7 @@ class ListExperimentsResponse implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $openAPITypes = [
-        'data' => '\Shipeasy\Admin\Generated\Model\ListExperimentsResponseDataInner[]',
+        'data' => '\Shipeasy\Admin\Generated\Model\ExperimentApiRow[]',
         'next_cursor' => 'string'
     ];
 
@@ -305,7 +305,7 @@ class ListExperimentsResponse implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Gets data
      *
-     * @return \Shipeasy\Admin\Generated\Model\ListExperimentsResponseDataInner[]
+     * @return \Shipeasy\Admin\Generated\Model\ExperimentApiRow[]
      */
     public function getData()
     {
@@ -315,7 +315,7 @@ class ListExperimentsResponse implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Sets data
      *
-     * @param \Shipeasy\Admin\Generated\Model\ListExperimentsResponseDataInner[] $data data
+     * @param \Shipeasy\Admin\Generated\Model\ExperimentApiRow[] $data data
      *
      * @return self
      */

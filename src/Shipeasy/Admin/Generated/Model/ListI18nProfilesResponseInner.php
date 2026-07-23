@@ -309,6 +309,15 @@ class ListI18nProfilesResponseInner implements ModelInterface, ArrayAccess, \Jso
         if ($this->container['name'] === null) {
             $invalidProperties[] = "'name' can't be null";
         }
+        if ($this->container['is_default'] === null) {
+            $invalidProperties[] = "'is_default' can't be null";
+        }
+        if ($this->container['created_at'] === null) {
+            $invalidProperties[] = "'created_at' can't be null";
+        }
+        if ($this->container['deleted_at'] === null && !$this->isNullableSetToNull('deleted_at')) {
+            $invalidProperties[] = "'deleted_at' is required";
+        }
         return $invalidProperties;
     }
 
@@ -381,7 +390,7 @@ class ListI18nProfilesResponseInner implements ModelInterface, ArrayAccess, \Jso
     /**
      * Gets is_default
      *
-     * @return float|null
+     * @return float
      */
     public function getIsDefault()
     {
@@ -391,7 +400,7 @@ class ListI18nProfilesResponseInner implements ModelInterface, ArrayAccess, \Jso
     /**
      * Sets is_default
      *
-     * @param float|null $is_default `1` for the project's single default profile (always seeded as `en:prod`), else `0`.
+     * @param float $is_default `1` for the project's single default profile (always seeded as `en:prod`), else `0`.
      *
      * @return self
      */
@@ -408,7 +417,7 @@ class ListI18nProfilesResponseInner implements ModelInterface, ArrayAccess, \Jso
     /**
      * Gets created_at
      *
-     * @return string|null
+     * @return string
      */
     public function getCreatedAt()
     {
@@ -418,7 +427,7 @@ class ListI18nProfilesResponseInner implements ModelInterface, ArrayAccess, \Jso
     /**
      * Sets created_at
      *
-     * @param string|null $created_at ISO-8601 timestamp of creation.
+     * @param string $created_at ISO-8601 timestamp of creation.
      *
      * @return self
      */

@@ -58,7 +58,7 @@ class GetExperimentTimeseriesResponse implements ModelInterface, ArrayAccess, \J
      */
     protected static $openAPITypes = [
         'experiment' => '\Shipeasy\Admin\Generated\Model\GetExperimentTimeseriesResponseExperiment',
-        'series' => '\Shipeasy\Admin\Generated\Model\GetExperimentTimeseriesResponseSeriesInner[]'
+        'series' => '\Shipeasy\Admin\Generated\Model\ExperimentResultRow[]'
     ];
 
     /**
@@ -332,7 +332,7 @@ class GetExperimentTimeseriesResponse implements ModelInterface, ArrayAccess, \J
     /**
      * Gets series
      *
-     * @return \Shipeasy\Admin\Generated\Model\GetExperimentTimeseriesResponseSeriesInner[]
+     * @return \Shipeasy\Admin\Generated\Model\ExperimentResultRow[]
      */
     public function getSeries()
     {
@@ -342,7 +342,7 @@ class GetExperimentTimeseriesResponse implements ModelInterface, ArrayAccess, \J
     /**
      * Sets series
      *
-     * @param \Shipeasy\Admin\Generated\Model\GetExperimentTimeseriesResponseSeriesInner[] $series series
+     * @param \Shipeasy\Admin\Generated\Model\ExperimentResultRow[] $series Every daily analysis slice (same row shape as `/results`), oldest to newest.
      *
      * @return self
      */

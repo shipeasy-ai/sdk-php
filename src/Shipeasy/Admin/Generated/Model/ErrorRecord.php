@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * ErrorRecord Class Doc Comment
  *
  * @category Class
- * @description A tracked production error — one row per distinct issue, keyed by &#x60;fingerprint&#x60;. Rows are never created by hand: an ingestion path (worker log drain / the &#x60;see()&#x60; SDK reporter) folds each occurrence into the matching row, bumping &#x60;count&#x60; and &#x60;lastSeenAt&#x60;. The admin surface only lists them, reads one, and flips &#x60;status&#x60;.  Field names are camelCase (the D1 row projected through Drizzle). Many columns are nullable because the reporting source may not supply them.
+ * @description A tracked production error — one row per distinct issue, keyed by &#x60;fingerprint&#x60;. Rows are never created by hand: an ingestion path (worker log drain / the &#x60;see()&#x60; SDK reporter) folds each occurrence into the matching row, bumping &#x60;count&#x60; and &#x60;lastSeenAt&#x60;. The admin surface only lists them, reads one, and flips &#x60;status&#x60;.  Field names are camelCase (the D1 row projected through Drizzle). Every row column is always present on the wire; many are *nullable* because the reporting source may not supply them — &#x60;null&#x60;, never absent. Only &#x60;occurrences&#x60; is conditional (detail reads only).
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -76,11 +76,15 @@ class ErrorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         'last_extras_json' => 'string',
         'sdk_version' => 'string',
         'count' => 'int',
+        'occurrences' => '\Shipeasy\Admin\Generated\Model\ErrorOccurrence[]',
         'status' => 'string',
         'first_seen_at' => 'string',
         'last_seen_at' => 'string',
         'created_at' => 'string',
-        'updated_at' => 'string'
+        'updated_at' => 'string',
+        'assignee_id' => 'string',
+        'assignee_connector_id' => 'string',
+        'assignee_agent' => 'string'
     ];
 
     /**
@@ -109,11 +113,15 @@ class ErrorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         'last_extras_json' => null,
         'sdk_version' => null,
         'count' => null,
+        'occurrences' => null,
         'status' => null,
         'first_seen_at' => null,
         'last_seen_at' => null,
         'created_at' => null,
-        'updated_at' => null
+        'updated_at' => null,
+        'assignee_id' => null,
+        'assignee_connector_id' => null,
+        'assignee_agent' => null
     ];
 
     /**
@@ -140,11 +148,15 @@ class ErrorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         'last_extras_json' => true,
         'sdk_version' => true,
         'count' => false,
+        'occurrences' => false,
         'status' => false,
         'first_seen_at' => false,
         'last_seen_at' => false,
         'created_at' => false,
-        'updated_at' => false
+        'updated_at' => false,
+        'assignee_id' => true,
+        'assignee_connector_id' => true,
+        'assignee_agent' => true
     ];
 
     /**
@@ -251,11 +263,15 @@ class ErrorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         'last_extras_json' => 'lastExtrasJson',
         'sdk_version' => 'sdkVersion',
         'count' => 'count',
+        'occurrences' => 'occurrences',
         'status' => 'status',
         'first_seen_at' => 'firstSeenAt',
         'last_seen_at' => 'lastSeenAt',
         'created_at' => 'createdAt',
-        'updated_at' => 'updatedAt'
+        'updated_at' => 'updatedAt',
+        'assignee_id' => 'assigneeId',
+        'assignee_connector_id' => 'assigneeConnectorId',
+        'assignee_agent' => 'assigneeAgent'
     ];
 
     /**
@@ -282,11 +298,15 @@ class ErrorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         'last_extras_json' => 'setLastExtrasJson',
         'sdk_version' => 'setSdkVersion',
         'count' => 'setCount',
+        'occurrences' => 'setOccurrences',
         'status' => 'setStatus',
         'first_seen_at' => 'setFirstSeenAt',
         'last_seen_at' => 'setLastSeenAt',
         'created_at' => 'setCreatedAt',
-        'updated_at' => 'setUpdatedAt'
+        'updated_at' => 'setUpdatedAt',
+        'assignee_id' => 'setAssigneeId',
+        'assignee_connector_id' => 'setAssigneeConnectorId',
+        'assignee_agent' => 'setAssigneeAgent'
     ];
 
     /**
@@ -313,11 +333,15 @@ class ErrorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         'last_extras_json' => 'getLastExtrasJson',
         'sdk_version' => 'getSdkVersion',
         'count' => 'getCount',
+        'occurrences' => 'getOccurrences',
         'status' => 'getStatus',
         'first_seen_at' => 'getFirstSeenAt',
         'last_seen_at' => 'getLastSeenAt',
         'created_at' => 'getCreatedAt',
-        'updated_at' => 'getUpdatedAt'
+        'updated_at' => 'getUpdatedAt',
+        'assignee_id' => 'getAssigneeId',
+        'assignee_connector_id' => 'getAssigneeConnectorId',
+        'assignee_agent' => 'getAssigneeAgent'
     ];
 
     /**
@@ -433,11 +457,15 @@ class ErrorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('last_extras_json', $data ?? [], null);
         $this->setIfExists('sdk_version', $data ?? [], null);
         $this->setIfExists('count', $data ?? [], null);
+        $this->setIfExists('occurrences', $data ?? [], null);
         $this->setIfExists('status', $data ?? [], null);
         $this->setIfExists('first_seen_at', $data ?? [], null);
         $this->setIfExists('last_seen_at', $data ?? [], null);
         $this->setIfExists('created_at', $data ?? [], null);
         $this->setIfExists('updated_at', $data ?? [], null);
+        $this->setIfExists('assignee_id', $data ?? [], null);
+        $this->setIfExists('assignee_connector_id', $data ?? [], null);
+        $this->setIfExists('assignee_agent', $data ?? [], null);
     }
 
     /**
@@ -476,8 +504,41 @@ class ErrorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         if ($this->container['fingerprint'] === null) {
             $invalidProperties[] = "'fingerprint' can't be null";
         }
+        if ($this->container['caused_by_fingerprint'] === null && !$this->isNullableSetToNull('caused_by_fingerprint')) {
+            $invalidProperties[] = "'caused_by_fingerprint' is required";
+        }
         if ($this->container['message'] === null) {
             $invalidProperties[] = "'message' can't be null";
+        }
+        if ($this->container['error_type'] === null && !$this->isNullableSetToNull('error_type')) {
+            $invalidProperties[] = "'error_type' is required";
+        }
+        if ($this->container['stack'] === null && !$this->isNullableSetToNull('stack')) {
+            $invalidProperties[] = "'stack' is required";
+        }
+        if ($this->container['source'] === null && !$this->isNullableSetToNull('source')) {
+            $invalidProperties[] = "'source' is required";
+        }
+        if ($this->container['url'] === null && !$this->isNullableSetToNull('url')) {
+            $invalidProperties[] = "'url' is required";
+        }
+        if ($this->container['seen_urls'] === null && !$this->isNullableSetToNull('seen_urls')) {
+            $invalidProperties[] = "'seen_urls' is required";
+        }
+        if ($this->container['subject'] === null && !$this->isNullableSetToNull('subject')) {
+            $invalidProperties[] = "'subject' is required";
+        }
+        if ($this->container['outcome'] === null && !$this->isNullableSetToNull('outcome')) {
+            $invalidProperties[] = "'outcome' is required";
+        }
+        if ($this->container['side'] === null && !$this->isNullableSetToNull('side')) {
+            $invalidProperties[] = "'side' is required";
+        }
+        if ($this->container['env'] === null && !$this->isNullableSetToNull('env')) {
+            $invalidProperties[] = "'env' is required";
+        }
+        if ($this->container['kind'] === null && !$this->isNullableSetToNull('kind')) {
+            $invalidProperties[] = "'kind' is required";
         }
         $allowedValues = $this->getKindAllowableValues();
         if (!is_null($this->container['kind']) && !in_array($this->container['kind'], $allowedValues, true)) {
@@ -488,6 +549,12 @@ class ErrorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
             );
         }
 
+        if ($this->container['last_extras_json'] === null && !$this->isNullableSetToNull('last_extras_json')) {
+            $invalidProperties[] = "'last_extras_json' is required";
+        }
+        if ($this->container['sdk_version'] === null && !$this->isNullableSetToNull('sdk_version')) {
+            $invalidProperties[] = "'sdk_version' is required";
+        }
         if ($this->container['count'] === null) {
             $invalidProperties[] = "'count' can't be null";
         }
@@ -518,6 +585,15 @@ class ErrorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         }
         if ($this->container['updated_at'] === null) {
             $invalidProperties[] = "'updated_at' can't be null";
+        }
+        if ($this->container['assignee_id'] === null && !$this->isNullableSetToNull('assignee_id')) {
+            $invalidProperties[] = "'assignee_id' is required";
+        }
+        if ($this->container['assignee_connector_id'] === null && !$this->isNullableSetToNull('assignee_connector_id')) {
+            $invalidProperties[] = "'assignee_connector_id' is required";
+        }
+        if ($this->container['assignee_agent'] === null && !$this->isNullableSetToNull('assignee_agent')) {
+            $invalidProperties[] = "'assignee_agent' is required";
         }
         return $invalidProperties;
     }
@@ -601,7 +677,7 @@ class ErrorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets fingerprint
      *
-     * @param string $fingerprint Stable dedupe key (hash of `errorType` + normalized `message` + consequence). Unique per project — every occurrence with the same fingerprint folds into this one row.
+     * @param string $fingerprint Stable dedupe key — the issue TITLE (hash of `errorType` + `subject` + `outcome`, plus the violation name for violations). Unique per project — every occurrence with the same title folds into this one row; per-instance variety (message/stack/extras) lives in `occurrences`.
      *
      * @return self
      */
@@ -1107,7 +1183,7 @@ class ErrorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets count
      *
-     * @param int $count Number of folded occurrences for this fingerprint.
+     * @param int $count EXACT number of folded occurrences for this fingerprint — every occurrence increments it, regardless of detail-row sampling.
      *
      * @return self
      */
@@ -1122,6 +1198,33 @@ class ErrorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         }
 
         $this->container['count'] = $count;
+
+        return $this;
+    }
+
+    /**
+     * Gets occurrences
+     *
+     * @return \Shipeasy\Admin\Generated\Model\ErrorOccurrence[]|null
+     */
+    public function getOccurrences()
+    {
+        return $this->container['occurrences'];
+    }
+
+    /**
+     * Sets occurrences
+     *
+     * @param \Shipeasy\Admin\Generated\Model\ErrorOccurrence[]|null $occurrences Sampled per-instance detail rows behind this issue, newest first. Returned only by `GET /api/admin/errors/{id}` (never in list responses). The parent row's `count` / `firstSeenAt` / `lastSeenAt` are exact; these rows are a *sampled sketch* of the instances — exhaustive while the issue is small, thinning to roughly 1-in-10 past 10 occurrences, 1-in-100 past 100, and 1-in-1000 past 1000 (each row's `sampleRate` records the rate in force when it was kept), capped at the newest 100 rows.
+     *
+     * @return self
+     */
+    public function setOccurrences($occurrences)
+    {
+        if (is_null($occurrences)) {
+            throw new \InvalidArgumentException('non-nullable occurrences cannot be null');
+        }
+        $this->container['occurrences'] = $occurrences;
 
         return $this;
     }
@@ -1267,6 +1370,108 @@ class ErrorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
             throw new \InvalidArgumentException('non-nullable updated_at cannot be null');
         }
         $this->container['updated_at'] = $updated_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets assignee_id
+     *
+     * @return string|null
+     */
+    public function getAssigneeId()
+    {
+        return $this->container['assignee_id'];
+    }
+
+    /**
+     * Sets assignee_id
+     *
+     * @param string|null $assignee_id PERSON owner of the triage — a `users.id` (soft reference, same value space as a feedback item's `assigneeId`), or `null` if unassigned. Set from the ops cockpit's Owner column; independent of the agent half.
+     *
+     * @return self
+     */
+    public function setAssigneeId($assignee_id)
+    {
+        if (is_null($assignee_id)) {
+            array_push($this->openAPINullablesSetToNull, 'assignee_id');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('assignee_id', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['assignee_id'] = $assignee_id;
+
+        return $this;
+    }
+
+    /**
+     * Gets assignee_connector_id
+     *
+     * @return string|null
+     */
+    public function getAssigneeConnectorId()
+    {
+        return $this->container['assignee_connector_id'];
+    }
+
+    /**
+     * Sets assignee_connector_id
+     *
+     * @param string|null $assignee_connector_id AGENT owner — the id of a connected trigger connector (`connectors.id`), or `null`. Mutually exclusive with `assigneeAgent`.
+     *
+     * @return self
+     */
+    public function setAssigneeConnectorId($assignee_connector_id)
+    {
+        if (is_null($assignee_connector_id)) {
+            array_push($this->openAPINullablesSetToNull, 'assignee_connector_id');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('assignee_connector_id', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['assignee_connector_id'] = $assignee_connector_id;
+
+        return $this;
+    }
+
+    /**
+     * Gets assignee_agent
+     *
+     * @return string|null
+     */
+    public function getAssigneeAgent()
+    {
+        return $this->container['assignee_agent'];
+    }
+
+    /**
+     * Sets assignee_agent
+     *
+     * @param string|null $assignee_agent AGENT owner — a built-in hosted Shipeasy agent (`\"jarvis\"`, Enterprise-gated), or `null`. Mutually exclusive with `assigneeConnectorId`.
+     *
+     * @return self
+     */
+    public function setAssigneeAgent($assignee_agent)
+    {
+        if (is_null($assignee_agent)) {
+            array_push($this->openAPINullablesSetToNull, 'assignee_agent');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('assignee_agent', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['assignee_agent'] = $assignee_agent;
 
         return $this;
     }

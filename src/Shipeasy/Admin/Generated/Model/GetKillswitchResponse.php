@@ -60,6 +60,9 @@ class GetKillswitchResponse implements ModelInterface, ArrayAccess, \JsonSeriali
         'id' => 'string',
         'name' => 'string',
         'description' => 'string',
+        'folder' => 'string',
+        'creator_email' => 'string',
+        'created_at' => 'string',
         'updated_at' => 'string',
         'envs' => 'array<string,\Shipeasy\Admin\Generated\Model\ListKillswitchesResponseDataInnerEnvsValue>'
     ];
@@ -75,6 +78,9 @@ class GetKillswitchResponse implements ModelInterface, ArrayAccess, \JsonSeriali
         'id' => null,
         'name' => null,
         'description' => null,
+        'folder' => null,
+        'creator_email' => null,
+        'created_at' => null,
         'updated_at' => null,
         'envs' => null
     ];
@@ -88,6 +94,9 @@ class GetKillswitchResponse implements ModelInterface, ArrayAccess, \JsonSeriali
         'id' => false,
         'name' => false,
         'description' => true,
+        'folder' => true,
+        'creator_email' => true,
+        'created_at' => true,
         'updated_at' => false,
         'envs' => false
     ];
@@ -181,6 +190,9 @@ class GetKillswitchResponse implements ModelInterface, ArrayAccess, \JsonSeriali
         'id' => 'id',
         'name' => 'name',
         'description' => 'description',
+        'folder' => 'folder',
+        'creator_email' => 'creatorEmail',
+        'created_at' => 'createdAt',
         'updated_at' => 'updatedAt',
         'envs' => 'envs'
     ];
@@ -194,6 +206,9 @@ class GetKillswitchResponse implements ModelInterface, ArrayAccess, \JsonSeriali
         'id' => 'setId',
         'name' => 'setName',
         'description' => 'setDescription',
+        'folder' => 'setFolder',
+        'creator_email' => 'setCreatorEmail',
+        'created_at' => 'setCreatedAt',
         'updated_at' => 'setUpdatedAt',
         'envs' => 'setEnvs'
     ];
@@ -207,6 +222,9 @@ class GetKillswitchResponse implements ModelInterface, ArrayAccess, \JsonSeriali
         'id' => 'getId',
         'name' => 'getName',
         'description' => 'getDescription',
+        'folder' => 'getFolder',
+        'creator_email' => 'getCreatorEmail',
+        'created_at' => 'getCreatedAt',
         'updated_at' => 'getUpdatedAt',
         'envs' => 'getEnvs'
     ];
@@ -271,6 +289,9 @@ class GetKillswitchResponse implements ModelInterface, ArrayAccess, \JsonSeriali
         $this->setIfExists('id', $data ?? [], null);
         $this->setIfExists('name', $data ?? [], null);
         $this->setIfExists('description', $data ?? [], null);
+        $this->setIfExists('folder', $data ?? [], null);
+        $this->setIfExists('creator_email', $data ?? [], null);
+        $this->setIfExists('created_at', $data ?? [], null);
         $this->setIfExists('updated_at', $data ?? [], null);
         $this->setIfExists('envs', $data ?? [], null);
     }
@@ -314,6 +335,15 @@ class GetKillswitchResponse implements ModelInterface, ArrayAccess, \JsonSeriali
 
         if ($this->container['description'] === null && !$this->isNullableSetToNull('description')) {
             $invalidProperties[] = "'description' is required";
+        }
+        if ($this->container['folder'] === null && !$this->isNullableSetToNull('folder')) {
+            $invalidProperties[] = "'folder' is required";
+        }
+        if ($this->container['creator_email'] === null && !$this->isNullableSetToNull('creator_email')) {
+            $invalidProperties[] = "'creator_email' is required";
+        }
+        if ($this->container['created_at'] === null && !$this->isNullableSetToNull('created_at')) {
+            $invalidProperties[] = "'created_at' is required";
         }
         if ($this->container['updated_at'] === null) {
             $invalidProperties[] = "'updated_at' can't be null";
@@ -424,6 +454,108 @@ class GetKillswitchResponse implements ModelInterface, ArrayAccess, \JsonSeriali
             }
         }
         $this->container['description'] = $description;
+
+        return $this;
+    }
+
+    /**
+     * Gets folder
+     *
+     * @return string|null
+     */
+    public function getFolder()
+    {
+        return $this->container['folder'];
+    }
+
+    /**
+     * Sets folder
+     *
+     * @param string|null $folder Folder segment used for dashboard organisation, or `null` when the killswitch lives at the root.
+     *
+     * @return self
+     */
+    public function setFolder($folder)
+    {
+        if (is_null($folder)) {
+            array_push($this->openAPINullablesSetToNull, 'folder');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('folder', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['folder'] = $folder;
+
+        return $this;
+    }
+
+    /**
+     * Gets creator_email
+     *
+     * @return string|null
+     */
+    public function getCreatorEmail()
+    {
+        return $this->container['creator_email'];
+    }
+
+    /**
+     * Sets creator_email
+     *
+     * @param string|null $creator_email Resolved email of the creator (`created_by` → `users.email`), or `null` when unknown.
+     *
+     * @return self
+     */
+    public function setCreatorEmail($creator_email)
+    {
+        if (is_null($creator_email)) {
+            array_push($this->openAPINullablesSetToNull, 'creator_email');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('creator_email', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['creator_email'] = $creator_email;
+
+        return $this;
+    }
+
+    /**
+     * Gets created_at
+     *
+     * @return string|null
+     */
+    public function getCreatedAt()
+    {
+        return $this->container['created_at'];
+    }
+
+    /**
+     * Sets created_at
+     *
+     * @param string|null $created_at ISO-8601 creation timestamp, or `null` on legacy rows created before the column existed.
+     *
+     * @return self
+     */
+    public function setCreatedAt($created_at)
+    {
+        if (is_null($created_at)) {
+            array_push($this->openAPINullablesSetToNull, 'created_at');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('created_at', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['created_at'] = $created_at;
 
         return $this;
     }

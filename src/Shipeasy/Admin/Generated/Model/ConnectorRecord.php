@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * ConnectorRecord Class Doc Comment
  *
  * @category Class
- * @description A connector row. The encrypted credentials cipher backing the connector is intentionally never serialised.
+ * @description A connector row. The encrypted credentials cipher backing the connector is intentionally never serialised — &#x60;hasCredentials&#x60; reports only whether one is stored.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -66,6 +66,7 @@ class ConnectorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         'events' => '\Shipeasy\Admin\Generated\Model\ConnectorEvent[]',
         'config' => 'array<string,mixed>',
         'account_label' => 'string',
+        'has_credentials' => 'bool',
         'last_error' => 'string',
         'last_attempt_at' => 'string',
         'last_success_at' => 'string',
@@ -89,6 +90,7 @@ class ConnectorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         'events' => null,
         'config' => null,
         'account_label' => null,
+        'has_credentials' => null,
         'last_error' => null,
         'last_attempt_at' => null,
         'last_success_at' => null,
@@ -110,6 +112,7 @@ class ConnectorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         'events' => false,
         'config' => false,
         'account_label' => true,
+        'has_credentials' => false,
         'last_error' => true,
         'last_attempt_at' => true,
         'last_success_at' => true,
@@ -211,6 +214,7 @@ class ConnectorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         'events' => 'events',
         'config' => 'config',
         'account_label' => 'accountLabel',
+        'has_credentials' => 'hasCredentials',
         'last_error' => 'lastError',
         'last_attempt_at' => 'lastAttemptAt',
         'last_success_at' => 'lastSuccessAt',
@@ -232,6 +236,7 @@ class ConnectorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         'events' => 'setEvents',
         'config' => 'setConfig',
         'account_label' => 'setAccountLabel',
+        'has_credentials' => 'setHasCredentials',
         'last_error' => 'setLastError',
         'last_attempt_at' => 'setLastAttemptAt',
         'last_success_at' => 'setLastSuccessAt',
@@ -253,6 +258,7 @@ class ConnectorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         'events' => 'getEvents',
         'config' => 'getConfig',
         'account_label' => 'getAccountLabel',
+        'has_credentials' => 'getHasCredentials',
         'last_error' => 'getLastError',
         'last_attempt_at' => 'getLastAttemptAt',
         'last_success_at' => 'getLastSuccessAt',
@@ -325,6 +331,7 @@ class ConnectorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('events', $data ?? [], null);
         $this->setIfExists('config', $data ?? [], null);
         $this->setIfExists('account_label', $data ?? [], null);
+        $this->setIfExists('has_credentials', $data ?? [], null);
         $this->setIfExists('last_error', $data ?? [], null);
         $this->setIfExists('last_attempt_at', $data ?? [], null);
         $this->setIfExists('last_success_at', $data ?? [], null);
@@ -386,6 +393,9 @@ class ConnectorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
         }
         if ($this->container['account_label'] === null && !$this->isNullableSetToNull('account_label')) {
             $invalidProperties[] = "'account_label' is required";
+        }
+        if ($this->container['has_credentials'] === null) {
+            $invalidProperties[] = "'has_credentials' can't be null";
         }
         if ($this->container['last_error'] === null && !$this->isNullableSetToNull('last_error')) {
             $invalidProperties[] = "'last_error' is required";
@@ -640,6 +650,33 @@ class ConnectorRecord implements ModelInterface, ArrayAccess, \JsonSerializable
             }
         }
         $this->container['account_label'] = $account_label;
+
+        return $this;
+    }
+
+    /**
+     * Gets has_credentials
+     *
+     * @return bool
+     */
+    public function getHasCredentials()
+    {
+        return $this->container['has_credentials'];
+    }
+
+    /**
+     * Sets has_credentials
+     *
+     * @param bool $has_credentials Whether an encrypted credentials cipher is stored for this connector (`true` once OAuth/token setup completed). The cipher itself is never serialised — this boolean is the only signal. `false` for a fresh OAuth stub or a tokenless trigger.
+     *
+     * @return self
+     */
+    public function setHasCredentials($has_credentials)
+    {
+        if (is_null($has_credentials)) {
+            throw new \InvalidArgumentException('non-nullable has_credentials cannot be null');
+        }
+        $this->container['has_credentials'] = $has_credentials;
 
         return $this;
     }

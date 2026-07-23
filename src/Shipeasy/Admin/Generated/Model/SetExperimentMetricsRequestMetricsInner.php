@@ -58,7 +58,8 @@ class SetExperimentMetricsRequestMetricsInner implements ModelInterface, ArrayAc
      */
     protected static $openAPITypes = [
         'metric_id' => 'string',
-        'role' => 'string'
+        'role' => 'string',
+        'min_effect_of_interest' => 'float'
     ];
 
     /**
@@ -70,7 +71,8 @@ class SetExperimentMetricsRequestMetricsInner implements ModelInterface, ArrayAc
      */
     protected static $openAPIFormats = [
         'metric_id' => null,
-        'role' => null
+        'role' => null,
+        'min_effect_of_interest' => null
     ];
 
     /**
@@ -80,7 +82,8 @@ class SetExperimentMetricsRequestMetricsInner implements ModelInterface, ArrayAc
      */
     protected static array $openAPINullables = [
         'metric_id' => false,
-        'role' => false
+        'role' => false,
+        'min_effect_of_interest' => true
     ];
 
     /**
@@ -170,7 +173,8 @@ class SetExperimentMetricsRequestMetricsInner implements ModelInterface, ArrayAc
      */
     protected static $attributeMap = [
         'metric_id' => 'metric_id',
-        'role' => 'role'
+        'role' => 'role',
+        'min_effect_of_interest' => 'min_effect_of_interest'
     ];
 
     /**
@@ -180,7 +184,8 @@ class SetExperimentMetricsRequestMetricsInner implements ModelInterface, ArrayAc
      */
     protected static $setters = [
         'metric_id' => 'setMetricId',
-        'role' => 'setRole'
+        'role' => 'setRole',
+        'min_effect_of_interest' => 'setMinEffectOfInterest'
     ];
 
     /**
@@ -190,7 +195,8 @@ class SetExperimentMetricsRequestMetricsInner implements ModelInterface, ArrayAc
      */
     protected static $getters = [
         'metric_id' => 'getMetricId',
-        'role' => 'getRole'
+        'role' => 'getRole',
+        'min_effect_of_interest' => 'getMinEffectOfInterest'
     ];
 
     /**
@@ -269,6 +275,7 @@ class SetExperimentMetricsRequestMetricsInner implements ModelInterface, ArrayAc
     {
         $this->setIfExists('metric_id', $data ?? [], null);
         $this->setIfExists('role', $data ?? [], null);
+        $this->setIfExists('min_effect_of_interest', $data ?? [], null);
     }
 
     /**
@@ -388,6 +395,40 @@ class SetExperimentMetricsRequestMetricsInner implements ModelInterface, ArrayAc
             );
         }
         $this->container['role'] = $role;
+
+        return $this;
+    }
+
+    /**
+     * Gets min_effect_of_interest
+     *
+     * @return float|null
+     */
+    public function getMinEffectOfInterest()
+    {
+        return $this->container['min_effect_of_interest'];
+    }
+
+    /**
+     * Sets min_effect_of_interest
+     *
+     * @param float|null $min_effect_of_interest Per-experiment override of the metric's `default_min_effect_of_interest` (relative, 0–1) — the smallest change worth acting on for THIS experiment's decision, which depends on the intervention's cost/risk. `null`/omitted falls back to the metric default. For a `guardrail` this is the non-inferiority margin (how large a regression is tolerated); for a `goal` it is the superiority threshold.
+     *
+     * @return self
+     */
+    public function setMinEffectOfInterest($min_effect_of_interest)
+    {
+        if (is_null($min_effect_of_interest)) {
+            array_push($this->openAPINullablesSetToNull, 'min_effect_of_interest');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('min_effect_of_interest', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['min_effect_of_interest'] = $min_effect_of_interest;
 
         return $this;
     }

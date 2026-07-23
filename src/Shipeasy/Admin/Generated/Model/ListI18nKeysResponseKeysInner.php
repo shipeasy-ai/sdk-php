@@ -64,7 +64,9 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         'description' => 'string',
         'variables' => 'string[]',
         'profile_id' => 'string',
+        'profile_name' => 'string',
         'chunk_id' => 'string',
+        'chunk_name' => 'string',
         'updated_at' => 'string',
         'updated_by' => 'string'
     ];
@@ -83,7 +85,9 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         'description' => null,
         'variables' => null,
         'profile_id' => null,
+        'profile_name' => null,
         'chunk_id' => null,
+        'chunk_name' => null,
         'updated_at' => null,
         'updated_by' => null
     ];
@@ -100,7 +104,9 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         'description' => true,
         'variables' => true,
         'profile_id' => false,
+        'profile_name' => true,
         'chunk_id' => false,
+        'chunk_name' => true,
         'updated_at' => false,
         'updated_by' => false
     ];
@@ -197,7 +203,9 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         'description' => 'description',
         'variables' => 'variables',
         'profile_id' => 'profileId',
+        'profile_name' => 'profileName',
         'chunk_id' => 'chunkId',
+        'chunk_name' => 'chunkName',
         'updated_at' => 'updatedAt',
         'updated_by' => 'updatedBy'
     ];
@@ -214,7 +222,9 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         'description' => 'setDescription',
         'variables' => 'setVariables',
         'profile_id' => 'setProfileId',
+        'profile_name' => 'setProfileName',
         'chunk_id' => 'setChunkId',
+        'chunk_name' => 'setChunkName',
         'updated_at' => 'setUpdatedAt',
         'updated_by' => 'setUpdatedBy'
     ];
@@ -231,7 +241,9 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         'description' => 'getDescription',
         'variables' => 'getVariables',
         'profile_id' => 'getProfileId',
+        'profile_name' => 'getProfileName',
         'chunk_id' => 'getChunkId',
+        'chunk_name' => 'getChunkName',
         'updated_at' => 'getUpdatedAt',
         'updated_by' => 'getUpdatedBy'
     ];
@@ -299,7 +311,9 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         $this->setIfExists('description', $data ?? [], null);
         $this->setIfExists('variables', $data ?? [], null);
         $this->setIfExists('profile_id', $data ?? [], null);
+        $this->setIfExists('profile_name', $data ?? [], null);
         $this->setIfExists('chunk_id', $data ?? [], null);
+        $this->setIfExists('chunk_name', $data ?? [], null);
         $this->setIfExists('updated_at', $data ?? [], null);
         $this->setIfExists('updated_by', $data ?? [], null);
     }
@@ -339,6 +353,30 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         }
         if ($this->container['value'] === null) {
             $invalidProperties[] = "'value' can't be null";
+        }
+        if ($this->container['description'] === null && !$this->isNullableSetToNull('description')) {
+            $invalidProperties[] = "'description' is required";
+        }
+        if ($this->container['variables'] === null && !$this->isNullableSetToNull('variables')) {
+            $invalidProperties[] = "'variables' is required";
+        }
+        if ($this->container['profile_id'] === null) {
+            $invalidProperties[] = "'profile_id' can't be null";
+        }
+        if ($this->container['profile_name'] === null && !$this->isNullableSetToNull('profile_name')) {
+            $invalidProperties[] = "'profile_name' is required";
+        }
+        if ($this->container['chunk_id'] === null) {
+            $invalidProperties[] = "'chunk_id' can't be null";
+        }
+        if ($this->container['chunk_name'] === null && !$this->isNullableSetToNull('chunk_name')) {
+            $invalidProperties[] = "'chunk_name' is required";
+        }
+        if ($this->container['updated_at'] === null) {
+            $invalidProperties[] = "'updated_at' can't be null";
+        }
+        if ($this->container['updated_by'] === null) {
+            $invalidProperties[] = "'updated_by' can't be null";
         }
         return $invalidProperties;
     }
@@ -507,7 +545,7 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
     /**
      * Gets profile_id
      *
-     * @return string|null
+     * @return string
      */
     public function getProfileId()
     {
@@ -517,7 +555,7 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
     /**
      * Sets profile_id
      *
-     * @param string|null $profile_id Owning profile id.
+     * @param string $profile_id Owning profile id.
      *
      * @return self
      */
@@ -532,9 +570,43 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
     }
 
     /**
-     * Gets chunk_id
+     * Gets profile_name
      *
      * @return string|null
+     */
+    public function getProfileName()
+    {
+        return $this->container['profile_name'];
+    }
+
+    /**
+     * Sets profile_name
+     *
+     * @param string|null $profile_name Name of the owning profile (e.g. `en:prod`), or `null` when it cannot be resolved.
+     *
+     * @return self
+     */
+    public function setProfileName($profile_name)
+    {
+        if (is_null($profile_name)) {
+            array_push($this->openAPINullablesSetToNull, 'profile_name');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('profile_name', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['profile_name'] = $profile_name;
+
+        return $this;
+    }
+
+    /**
+     * Gets chunk_id
+     *
+     * @return string
      */
     public function getChunkId()
     {
@@ -544,7 +616,7 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
     /**
      * Sets chunk_id
      *
-     * @param string|null $chunk_id Owning chunk (authoring grouping) id.
+     * @param string $chunk_id Owning chunk (authoring grouping) id.
      *
      * @return self
      */
@@ -559,9 +631,43 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
     }
 
     /**
-     * Gets updated_at
+     * Gets chunk_name
      *
      * @return string|null
+     */
+    public function getChunkName()
+    {
+        return $this->container['chunk_name'];
+    }
+
+    /**
+     * Sets chunk_name
+     *
+     * @param string|null $chunk_name Name of the owning chunk (authoring grouping), or `null` when it cannot be resolved.
+     *
+     * @return self
+     */
+    public function setChunkName($chunk_name)
+    {
+        if (is_null($chunk_name)) {
+            array_push($this->openAPINullablesSetToNull, 'chunk_name');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('chunk_name', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['chunk_name'] = $chunk_name;
+
+        return $this;
+    }
+
+    /**
+     * Gets updated_at
+     *
+     * @return string
      */
     public function getUpdatedAt()
     {
@@ -571,7 +677,7 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
     /**
      * Sets updated_at
      *
-     * @param string|null $updated_at ISO-8601 timestamp of the last edit.
+     * @param string $updated_at ISO-8601 timestamp of the last edit.
      *
      * @return self
      */
@@ -588,7 +694,7 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
     /**
      * Gets updated_by
      *
-     * @return string|null
+     * @return string
      */
     public function getUpdatedBy()
     {
@@ -598,7 +704,7 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
     /**
      * Sets updated_by
      *
-     * @param string|null $updated_by Actor email that last edited the key.
+     * @param string $updated_by Actor email that last edited the key.
      *
      * @return self
      */

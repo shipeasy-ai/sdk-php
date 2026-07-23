@@ -293,6 +293,10 @@ class UpsertProjectRequest implements ModelInterface, ArrayAccess, \JsonSerializ
             $invalidProperties[] = "invalid value for 'domain', the character length must be bigger than or equal to 1.";
         }
 
+        if (!preg_match("/^(\\*|(\\*\\.)?[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+)$/", $this->container['domain'])) {
+            $invalidProperties[] = "invalid value for 'domain', must be conform to the pattern /^(\\*|(\\*\\.)?[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+)$/.";
+        }
+
         if (!is_null($this->container['name']) && (mb_strlen($this->container['name']) > 100)) {
             $invalidProperties[] = "invalid value for 'name', the character length must be smaller than or equal to 100.";
         }
@@ -329,7 +333,7 @@ class UpsertProjectRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     /**
      * Sets domain
      *
-     * @param string $domain Hostname-like project identifier (e.g. `acme.com`). Use `*` to allow any origin. The project is keyed by `(owner_email, domain)`, so a second call with the same domain returns the existing project.
+     * @param string $domain Lowercase bare hostname (e.g. `acme.com`, `app.acme.com`, `*.acme.com`), or `*` to allow any origin. Full URLs with `https://` are not accepted. The project is keyed by `(owner_email, domain)`, so a second call with the same domain returns the existing project.
      *
      * @return self
      */
@@ -343,6 +347,9 @@ class UpsertProjectRequest implements ModelInterface, ArrayAccess, \JsonSerializ
         }
         if ((mb_strlen($domain) < 1)) {
             throw new \InvalidArgumentException('invalid length for $domain when calling UpsertProjectRequest., must be bigger than or equal to 1.');
+        }
+        if ((!preg_match("/^(\\*|(\\*\\.)?[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+)$/", ObjectSerializer::toString($domain)))) {
+            throw new \InvalidArgumentException("invalid value for \$domain when calling UpsertProjectRequest., must conform to the pattern /^(\\*|(\\*\\.)?[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+)$/.");
         }
 
         $this->container['domain'] = $domain;

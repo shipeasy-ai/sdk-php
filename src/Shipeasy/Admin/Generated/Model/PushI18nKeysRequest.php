@@ -60,7 +60,7 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     protected static $openAPITypes = [
         'profile_id' => 'string',
         'chunk' => 'string',
-        'keys' => '\Shipeasy\Admin\Generated\Model\PushI18nKeysRequestKeysInner[]'
+        'keys' => '\Shipeasy\Admin\Generated\Model\UpsertI18nKeysRequestKeysInner[]'
     ];
 
     /**
@@ -71,7 +71,7 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'profile_id' => null,
+        'profile_id' => 'uuid',
         'chunk' => null,
         'keys' => null
     ];
@@ -258,7 +258,7 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     public function __construct(?array $data = null)
     {
         $this->setIfExists('profile_id', $data ?? [], null);
-        $this->setIfExists('chunk', $data ?? [], null);
+        $this->setIfExists('chunk', $data ?? [], 'default');
         $this->setIfExists('keys', $data ?? [], null);
     }
 
@@ -292,9 +292,25 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         if ($this->container['profile_id'] === null) {
             $invalidProperties[] = "'profile_id' can't be null";
         }
+        if (!is_null($this->container['chunk']) && (mb_strlen($this->container['chunk']) > 64)) {
+            $invalidProperties[] = "invalid value for 'chunk', the character length must be smaller than or equal to 64.";
+        }
+
+        if (!is_null($this->container['chunk']) && (mb_strlen($this->container['chunk']) < 1)) {
+            $invalidProperties[] = "invalid value for 'chunk', the character length must be bigger than or equal to 1.";
+        }
+
         if ($this->container['keys'] === null) {
             $invalidProperties[] = "'keys' can't be null";
         }
+        if ((count($this->container['keys']) > 5000)) {
+            $invalidProperties[] = "invalid value for 'keys', number of items must be less than or equal to 5000.";
+        }
+
+        if ((count($this->container['keys']) < 1)) {
+            $invalidProperties[] = "invalid value for 'keys', number of items must be greater than or equal to 1.";
+        }
+
         return $invalidProperties;
     }
 
@@ -359,6 +375,13 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         if (is_null($chunk)) {
             throw new \InvalidArgumentException('non-nullable chunk cannot be null');
         }
+        if ((mb_strlen($chunk) > 64)) {
+            throw new \InvalidArgumentException('invalid length for $chunk when calling PushI18nKeysRequest., must be smaller than or equal to 64.');
+        }
+        if ((mb_strlen($chunk) < 1)) {
+            throw new \InvalidArgumentException('invalid length for $chunk when calling PushI18nKeysRequest., must be bigger than or equal to 1.');
+        }
+
         $this->container['chunk'] = $chunk;
 
         return $this;
@@ -367,7 +390,7 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Gets keys
      *
-     * @return \Shipeasy\Admin\Generated\Model\PushI18nKeysRequestKeysInner[]
+     * @return \Shipeasy\Admin\Generated\Model\UpsertI18nKeysRequestKeysInner[]
      */
     public function getKeys()
     {
@@ -377,7 +400,7 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Sets keys
      *
-     * @param \Shipeasy\Admin\Generated\Model\PushI18nKeysRequestKeysInner[] $keys Keys to add. Insert-only — existing keys are reported back as `skipped`.
+     * @param \Shipeasy\Admin\Generated\Model\UpsertI18nKeysRequestKeysInner[] $keys Keys to add. Insert-only — existing keys are reported back as `skipped`.
      *
      * @return self
      */
@@ -385,6 +408,13 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     {
         if (is_null($keys)) {
             throw new \InvalidArgumentException('non-nullable keys cannot be null');
+        }
+
+        if ((count($keys) > 5000)) {
+            throw new \InvalidArgumentException('invalid value for $keys when calling PushI18nKeysRequest., number of items must be less than or equal to 5000.');
+        }
+        if ((count($keys) < 1)) {
+            throw new \InvalidArgumentException('invalid length for $keys when calling PushI18nKeysRequest., number of items must be greater than or equal to 1.');
         }
         $this->container['keys'] = $keys;
 

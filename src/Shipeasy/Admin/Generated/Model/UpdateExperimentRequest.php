@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * UpdateExperimentRequest Class Doc Comment
  *
  * @category Class
- * @description Body for &#x60;PATCH /api/admin/experiments/{id}&#x60;. Partial — only supplied fields change. &#x60;allocation_pct&#x60;, &#x60;groups&#x60;, &#x60;salt&#x60;, &#x60;universe&#x60;, &#x60;params&#x60; are immutable while the experiment is running (stop first).
+ * @description Body for &#x60;PATCH /api/admin/experiments/{id}&#x60;. Partial — only supplied fields change. &#x60;allocation_pct&#x60;, &#x60;salt&#x60;, &#x60;universe&#x60; and existing group weights/values are immutable while running (stop first); a new variant may still be appended into the reserved tail.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -67,12 +67,14 @@ class UpdateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         'bucket_by' => 'string',
         'folder' => 'string',
         'targeting_gate' => 'string',
+        'holdout_gate' => 'string',
         'allocation_pct' => 'int',
+        'reserved_headroom' => 'int',
         'allocation_percent' => 'float',
         'salt' => 'string',
         'universe' => 'string',
         'params' => 'array<string,string>',
-        'groups' => '\Shipeasy\Admin\Generated\Model\ListExperimentsResponseDataInnerGroupsInner[]',
+        'groups' => '\Shipeasy\Admin\Generated\Model\ExperimentApiRowGroupsInner[]',
         'significance_threshold' => 'float',
         'min_runtime_days' => 'int',
         'min_sample_size' => 'int',
@@ -98,7 +100,9 @@ class UpdateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         'bucket_by' => null,
         'folder' => null,
         'targeting_gate' => null,
+        'holdout_gate' => null,
         'allocation_pct' => null,
+        'reserved_headroom' => null,
         'allocation_percent' => null,
         'salt' => null,
         'universe' => null,
@@ -127,7 +131,9 @@ class UpdateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         'bucket_by' => true,
         'folder' => true,
         'targeting_gate' => true,
+        'holdout_gate' => true,
         'allocation_pct' => false,
+        'reserved_headroom' => false,
         'allocation_percent' => false,
         'salt' => false,
         'universe' => false,
@@ -236,7 +242,9 @@ class UpdateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         'bucket_by' => 'bucket_by',
         'folder' => 'folder',
         'targeting_gate' => 'targeting_gate',
+        'holdout_gate' => 'holdout_gate',
         'allocation_pct' => 'allocation_pct',
+        'reserved_headroom' => 'reserved_headroom',
         'allocation_percent' => 'allocation_percent',
         'salt' => 'salt',
         'universe' => 'universe',
@@ -265,7 +273,9 @@ class UpdateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         'bucket_by' => 'setBucketBy',
         'folder' => 'setFolder',
         'targeting_gate' => 'setTargetingGate',
+        'holdout_gate' => 'setHoldoutGate',
         'allocation_pct' => 'setAllocationPct',
+        'reserved_headroom' => 'setReservedHeadroom',
         'allocation_percent' => 'setAllocationPercent',
         'salt' => 'setSalt',
         'universe' => 'setUniverse',
@@ -294,7 +304,9 @@ class UpdateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         'bucket_by' => 'getBucketBy',
         'folder' => 'getFolder',
         'targeting_gate' => 'getTargetingGate',
+        'holdout_gate' => 'getHoldoutGate',
         'allocation_pct' => 'getAllocationPct',
+        'reserved_headroom' => 'getReservedHeadroom',
         'allocation_percent' => 'getAllocationPercent',
         'salt' => 'getSalt',
         'universe' => 'getUniverse',
@@ -391,7 +403,9 @@ class UpdateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         $this->setIfExists('bucket_by', $data ?? [], null);
         $this->setIfExists('folder', $data ?? [], null);
         $this->setIfExists('targeting_gate', $data ?? [], null);
+        $this->setIfExists('holdout_gate', $data ?? [], null);
         $this->setIfExists('allocation_pct', $data ?? [], null);
+        $this->setIfExists('reserved_headroom', $data ?? [], null);
         $this->setIfExists('allocation_percent', $data ?? [], null);
         $this->setIfExists('salt', $data ?? [], null);
         $this->setIfExists('universe', $data ?? [], null);
@@ -486,6 +500,14 @@ class UpdateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
 
         if (!is_null($this->container['allocation_pct']) && ($this->container['allocation_pct'] < 0)) {
             $invalidProperties[] = "invalid value for 'allocation_pct', must be bigger than or equal to 0.";
+        }
+
+        if (!is_null($this->container['reserved_headroom']) && ($this->container['reserved_headroom'] > 10000)) {
+            $invalidProperties[] = "invalid value for 'reserved_headroom', must be smaller than or equal to 10000.";
+        }
+
+        if (!is_null($this->container['reserved_headroom']) && ($this->container['reserved_headroom'] < 0)) {
+            $invalidProperties[] = "invalid value for 'reserved_headroom', must be bigger than or equal to 0.";
         }
 
         if (!is_null($this->container['allocation_percent']) && ($this->container['allocation_percent'] > 100)) {
@@ -895,6 +917,40 @@ class UpdateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
     }
 
     /**
+     * Gets holdout_gate
+     *
+     * @return string|null
+     */
+    public function getHoldoutGate()
+    {
+        return $this->container['holdout_gate'];
+    }
+
+    /**
+     * Sets holdout_gate
+     *
+     * @param string|null $holdout_gate Per-experiment holdout gate — the name of a `holdout`-type flag, or `null` to clear. A caller the flag passes is held out.
+     *
+     * @return self
+     */
+    public function setHoldoutGate($holdout_gate)
+    {
+        if (is_null($holdout_gate)) {
+            array_push($this->openAPINullablesSetToNull, 'holdout_gate');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('holdout_gate', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['holdout_gate'] = $holdout_gate;
+
+        return $this;
+    }
+
+    /**
      * Gets allocation_pct
      *
      * @return int|null
@@ -925,6 +981,41 @@ class UpdateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         }
 
         $this->container['allocation_pct'] = $allocation_pct;
+
+        return $this;
+    }
+
+    /**
+     * Gets reserved_headroom
+     *
+     * @return int|null
+     */
+    public function getReservedHeadroom()
+    {
+        return $this->container['reserved_headroom'];
+    }
+
+    /**
+     * Sets reserved_headroom
+     *
+     * @param int|null $reserved_headroom Basis points of the split kept empty for appended variants. Group weights must sum to `10000 − reserved_headroom`. May be shrunk (never grown into existing weights) while running when appending a variant.
+     *
+     * @return self
+     */
+    public function setReservedHeadroom($reserved_headroom)
+    {
+        if (is_null($reserved_headroom)) {
+            throw new \InvalidArgumentException('non-nullable reserved_headroom cannot be null');
+        }
+
+        if (($reserved_headroom > 10000)) {
+            throw new \InvalidArgumentException('invalid value for $reserved_headroom when calling UpdateExperimentRequest., must be smaller than or equal to 10000.');
+        }
+        if (($reserved_headroom < 0)) {
+            throw new \InvalidArgumentException('invalid value for $reserved_headroom when calling UpdateExperimentRequest., must be bigger than or equal to 0.');
+        }
+
+        $this->container['reserved_headroom'] = $reserved_headroom;
 
         return $this;
     }
@@ -1038,7 +1129,7 @@ class UpdateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Sets params
      *
-     * @param array<string,string>|null $params Map of param-name → scalar type. Defines the shape of `groups[].params`. Example: `{ headline: 'string', show_cta: 'bool' }`.
+     * @param array<string,string>|null $params **Deprecated** — the universe owns the config schema (`param_schema`). Retained for back-compat. Map of param-name → scalar type.
      *
      * @return self
      */
@@ -1064,7 +1155,7 @@ class UpdateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Gets groups
      *
-     * @return \Shipeasy\Admin\Generated\Model\ListExperimentsResponseDataInnerGroupsInner[]|null
+     * @return \Shipeasy\Admin\Generated\Model\ExperimentApiRowGroupsInner[]|null
      */
     public function getGroups()
     {
@@ -1074,7 +1165,7 @@ class UpdateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Sets groups
      *
-     * @param \Shipeasy\Admin\Generated\Model\ListExperimentsResponseDataInnerGroupsInner[]|null $groups Replacement groups. Weights must sum to 10000. Immutable while running.
+     * @param \Shipeasy\Admin\Generated\Model\ExperimentApiRowGroupsInner[]|null $groups Replacement groups. Weights must sum to `10000 − reserved_headroom`. Existing weights/values are immutable while running; a new variant may be appended into the reserved tail.
      *
      * @return self
      */

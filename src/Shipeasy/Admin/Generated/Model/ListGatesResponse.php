@@ -57,7 +57,7 @@ class ListGatesResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var string[]
      */
     protected static $openAPITypes = [
-        'data' => '\Shipeasy\Admin\Generated\Model\ListGatesResponseDataInner[]',
+        'data' => '\Shipeasy\Admin\Generated\Model\GateApiRow[]',
         'next_cursor' => 'string'
     ];
 
@@ -305,7 +305,7 @@ class ListGatesResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Gets data
      *
-     * @return \Shipeasy\Admin\Generated\Model\ListGatesResponseDataInner[]
+     * @return \Shipeasy\Admin\Generated\Model\GateApiRow[]
      */
     public function getData()
     {
@@ -315,7 +315,7 @@ class ListGatesResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets data
      *
-     * @param \Shipeasy\Admin\Generated\Model\ListGatesResponseDataInner[] $data data
+     * @param \Shipeasy\Admin\Generated\Model\GateApiRow[] $data data
      *
      * @return self
      */

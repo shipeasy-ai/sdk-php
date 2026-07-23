@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * FireConnectorResponse Class Doc Comment
  *
  * @category Class
- * @description Result of firing a trigger connector. &#x60;{ ok: true }&#x60; on success; &#x60;{ ok: false, error }&#x60; when the dispatch fails (the request still returns HTTP 200).
+ * @description Result of a successful trigger fire: &#x60;{ ok: true }&#x60;. When the downstream dispatch fails the endpoint returns HTTP 502 (see the &#x60;Error&#x60; response), never &#x60;ok: false&#x60;.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -58,8 +58,7 @@ class FireConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $openAPITypes = [
-        'ok' => 'bool',
-        'error' => 'string'
+        'ok' => 'bool'
     ];
 
     /**
@@ -70,8 +69,7 @@ class FireConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'ok' => null,
-        'error' => null
+        'ok' => null
     ];
 
     /**
@@ -80,8 +78,7 @@ class FireConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'ok' => false,
-        'error' => false
+        'ok' => false
     ];
 
     /**
@@ -170,8 +167,7 @@ class FireConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $attributeMap = [
-        'ok' => 'ok',
-        'error' => 'error'
+        'ok' => 'ok'
     ];
 
     /**
@@ -180,8 +176,7 @@ class FireConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $setters = [
-        'ok' => 'setOk',
-        'error' => 'setError'
+        'ok' => 'setOk'
     ];
 
     /**
@@ -190,8 +185,7 @@ class FireConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $getters = [
-        'ok' => 'getOk',
-        'error' => 'getError'
+        'ok' => 'getOk'
     ];
 
     /**
@@ -252,7 +246,6 @@ class FireConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
     public function __construct(?array $data = null)
     {
         $this->setIfExists('ok', $data ?? [], null);
-        $this->setIfExists('error', $data ?? [], null);
     }
 
     /**
@@ -313,7 +306,7 @@ class FireConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
     /**
      * Sets ok
      *
-     * @param bool $ok `true` when the trigger run was successfully kicked off; `false` when the dispatch itself failed (still HTTP 200, with `error` set).
+     * @param bool $ok Always `true` — a successful fire returns HTTP 200. A dispatch failure returns HTTP 502 with the `Error` envelope, not this body.
      *
      * @return self
      */
@@ -323,33 +316,6 @@ class FireConnectorResponse implements ModelInterface, ArrayAccess, \JsonSeriali
             throw new \InvalidArgumentException('non-nullable ok cannot be null');
         }
         $this->container['ok'] = $ok;
-
-        return $this;
-    }
-
-    /**
-     * Gets error
-     *
-     * @return string|null
-     */
-    public function getError()
-    {
-        return $this->container['error'];
-    }
-
-    /**
-     * Sets error
-     *
-     * @param string|null $error Failure reason. Present only when `ok` is `false` — the fire reached the handler but the underlying dispatch to the provider failed.
-     *
-     * @return self
-     */
-    public function setError($error)
-    {
-        if (is_null($error)) {
-            throw new \InvalidArgumentException('non-nullable error cannot be null');
-        }
-        $this->container['error'] = $error;
 
         return $this;
     }

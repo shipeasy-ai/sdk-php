@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * CreateOpsItemRequest Class Doc Comment
  *
  * @category Class
- * @description Body for &#x60;POST /api/admin/ops&#x60;. Files one queue item; &#x60;type&#x60; selects bug vs. feature request.
+ * @description Body for &#x60;POST /api/admin/ops&#x60;. A discriminated union on &#x60;type&#x60;: &#x60;bug&#x60; carries the bug fields, &#x60;feature_request&#x60; the feature fields. Only these two user-fileable types are accepted — &#x60;error&#x60;, &#x60;alert&#x60;, and &#x60;measure_plan&#x60; tickets are auto-filed by the platform and cannot be created over the API.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -43,7 +43,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  */
 class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializable
 {
-    public const DISCRIMINATOR = null;
+    public const DISCRIMINATOR = 'type';
 
     /**
      * The original name of the model.
@@ -60,10 +60,22 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     protected static $openAPITypes = [
         'type' => 'string',
         'title' => 'string',
-        'body' => 'string',
-        'priority' => 'string',
         'steps_to_reproduce' => 'string',
-        'page_url' => 'string'
+        'actual_result' => 'string',
+        'expected_result' => 'string',
+        'priority' => '\Shipeasy\Admin\Generated\Model\OpsItemPriority',
+        'status' => '\Shipeasy\Admin\Generated\Model\OpsItemStatus',
+        'assignee_id' => 'string',
+        'subscribers' => 'string[]',
+        'tags' => 'string[]',
+        'reporter_email' => 'string',
+        'page_url' => 'string',
+        'user_agent' => 'string',
+        'viewport' => 'string',
+        'context' => 'array<string,mixed>',
+        'notify' => '\Shipeasy\Admin\Generated\Model\NotificationTarget',
+        'description' => 'string',
+        'use_case' => 'string'
     ];
 
     /**
@@ -76,10 +88,22 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     protected static $openAPIFormats = [
         'type' => null,
         'title' => null,
-        'body' => null,
-        'priority' => null,
         'steps_to_reproduce' => null,
-        'page_url' => null
+        'actual_result' => null,
+        'expected_result' => null,
+        'priority' => null,
+        'status' => null,
+        'assignee_id' => null,
+        'subscribers' => 'email',
+        'tags' => null,
+        'reporter_email' => 'email',
+        'page_url' => 'uri',
+        'user_agent' => null,
+        'viewport' => null,
+        'context' => null,
+        'notify' => null,
+        'description' => null,
+        'use_case' => null
     ];
 
     /**
@@ -90,10 +114,22 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     protected static array $openAPINullables = [
         'type' => false,
         'title' => false,
-        'body' => false,
-        'priority' => false,
         'steps_to_reproduce' => false,
-        'page_url' => false
+        'actual_result' => false,
+        'expected_result' => false,
+        'priority' => false,
+        'status' => false,
+        'assignee_id' => false,
+        'subscribers' => false,
+        'tags' => false,
+        'reporter_email' => false,
+        'page_url' => false,
+        'user_agent' => false,
+        'viewport' => false,
+        'context' => false,
+        'notify' => true,
+        'description' => false,
+        'use_case' => false
     ];
 
     /**
@@ -184,10 +220,22 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     protected static $attributeMap = [
         'type' => 'type',
         'title' => 'title',
-        'body' => 'body',
-        'priority' => 'priority',
         'steps_to_reproduce' => 'stepsToReproduce',
-        'page_url' => 'pageUrl'
+        'actual_result' => 'actualResult',
+        'expected_result' => 'expectedResult',
+        'priority' => 'priority',
+        'status' => 'status',
+        'assignee_id' => 'assigneeId',
+        'subscribers' => 'subscribers',
+        'tags' => 'tags',
+        'reporter_email' => 'reporterEmail',
+        'page_url' => 'pageUrl',
+        'user_agent' => 'userAgent',
+        'viewport' => 'viewport',
+        'context' => 'context',
+        'notify' => 'notify',
+        'description' => 'description',
+        'use_case' => 'useCase'
     ];
 
     /**
@@ -198,10 +246,22 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     protected static $setters = [
         'type' => 'setType',
         'title' => 'setTitle',
-        'body' => 'setBody',
-        'priority' => 'setPriority',
         'steps_to_reproduce' => 'setStepsToReproduce',
-        'page_url' => 'setPageUrl'
+        'actual_result' => 'setActualResult',
+        'expected_result' => 'setExpectedResult',
+        'priority' => 'setPriority',
+        'status' => 'setStatus',
+        'assignee_id' => 'setAssigneeId',
+        'subscribers' => 'setSubscribers',
+        'tags' => 'setTags',
+        'reporter_email' => 'setReporterEmail',
+        'page_url' => 'setPageUrl',
+        'user_agent' => 'setUserAgent',
+        'viewport' => 'setViewport',
+        'context' => 'setContext',
+        'notify' => 'setNotify',
+        'description' => 'setDescription',
+        'use_case' => 'setUseCase'
     ];
 
     /**
@@ -212,10 +272,22 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     protected static $getters = [
         'type' => 'getType',
         'title' => 'getTitle',
-        'body' => 'getBody',
-        'priority' => 'getPriority',
         'steps_to_reproduce' => 'getStepsToReproduce',
-        'page_url' => 'getPageUrl'
+        'actual_result' => 'getActualResult',
+        'expected_result' => 'getExpectedResult',
+        'priority' => 'getPriority',
+        'status' => 'getStatus',
+        'assignee_id' => 'getAssigneeId',
+        'subscribers' => 'getSubscribers',
+        'tags' => 'getTags',
+        'reporter_email' => 'getReporterEmail',
+        'page_url' => 'getPageUrl',
+        'user_agent' => 'getUserAgent',
+        'viewport' => 'getViewport',
+        'context' => 'getContext',
+        'notify' => 'getNotify',
+        'description' => 'getDescription',
+        'use_case' => 'getUseCase'
     ];
 
     /**
@@ -261,10 +333,6 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
 
     public const TYPE_BUG = 'bug';
     public const TYPE_FEATURE_REQUEST = 'feature_request';
-    public const PRIORITY_NICE_TO_HAVE = 'nice_to_have';
-    public const PRIORITY_MEDIUM = 'medium';
-    public const PRIORITY_HIGH = 'high';
-    public const PRIORITY_CRITICAL = 'critical';
 
     /**
      * Gets allowable values of the enum
@@ -276,21 +344,6 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
         return [
             self::TYPE_BUG,
             self::TYPE_FEATURE_REQUEST,
-        ];
-    }
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getPriorityAllowableValues()
-    {
-        return [
-            self::PRIORITY_NICE_TO_HAVE,
-            self::PRIORITY_MEDIUM,
-            self::PRIORITY_HIGH,
-            self::PRIORITY_CRITICAL,
         ];
     }
 
@@ -311,10 +364,25 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     {
         $this->setIfExists('type', $data ?? [], null);
         $this->setIfExists('title', $data ?? [], null);
-        $this->setIfExists('body', $data ?? [], null);
+        $this->setIfExists('steps_to_reproduce', $data ?? [], '');
+        $this->setIfExists('actual_result', $data ?? [], '');
+        $this->setIfExists('expected_result', $data ?? [], '');
         $this->setIfExists('priority', $data ?? [], null);
-        $this->setIfExists('steps_to_reproduce', $data ?? [], null);
+        $this->setIfExists('status', $data ?? [], null);
+        $this->setIfExists('assignee_id', $data ?? [], null);
+        $this->setIfExists('subscribers', $data ?? [], null);
+        $this->setIfExists('tags', $data ?? [], null);
+        $this->setIfExists('reporter_email', $data ?? [], null);
         $this->setIfExists('page_url', $data ?? [], null);
+        $this->setIfExists('user_agent', $data ?? [], null);
+        $this->setIfExists('viewport', $data ?? [], null);
+        $this->setIfExists('context', $data ?? [], null);
+        $this->setIfExists('notify', $data ?? [], null);
+        $this->setIfExists('description', $data ?? [], '');
+        $this->setIfExists('use_case', $data ?? [], '');
+
+        // Initialize discriminator property with the model name.
+        $this->container['type'] = static::$openAPIModelName;
     }
 
     /**
@@ -367,13 +435,36 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
             $invalidProperties[] = "invalid value for 'title', the character length must be bigger than or equal to 1.";
         }
 
-        $allowedValues = $this->getPriorityAllowableValues();
-        if (!is_null($this->container['priority']) && !in_array($this->container['priority'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'priority', must be one of '%s'",
-                $this->container['priority'],
-                implode("', '", $allowedValues)
-            );
+        if (!preg_match("/^\\S(.*\\S)?$/", $this->container['title'])) {
+            $invalidProperties[] = "invalid value for 'title', must be conform to the pattern /^\\S(.*\\S)?$/.";
+        }
+
+        if (!is_null($this->container['steps_to_reproduce']) && (mb_strlen($this->container['steps_to_reproduce']) > 8000)) {
+            $invalidProperties[] = "invalid value for 'steps_to_reproduce', the character length must be smaller than or equal to 8000.";
+        }
+
+        if (!is_null($this->container['actual_result']) && (mb_strlen($this->container['actual_result']) > 8000)) {
+            $invalidProperties[] = "invalid value for 'actual_result', the character length must be smaller than or equal to 8000.";
+        }
+
+        if (!is_null($this->container['expected_result']) && (mb_strlen($this->container['expected_result']) > 8000)) {
+            $invalidProperties[] = "invalid value for 'expected_result', the character length must be smaller than or equal to 8000.";
+        }
+
+        if (!is_null($this->container['user_agent']) && (mb_strlen($this->container['user_agent']) > 500)) {
+            $invalidProperties[] = "invalid value for 'user_agent', the character length must be smaller than or equal to 500.";
+        }
+
+        if (!is_null($this->container['viewport']) && (mb_strlen($this->container['viewport']) > 40)) {
+            $invalidProperties[] = "invalid value for 'viewport', the character length must be smaller than or equal to 40.";
+        }
+
+        if (!is_null($this->container['description']) && (mb_strlen($this->container['description']) > 8000)) {
+            $invalidProperties[] = "invalid value for 'description', the character length must be smaller than or equal to 8000.";
+        }
+
+        if (!is_null($this->container['use_case']) && (mb_strlen($this->container['use_case']) > 8000)) {
+            $invalidProperties[] = "invalid value for 'use_case', the character length must be smaller than or equal to 8000.";
         }
 
         return $invalidProperties;
@@ -404,7 +495,7 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     /**
      * Sets type
      *
-     * @param string $type Item type to file. Only the two user-fileable types are accepted here — `error` and `alert` tickets are auto-filed by the platform and cannot be created over the API.
+     * @param string $type Discriminator — files a bug.
      *
      * @return self
      */
@@ -441,7 +532,7 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     /**
      * Sets title
      *
-     * @param string $title One-line title of the bug or feature request.
+     * @param string $title One-line feature-request title (no leading/trailing whitespace).
      *
      * @return self
      */
@@ -456,72 +547,11 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
         if ((mb_strlen($title) < 1)) {
             throw new \InvalidArgumentException('invalid length for $title when calling CreateOpsItemRequest., must be bigger than or equal to 1.');
         }
+        if ((!preg_match("/^\\S(.*\\S)?$/", ObjectSerializer::toString($title)))) {
+            throw new \InvalidArgumentException("invalid value for \$title when calling CreateOpsItemRequest., must conform to the pattern /^\\S(.*\\S)?$/.");
+        }
 
         $this->container['title'] = $title;
-
-        return $this;
-    }
-
-    /**
-     * Gets body
-     *
-     * @return string|null
-     */
-    public function getBody()
-    {
-        return $this->container['body'];
-    }
-
-    /**
-     * Sets body
-     *
-     * @param string|null $body Detailed description / steps to reproduce.
-     *
-     * @return self
-     */
-    public function setBody($body)
-    {
-        if (is_null($body)) {
-            throw new \InvalidArgumentException('non-nullable body cannot be null');
-        }
-        $this->container['body'] = $body;
-
-        return $this;
-    }
-
-    /**
-     * Gets priority
-     *
-     * @return string|null
-     */
-    public function getPriority()
-    {
-        return $this->container['priority'];
-    }
-
-    /**
-     * Sets priority
-     *
-     * @param string|null $priority Initial triage priority.
-     *
-     * @return self
-     */
-    public function setPriority($priority)
-    {
-        if (is_null($priority)) {
-            throw new \InvalidArgumentException('non-nullable priority cannot be null');
-        }
-        $allowedValues = $this->getPriorityAllowableValues();
-        if (!in_array($priority, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'priority', must be one of '%s'",
-                    $priority,
-                    implode("', '", $allowedValues)
-                )
-            );
-        }
-        $this->container['priority'] = $priority;
 
         return $this;
     }
@@ -539,7 +569,7 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     /**
      * Sets steps_to_reproduce
      *
-     * @param string|null $steps_to_reproduce Reproduction steps (bugs).
+     * @param string|null $steps_to_reproduce How to reproduce the bug.
      *
      * @return self
      */
@@ -548,7 +578,235 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
         if (is_null($steps_to_reproduce)) {
             throw new \InvalidArgumentException('non-nullable steps_to_reproduce cannot be null');
         }
+        if ((mb_strlen($steps_to_reproduce) > 8000)) {
+            throw new \InvalidArgumentException('invalid length for $steps_to_reproduce when calling CreateOpsItemRequest., must be smaller than or equal to 8000.');
+        }
+
         $this->container['steps_to_reproduce'] = $steps_to_reproduce;
+
+        return $this;
+    }
+
+    /**
+     * Gets actual_result
+     *
+     * @return string|null
+     */
+    public function getActualResult()
+    {
+        return $this->container['actual_result'];
+    }
+
+    /**
+     * Sets actual_result
+     *
+     * @param string|null $actual_result What actually happened.
+     *
+     * @return self
+     */
+    public function setActualResult($actual_result)
+    {
+        if (is_null($actual_result)) {
+            throw new \InvalidArgumentException('non-nullable actual_result cannot be null');
+        }
+        if ((mb_strlen($actual_result) > 8000)) {
+            throw new \InvalidArgumentException('invalid length for $actual_result when calling CreateOpsItemRequest., must be smaller than or equal to 8000.');
+        }
+
+        $this->container['actual_result'] = $actual_result;
+
+        return $this;
+    }
+
+    /**
+     * Gets expected_result
+     *
+     * @return string|null
+     */
+    public function getExpectedResult()
+    {
+        return $this->container['expected_result'];
+    }
+
+    /**
+     * Sets expected_result
+     *
+     * @param string|null $expected_result What was expected instead.
+     *
+     * @return self
+     */
+    public function setExpectedResult($expected_result)
+    {
+        if (is_null($expected_result)) {
+            throw new \InvalidArgumentException('non-nullable expected_result cannot be null');
+        }
+        if ((mb_strlen($expected_result) > 8000)) {
+            throw new \InvalidArgumentException('invalid length for $expected_result when calling CreateOpsItemRequest., must be smaller than or equal to 8000.');
+        }
+
+        $this->container['expected_result'] = $expected_result;
+
+        return $this;
+    }
+
+    /**
+     * Gets priority
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemPriority|null
+     */
+    public function getPriority()
+    {
+        return $this->container['priority'];
+    }
+
+    /**
+     * Sets priority
+     *
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemPriority|null $priority Initial triage priority, or `null`.
+     *
+     * @return self
+     */
+    public function setPriority($priority)
+    {
+        if (is_null($priority)) {
+            throw new \InvalidArgumentException('non-nullable priority cannot be null');
+        }
+        $this->container['priority'] = $priority;
+
+        return $this;
+    }
+
+    /**
+     * Gets status
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsItemStatus|null
+     */
+    public function getStatus()
+    {
+        return $this->container['status'];
+    }
+
+    /**
+     * Sets status
+     *
+     * @param \Shipeasy\Admin\Generated\Model\OpsItemStatus|null $status Initial lifecycle status; defaults to `open` when omitted.
+     *
+     * @return self
+     */
+    public function setStatus($status)
+    {
+        if (is_null($status)) {
+            throw new \InvalidArgumentException('non-nullable status cannot be null');
+        }
+        $this->container['status'] = $status;
+
+        return $this;
+    }
+
+    /**
+     * Gets assignee_id
+     *
+     * @return string|null
+     */
+    public function getAssigneeId()
+    {
+        return $this->container['assignee_id'];
+    }
+
+    /**
+     * Sets assignee_id
+     *
+     * @param string|null $assignee_id The `users.id` of the person to assign as owner at creation, or `null`.
+     *
+     * @return self
+     */
+    public function setAssigneeId($assignee_id)
+    {
+        if (is_null($assignee_id)) {
+            throw new \InvalidArgumentException('non-nullable assignee_id cannot be null');
+        }
+        $this->container['assignee_id'] = $assignee_id;
+
+        return $this;
+    }
+
+    /**
+     * Gets subscribers
+     *
+     * @return string[]|null
+     */
+    public function getSubscribers()
+    {
+        return $this->container['subscribers'];
+    }
+
+    /**
+     * Sets subscribers
+     *
+     * @param string[]|null $subscribers Emails of teammates to subscribe to this item's Slack pings at creation.
+     *
+     * @return self
+     */
+    public function setSubscribers($subscribers)
+    {
+        if (is_null($subscribers)) {
+            throw new \InvalidArgumentException('non-nullable subscribers cannot be null');
+        }
+        $this->container['subscribers'] = $subscribers;
+
+        return $this;
+    }
+
+    /**
+     * Gets tags
+     *
+     * @return string[]|null
+     */
+    public function getTags()
+    {
+        return $this->container['tags'];
+    }
+
+    /**
+     * Sets tags
+     *
+     * @param string[]|null $tags Tag names to attach at creation (get-or-created by name, deduped case-insensitively).
+     *
+     * @return self
+     */
+    public function setTags($tags)
+    {
+        if (is_null($tags)) {
+            throw new \InvalidArgumentException('non-nullable tags cannot be null');
+        }
+        $this->container['tags'] = $tags;
+
+        return $this;
+    }
+
+    /**
+     * Gets reporter_email
+     *
+     * @return string|null
+     */
+    public function getReporterEmail()
+    {
+        return $this->container['reporter_email'];
+    }
+
+    /**
+     * Sets reporter_email
+     *
+     * @param string|null $reporter_email Email of the reporter, or `null`.
+     *
+     * @return self
+     */
+    public function setReporterEmail($reporter_email)
+    {
+        if (is_null($reporter_email)) {
+            throw new \InvalidArgumentException('non-nullable reporter_email cannot be null');
+        }
+        $this->container['reporter_email'] = $reporter_email;
 
         return $this;
     }
@@ -566,7 +824,7 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
     /**
      * Sets page_url
      *
-     * @param string|null $page_url URL of the page the item relates to.
+     * @param string|null $page_url URL of the page the request relates to, or `null`.
      *
      * @return self
      */
@@ -576,6 +834,191 @@ class CreateOpsItemRequest implements ModelInterface, ArrayAccess, \JsonSerializ
             throw new \InvalidArgumentException('non-nullable page_url cannot be null');
         }
         $this->container['page_url'] = $page_url;
+
+        return $this;
+    }
+
+    /**
+     * Gets user_agent
+     *
+     * @return string|null
+     */
+    public function getUserAgent()
+    {
+        return $this->container['user_agent'];
+    }
+
+    /**
+     * Sets user_agent
+     *
+     * @param string|null $user_agent Reporter's user-agent string, or `null`.
+     *
+     * @return self
+     */
+    public function setUserAgent($user_agent)
+    {
+        if (is_null($user_agent)) {
+            throw new \InvalidArgumentException('non-nullable user_agent cannot be null');
+        }
+        if ((mb_strlen($user_agent) > 500)) {
+            throw new \InvalidArgumentException('invalid length for $user_agent when calling CreateOpsItemRequest., must be smaller than or equal to 500.');
+        }
+
+        $this->container['user_agent'] = $user_agent;
+
+        return $this;
+    }
+
+    /**
+     * Gets viewport
+     *
+     * @return string|null
+     */
+    public function getViewport()
+    {
+        return $this->container['viewport'];
+    }
+
+    /**
+     * Sets viewport
+     *
+     * @param string|null $viewport Reporter's viewport (e.g. `1280x720`), or `null`.
+     *
+     * @return self
+     */
+    public function setViewport($viewport)
+    {
+        if (is_null($viewport)) {
+            throw new \InvalidArgumentException('non-nullable viewport cannot be null');
+        }
+        if ((mb_strlen($viewport) > 40)) {
+            throw new \InvalidArgumentException('invalid length for $viewport when calling CreateOpsItemRequest., must be smaller than or equal to 40.');
+        }
+
+        $this->container['viewport'] = $viewport;
+
+        return $this;
+    }
+
+    /**
+     * Gets context
+     *
+     * @return array<string,mixed>|null
+     */
+    public function getContext()
+    {
+        return $this->container['context'];
+    }
+
+    /**
+     * Sets context
+     *
+     * @param array<string,mixed>|null $context Arbitrary capture context, or `null`.
+     *
+     * @return self
+     */
+    public function setContext($context)
+    {
+        if (is_null($context)) {
+            throw new \InvalidArgumentException('non-nullable context cannot be null');
+        }
+        $this->container['context'] = $context;
+
+        return $this;
+    }
+
+    /**
+     * Gets notify
+     *
+     * @return \Shipeasy\Admin\Generated\Model\NotificationTarget|null
+     */
+    public function getNotify()
+    {
+        return $this->container['notify'];
+    }
+
+    /**
+     * Sets notify
+     *
+     * @param \Shipeasy\Admin\Generated\Model\NotificationTarget|null $notify Where this request's completion notification lands.
+     *
+     * @return self
+     */
+    public function setNotify($notify)
+    {
+        if (is_null($notify)) {
+            array_push($this->openAPINullablesSetToNull, 'notify');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('notify', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['notify'] = $notify;
+
+        return $this;
+    }
+
+    /**
+     * Gets description
+     *
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->container['description'];
+    }
+
+    /**
+     * Sets description
+     *
+     * @param string|null $description What the feature is.
+     *
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        if (is_null($description)) {
+            throw new \InvalidArgumentException('non-nullable description cannot be null');
+        }
+        if ((mb_strlen($description) > 8000)) {
+            throw new \InvalidArgumentException('invalid length for $description when calling CreateOpsItemRequest., must be smaller than or equal to 8000.');
+        }
+
+        $this->container['description'] = $description;
+
+        return $this;
+    }
+
+    /**
+     * Gets use_case
+     *
+     * @return string|null
+     */
+    public function getUseCase()
+    {
+        return $this->container['use_case'];
+    }
+
+    /**
+     * Sets use_case
+     *
+     * @param string|null $use_case Why it's needed / the use case.
+     *
+     * @return self
+     */
+    public function setUseCase($use_case)
+    {
+        if (is_null($use_case)) {
+            throw new \InvalidArgumentException('non-nullable use_case cannot be null');
+        }
+        if ((mb_strlen($use_case) > 8000)) {
+            throw new \InvalidArgumentException('invalid length for $use_case when calling CreateOpsItemRequest., must be smaller than or equal to 8000.');
+        }
+
+        $this->container['use_case'] = $use_case;
 
         return $this;
     }

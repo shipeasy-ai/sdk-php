@@ -504,7 +504,7 @@ class UniversesApi
      *
      * Delete a universe
      *
-     * @param  string|null $id Stable opaque universe id (&#x60;uni_…&#x60;) or the universe&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque universe id (&#x60;uni_…&#x60;) or the universe&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteUniverse'] to see the possible values for this operation
      *
@@ -523,7 +523,7 @@ class UniversesApi
      *
      * Delete a universe
      *
-     * @param  string|null $id Stable opaque universe id (&#x60;uni_…&#x60;) or the universe&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque universe id (&#x60;uni_…&#x60;) or the universe&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteUniverse'] to see the possible values for this operation
      *
@@ -693,7 +693,7 @@ class UniversesApi
      *
      * Delete a universe
      *
-     * @param  string|null $id Stable opaque universe id (&#x60;uni_…&#x60;) or the universe&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque universe id (&#x60;uni_…&#x60;) or the universe&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteUniverse'] to see the possible values for this operation
      *
@@ -715,7 +715,7 @@ class UniversesApi
      *
      * Delete a universe
      *
-     * @param  string|null $id Stable opaque universe id (&#x60;uni_…&#x60;) or the universe&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque universe id (&#x60;uni_…&#x60;) or the universe&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteUniverse'] to see the possible values for this operation
      *
@@ -766,7 +766,7 @@ class UniversesApi
     /**
      * Create request for operation 'deleteUniverse'
      *
-     * @param  string|null $id Stable opaque universe id (&#x60;uni_…&#x60;) or the universe&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque universe id (&#x60;uni_…&#x60;) or the universe&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteUniverse'] to see the possible values for this operation
      *
@@ -782,7 +782,13 @@ class UniversesApi
                 'Missing the required parameter $id when calling deleteUniverse'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling UniversesApi.deleteUniverse, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling UniversesApi.deleteUniverse, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/universes/{id}';
@@ -873,15 +879,16 @@ class UniversesApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listUniverses'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Shipeasy\Admin\Generated\Model\ListUniversesResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
-    public function listUniverses($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listUniverses'][0])
+    public function listUniverses($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listUniverses'][0])
     {
-        list($response) = $this->listUniversesWithHttpInfo($x_project_id, $limit, $cursor, $contentType);
+        list($response) = $this->listUniversesWithHttpInfo($x_project_id, $limit, $cursor, $q, $contentType);
         return $response;
     }
 
@@ -893,15 +900,16 @@ class UniversesApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listUniverses'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return array of \Shipeasy\Admin\Generated\Model\ListUniversesResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listUniversesWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listUniverses'][0])
+    public function listUniversesWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listUniverses'][0])
     {
-        $request = $this->listUniversesRequest($x_project_id, $limit, $cursor, $contentType);
+        $request = $this->listUniversesRequest($x_project_id, $limit, $cursor, $q, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1064,14 +1072,15 @@ class UniversesApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listUniverses'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listUniversesAsync($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listUniverses'][0])
+    public function listUniversesAsync($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listUniverses'][0])
     {
-        return $this->listUniversesAsyncWithHttpInfo($x_project_id, $limit, $cursor, $contentType)
+        return $this->listUniversesAsyncWithHttpInfo($x_project_id, $limit, $cursor, $q, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1087,15 +1096,16 @@ class UniversesApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listUniverses'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listUniversesAsyncWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listUniverses'][0])
+    public function listUniversesAsyncWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listUniverses'][0])
     {
         $returnType = '\Shipeasy\Admin\Generated\Model\ListUniversesResponse';
-        $request = $this->listUniversesRequest($x_project_id, $limit, $cursor, $contentType);
+        $request = $this->listUniversesRequest($x_project_id, $limit, $cursor, $q, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1139,12 +1149,13 @@ class UniversesApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listUniverses'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listUniversesRequest($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listUniverses'][0])
+    public function listUniversesRequest($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listUniverses'][0])
     {
 
 
@@ -1156,6 +1167,10 @@ class UniversesApi
         }
         
 
+        if ($q !== null && strlen($q) > 100) {
+            throw new \InvalidArgumentException('invalid length for "$q" when calling UniversesApi.listUniverses, must be smaller than or equal to 100.');
+        }
+        
 
         $resourcePath = '/api/admin/universes';
         $formParams = [];
@@ -1177,6 +1192,15 @@ class UniversesApi
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $cursor,
             'cursor', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $q,
+            'q', // param base name
             'string', // openApiType
             'form', // style
             true, // explode
@@ -1535,7 +1559,13 @@ class UniversesApi
                 'Missing the required parameter $id when calling updateUniverse'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling UniversesApi.updateUniverse, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling UniversesApi.updateUniverse, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'update_universe_request' is set
         if ($update_universe_request === null || (is_array($update_universe_request) && count($update_universe_request) === 0)) {
             throw new \InvalidArgumentException(

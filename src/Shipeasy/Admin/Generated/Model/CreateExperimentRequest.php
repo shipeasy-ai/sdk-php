@@ -68,11 +68,13 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         'folder' => 'string',
         'universe' => 'string',
         'targeting_gate' => 'string',
+        'holdout_gate' => 'string',
         'allocation_pct' => 'int',
         'allocation_percent' => 'float',
+        'reserved_headroom' => 'int',
         'salt' => 'string',
         'params' => 'array<string,string>',
-        'groups' => '\Shipeasy\Admin\Generated\Model\ListExperimentsResponseDataInnerGroupsInner[]',
+        'groups' => '\Shipeasy\Admin\Generated\Model\ExperimentApiRowGroupsInner[]',
         'significance_threshold' => 'float',
         'min_runtime_days' => 'int',
         'min_sample_size' => 'int',
@@ -99,8 +101,10 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         'folder' => null,
         'universe' => null,
         'targeting_gate' => null,
+        'holdout_gate' => null,
         'allocation_pct' => null,
         'allocation_percent' => null,
+        'reserved_headroom' => null,
         'salt' => null,
         'params' => null,
         'groups' => null,
@@ -128,8 +132,10 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         'folder' => true,
         'universe' => false,
         'targeting_gate' => true,
+        'holdout_gate' => true,
         'allocation_pct' => false,
         'allocation_percent' => false,
+        'reserved_headroom' => false,
         'salt' => false,
         'params' => false,
         'groups' => false,
@@ -237,8 +243,10 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         'folder' => 'folder',
         'universe' => 'universe',
         'targeting_gate' => 'targeting_gate',
+        'holdout_gate' => 'holdout_gate',
         'allocation_pct' => 'allocation_pct',
         'allocation_percent' => 'allocation_percent',
+        'reserved_headroom' => 'reserved_headroom',
         'salt' => 'salt',
         'params' => 'params',
         'groups' => 'groups',
@@ -266,8 +274,10 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         'folder' => 'setFolder',
         'universe' => 'setUniverse',
         'targeting_gate' => 'setTargetingGate',
+        'holdout_gate' => 'setHoldoutGate',
         'allocation_pct' => 'setAllocationPct',
         'allocation_percent' => 'setAllocationPercent',
+        'reserved_headroom' => 'setReservedHeadroom',
         'salt' => 'setSalt',
         'params' => 'setParams',
         'groups' => 'setGroups',
@@ -295,8 +305,10 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         'folder' => 'getFolder',
         'universe' => 'getUniverse',
         'targeting_gate' => 'getTargetingGate',
+        'holdout_gate' => 'getHoldoutGate',
         'allocation_pct' => 'getAllocationPct',
         'allocation_percent' => 'getAllocationPercent',
+        'reserved_headroom' => 'getReservedHeadroom',
         'salt' => 'getSalt',
         'params' => 'getParams',
         'groups' => 'getGroups',
@@ -392,8 +404,10 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
         $this->setIfExists('folder', $data ?? [], null);
         $this->setIfExists('universe', $data ?? [], null);
         $this->setIfExists('targeting_gate', $data ?? [], null);
+        $this->setIfExists('holdout_gate', $data ?? [], null);
         $this->setIfExists('allocation_pct', $data ?? [], 0);
         $this->setIfExists('allocation_percent', $data ?? [], null);
+        $this->setIfExists('reserved_headroom', $data ?? [], null);
         $this->setIfExists('salt', $data ?? [], null);
         $this->setIfExists('params', $data ?? [], null);
         $this->setIfExists('groups', $data ?? [], null);
@@ -504,6 +518,14 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
 
         if (!is_null($this->container['allocation_percent']) && ($this->container['allocation_percent'] < 0)) {
             $invalidProperties[] = "invalid value for 'allocation_percent', must be bigger than or equal to 0.";
+        }
+
+        if (!is_null($this->container['reserved_headroom']) && ($this->container['reserved_headroom'] > 10000)) {
+            $invalidProperties[] = "invalid value for 'reserved_headroom', must be smaller than or equal to 10000.";
+        }
+
+        if (!is_null($this->container['reserved_headroom']) && ($this->container['reserved_headroom'] < 0)) {
+            $invalidProperties[] = "invalid value for 'reserved_headroom', must be bigger than or equal to 0.";
         }
 
         if (!is_null($this->container['salt']) && (mb_strlen($this->container['salt']) > 64)) {
@@ -918,7 +940,7 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Sets targeting_gate
      *
-     * @param string|null $targeting_gate Optional gate name. Only callers that pass the gate are enrolled in the experiment.
+     * @param string|null $targeting_gate Optional gate name (a `targeting`-type flag). Only callers that pass the gate are enrolled in the experiment.
      *
      * @return self
      */
@@ -940,6 +962,40 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
     }
 
     /**
+     * Gets holdout_gate
+     *
+     * @return string|null
+     */
+    public function getHoldoutGate()
+    {
+        return $this->container['holdout_gate'];
+    }
+
+    /**
+     * Sets holdout_gate
+     *
+     * @param string|null $holdout_gate Optional gate name (a `targeting`-type flag). Only callers that pass the gate are enrolled in the experiment.
+     *
+     * @return self
+     */
+    public function setHoldoutGate($holdout_gate)
+    {
+        if (is_null($holdout_gate)) {
+            array_push($this->openAPINullablesSetToNull, 'holdout_gate');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('holdout_gate', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['holdout_gate'] = $holdout_gate;
+
+        return $this;
+    }
+
+    /**
      * Gets allocation_pct
      *
      * @return int|null
@@ -952,7 +1008,7 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Sets allocation_pct
      *
-     * @param int|null $allocation_pct Share of the (gated) audience allocated to the experiment, in basis points (0–10000 = 0%–100%). `0` = unallocated. Use `allocation_percent` (0–100) below to think in percent. Immutable while the experiment is running.
+     * @param int|null $allocation_pct Share of the (gated) audience allocated to the experiment, in basis points (0–10000 = 0%–100%). `0` = unallocated. Under pooled assignment this is the size of the universe-pool slice claimed. Use `allocation_percent` (0–100) below to think in percent. Immutable while the experiment is running.
      *
      * @return self
      */
@@ -1010,6 +1066,41 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
     }
 
     /**
+     * Gets reserved_headroom
+     *
+     * @return int|null
+     */
+    public function getReservedHeadroom()
+    {
+        return $this->container['reserved_headroom'];
+    }
+
+    /**
+     * Sets reserved_headroom
+     *
+     * @param int|null $reserved_headroom Basis points of this experiment's split kept empty (0–10000) so a new variant can be appended into it while running without reshuffling. Group weights must sum to `10000 − reserved_headroom`. Defaults to the universe's `recommended_headroom` when omitted.
+     *
+     * @return self
+     */
+    public function setReservedHeadroom($reserved_headroom)
+    {
+        if (is_null($reserved_headroom)) {
+            throw new \InvalidArgumentException('non-nullable reserved_headroom cannot be null');
+        }
+
+        if (($reserved_headroom > 10000)) {
+            throw new \InvalidArgumentException('invalid value for $reserved_headroom when calling CreateExperimentRequest., must be smaller than or equal to 10000.');
+        }
+        if (($reserved_headroom < 0)) {
+            throw new \InvalidArgumentException('invalid value for $reserved_headroom when calling CreateExperimentRequest., must be bigger than or equal to 0.');
+        }
+
+        $this->container['reserved_headroom'] = $reserved_headroom;
+
+        return $this;
+    }
+
+    /**
      * Gets salt
      *
      * @return string|null
@@ -1056,7 +1147,7 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Sets params
      *
-     * @param array<string,string>|null $params Map of param-name → scalar type. Defines the shape of `groups[].params`. Example: `{ headline: 'string', show_cta: 'bool' }`.
+     * @param array<string,string>|null $params **Deprecated** — the universe now owns the config schema (`param_schema`). Retained for back-compat; new experiments should leave this empty and declare params on the universe. Map of param-name → scalar type.
      *
      * @return self
      */
@@ -1082,7 +1173,7 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Gets groups
      *
-     * @return \Shipeasy\Admin\Generated\Model\ListExperimentsResponseDataInnerGroupsInner[]
+     * @return \Shipeasy\Admin\Generated\Model\ExperimentApiRowGroupsInner[]
      */
     public function getGroups()
     {
@@ -1092,7 +1183,7 @@ class CreateExperimentRequest implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Sets groups
      *
-     * @param \Shipeasy\Admin\Generated\Model\ListExperimentsResponseDataInnerGroupsInner[] $groups Two or more variants. Weights must sum to exactly 10000 (100%). Immutable while running.
+     * @param \Shipeasy\Admin\Generated\Model\ExperimentApiRowGroupsInner[] $groups Two or more variants. Weights must sum to `10000 − reserved_headroom`. Existing weights are immutable while running, but a new variant may be appended into the reserved tail.
      *
      * @return self
      */

@@ -59,7 +59,7 @@ class ErrorSeriesResponse implements ModelInterface, ArrayAccess, \JsonSerializa
      */
     protected static $openAPITypes = [
         'sql' => 'string',
-        'rows' => '\Shipeasy\Admin\Generated\Model\ErrorSeriesResponseRowsInner[]'
+        'rows' => '\Shipeasy\Admin\Generated\Model\GetMetricSeriesResponseRowsInner[]'
     ];
 
     /**
@@ -333,7 +333,7 @@ class ErrorSeriesResponse implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Gets rows
      *
-     * @return \Shipeasy\Admin\Generated\Model\ErrorSeriesResponseRowsInner[]
+     * @return \Shipeasy\Admin\Generated\Model\GetMetricSeriesResponseRowsInner[]
      */
     public function getRows()
     {
@@ -343,7 +343,7 @@ class ErrorSeriesResponse implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Sets rows
      *
-     * @param \Shipeasy\Admin\Generated\Model\ErrorSeriesResponseRowsInner[] $rows Bucketed occurrence series, ordered by `t` ascending.
+     * @param \Shipeasy\Admin\Generated\Model\GetMetricSeriesResponseRowsInner[] $rows Bucketed occurrence series, ordered by `t` ascending.
      *
      * @return self
      */

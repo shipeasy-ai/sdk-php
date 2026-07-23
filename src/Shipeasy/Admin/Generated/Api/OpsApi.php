@@ -74,7 +74,13 @@ class OpsApi
 
     /** @var string[] $contentTypes **/
     public const contentTypes = [
+        'ackOpsItem' => [
+            'application/json',
+        ],
         'createOpsItem' => [
+            'application/json',
+        ],
+        'deleteOpsItem' => [
             'application/json',
         ],
         'getOpsItem' => [
@@ -138,6 +144,377 @@ class OpsApi
     public function getConfig()
     {
         return $this->config;
+    }
+
+    /**
+     * Operation ackOpsItem
+     *
+     * Ack an item (start a run)
+     *
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  \Shipeasy\Admin\Generated\Model\AckOpsItemRequest|null $ack_ops_item_request ack_ops_item_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['ackOpsItem'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Shipeasy\Admin\Generated\Model\AckOpsItemResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     */
+    public function ackOpsItem($handle, $x_project_id = null, $ack_ops_item_request = null, string $contentType = self::contentTypes['ackOpsItem'][0])
+    {
+        list($response) = $this->ackOpsItemWithHttpInfo($handle, $x_project_id, $ack_ops_item_request, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation ackOpsItemWithHttpInfo
+     *
+     * Ack an item (start a run)
+     *
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  \Shipeasy\Admin\Generated\Model\AckOpsItemRequest|null $ack_ops_item_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['ackOpsItem'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of \Shipeasy\Admin\Generated\Model\AckOpsItemResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function ackOpsItemWithHttpInfo($handle, $x_project_id = null, $ack_ops_item_request = null, string $contentType = self::contentTypes['ackOpsItem'][0])
+    {
+        $request = $this->ackOpsItemRequest($handle, $x_project_id, $ack_ops_item_request, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\AckOpsItemResponse',
+                        $request,
+                        $response,
+                    );
+                case 400:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 401:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Shipeasy\Admin\Generated\Model\AckOpsItemResponse',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\AckOpsItemResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+        
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation ackOpsItemAsync
+     *
+     * Ack an item (start a run)
+     *
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  \Shipeasy\Admin\Generated\Model\AckOpsItemRequest|null $ack_ops_item_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['ackOpsItem'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function ackOpsItemAsync($handle, $x_project_id = null, $ack_ops_item_request = null, string $contentType = self::contentTypes['ackOpsItem'][0])
+    {
+        return $this->ackOpsItemAsyncWithHttpInfo($handle, $x_project_id, $ack_ops_item_request, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation ackOpsItemAsyncWithHttpInfo
+     *
+     * Ack an item (start a run)
+     *
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  \Shipeasy\Admin\Generated\Model\AckOpsItemRequest|null $ack_ops_item_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['ackOpsItem'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function ackOpsItemAsyncWithHttpInfo($handle, $x_project_id = null, $ack_ops_item_request = null, string $contentType = self::contentTypes['ackOpsItem'][0])
+    {
+        $returnType = '\Shipeasy\Admin\Generated\Model\AckOpsItemResponse';
+        $request = $this->ackOpsItemRequest($handle, $x_project_id, $ack_ops_item_request, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'ackOpsItem'
+     *
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  \Shipeasy\Admin\Generated\Model\AckOpsItemRequest|null $ack_ops_item_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['ackOpsItem'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function ackOpsItemRequest($handle, $x_project_id = null, $ack_ops_item_request = null, string $contentType = self::contentTypes['ackOpsItem'][0])
+    {
+
+        // verify the required parameter 'handle' is set
+        if ($handle === null || (is_array($handle) && count($handle) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $handle when calling ackOpsItem'
+            );
+        }
+        if (strlen($handle) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$handle" when calling OpsApi.ackOpsItem, must be smaller than or equal to 128.');
+        }
+        if (strlen($handle) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$handle" when calling OpsApi.ackOpsItem, must be bigger than or equal to 1.');
+        }
+        
+
+
+
+        $resourcePath = '/api/admin/ops/{handle}/ack';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // header params
+        if ($x_project_id !== null) {
+            $headerParams['X-Project-Id'] = ObjectSerializer::toHeaderValue($x_project_id);
+        }
+
+        // path params
+        if ($handle !== null) {
+            $resourcePath = str_replace(
+                '{handle}',
+                ObjectSerializer::toPathValue($handle),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (isset($ack_ops_item_request)) {
+            if (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the body
+                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($ack_ops_item_request));
+            } else {
+                $httpBody = $ack_ops_item_request;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (sdk_admin_*) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'POST',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
     }
 
     /**
@@ -506,11 +883,383 @@ class OpsApi
     }
 
     /**
+     * Operation deleteOpsItem
+     *
+     * Delete a queue item
+     *
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteOpsItem'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Shipeasy\Admin\Generated\Model\DeleteOpsItemResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     */
+    public function deleteOpsItem($handle, $x_project_id = null, string $contentType = self::contentTypes['deleteOpsItem'][0])
+    {
+        list($response) = $this->deleteOpsItemWithHttpInfo($handle, $x_project_id, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation deleteOpsItemWithHttpInfo
+     *
+     * Delete a queue item
+     *
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteOpsItem'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of \Shipeasy\Admin\Generated\Model\DeleteOpsItemResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function deleteOpsItemWithHttpInfo($handle, $x_project_id = null, string $contentType = self::contentTypes['deleteOpsItem'][0])
+    {
+        $request = $this->deleteOpsItemRequest($handle, $x_project_id, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\DeleteOpsItemResponse',
+                        $request,
+                        $response,
+                    );
+                case 400:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 401:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 409:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Shipeasy\Admin\Generated\Model\DeleteOpsItemResponse',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\DeleteOpsItemResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+        
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation deleteOpsItemAsync
+     *
+     * Delete a queue item
+     *
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteOpsItem'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function deleteOpsItemAsync($handle, $x_project_id = null, string $contentType = self::contentTypes['deleteOpsItem'][0])
+    {
+        return $this->deleteOpsItemAsyncWithHttpInfo($handle, $x_project_id, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation deleteOpsItemAsyncWithHttpInfo
+     *
+     * Delete a queue item
+     *
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteOpsItem'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function deleteOpsItemAsyncWithHttpInfo($handle, $x_project_id = null, string $contentType = self::contentTypes['deleteOpsItem'][0])
+    {
+        $returnType = '\Shipeasy\Admin\Generated\Model\DeleteOpsItemResponse';
+        $request = $this->deleteOpsItemRequest($handle, $x_project_id, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'deleteOpsItem'
+     *
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['deleteOpsItem'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function deleteOpsItemRequest($handle, $x_project_id = null, string $contentType = self::contentTypes['deleteOpsItem'][0])
+    {
+
+        // verify the required parameter 'handle' is set
+        if ($handle === null || (is_array($handle) && count($handle) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $handle when calling deleteOpsItem'
+            );
+        }
+        if (strlen($handle) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$handle" when calling OpsApi.deleteOpsItem, must be smaller than or equal to 128.');
+        }
+        if (strlen($handle) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$handle" when calling OpsApi.deleteOpsItem, must be bigger than or equal to 1.');
+        }
+        
+
+
+        $resourcePath = '/api/admin/ops/{handle}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // header params
+        if ($x_project_id !== null) {
+            $headerParams['X-Project-Id'] = ObjectSerializer::toHeaderValue($x_project_id);
+        }
+
+        // path params
+        if ($handle !== null) {
+            $resourcePath = str_replace(
+                '{handle}',
+                ObjectSerializer::toPathValue($handle),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (sdk_admin_*) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'DELETE',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation getOpsItem
      *
      * Get one queue item
      *
-     * @param  string|null $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getOpsItem'] to see the possible values for this operation
      *
@@ -529,7 +1278,7 @@ class OpsApi
      *
      * Get one queue item
      *
-     * @param  string|null $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getOpsItem'] to see the possible values for this operation
      *
@@ -699,7 +1448,7 @@ class OpsApi
      *
      * Get one queue item
      *
-     * @param  string|null $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getOpsItem'] to see the possible values for this operation
      *
@@ -721,7 +1470,7 @@ class OpsApi
      *
      * Get one queue item
      *
-     * @param  string|null $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getOpsItem'] to see the possible values for this operation
      *
@@ -772,7 +1521,7 @@ class OpsApi
     /**
      * Create request for operation 'getOpsItem'
      *
-     * @param  string|null $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
+     * @param  string $handle Per-project item number (e.g. &#x60;7&#x60;) or the full ops item id. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getOpsItem'] to see the possible values for this operation
      *
@@ -788,7 +1537,13 @@ class OpsApi
                 'Missing the required parameter $handle when calling getOpsItem'
             );
         }
-
+        if (strlen($handle) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$handle" when calling OpsApi.getOpsItem, must be smaller than or equal to 128.');
+        }
+        if (strlen($handle) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$handle" when calling OpsApi.getOpsItem, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/ops/{handle}';
@@ -933,7 +1688,7 @@ class OpsApi
 
 
             switch($statusCode) {
-                case 201:
+                case 200:
                     return $this->handleResponseWithDataType(
                         '\Shipeasy\Admin\Generated\Model\LinkPrToOpsItemResponse',
                         $request,
@@ -999,7 +1754,7 @@ class OpsApi
             );
         } catch (ApiException $e) {
             switch ($e->getCode()) {
-                case 201:
+                case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Shipeasy\Admin\Generated\Model\LinkPrToOpsItemResponse',
@@ -1159,7 +1914,13 @@ class OpsApi
                 'Missing the required parameter $handle when calling linkPrToOpsItem'
             );
         }
-
+        if (strlen($handle) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$handle" when calling OpsApi.linkPrToOpsItem, must be smaller than or equal to 128.');
+        }
+        if (strlen($handle) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$handle" when calling OpsApi.linkPrToOpsItem, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'link_pr_to_ops_item_request' is set
         if ($link_pr_to_ops_item_request === null || (is_array($link_pr_to_ops_item_request) && count($link_pr_to_ops_item_request) === 0)) {
             throw new \InvalidArgumentException(
@@ -1263,17 +2024,18 @@ class OpsApi
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string|null $type Filter by item type (&#x60;bug&#x60;/&#x60;feature_request&#x60;/&#x60;error&#x60;/&#x60;alert&#x60;), or &#x60;all&#x60;. (optional)
-     * @param  string|null $status Filter by lifecycle status, or &#x60;all&#x60;. (optional)
+     * @param  string|null $status Filter by lifecycle status, or &#x60;all&#x60;. The human-gated holding states (&#x60;pending_approval&#x60;, &#x60;triage&#x60;) are excluded from &#x60;all&#x60;/default and returned only when requested as the exact status. (optional)
      * @param  int|null $limit Max items to return (1–500). (optional)
+     * @param  string|null $owner Narrow to items owned by one person OR one agent. Matches a person by &#x60;users.id&#x60;, email, or display name, and an agent by connector id, display name, or kebab-case handle — e.g. &#x60;owner&#x3D;Claude&#x60; or &#x60;owner&#x3D;alice@acme.dev&#x60;. Case-insensitive exact match, applied over the returned page. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listOpsItems'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Shipeasy\Admin\Generated\Model\ListOpsItemsResponseInner[]|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
-    public function listOpsItems($x_project_id = null, $type = null, $status = null, $limit = null, string $contentType = self::contentTypes['listOpsItems'][0])
+    public function listOpsItems($x_project_id = null, $type = null, $status = null, $limit = null, $owner = null, string $contentType = self::contentTypes['listOpsItems'][0])
     {
-        list($response) = $this->listOpsItemsWithHttpInfo($x_project_id, $type, $status, $limit, $contentType);
+        list($response) = $this->listOpsItemsWithHttpInfo($x_project_id, $type, $status, $limit, $owner, $contentType);
         return $response;
     }
 
@@ -1284,17 +2046,18 @@ class OpsApi
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string|null $type Filter by item type (&#x60;bug&#x60;/&#x60;feature_request&#x60;/&#x60;error&#x60;/&#x60;alert&#x60;), or &#x60;all&#x60;. (optional)
-     * @param  string|null $status Filter by lifecycle status, or &#x60;all&#x60;. (optional)
+     * @param  string|null $status Filter by lifecycle status, or &#x60;all&#x60;. The human-gated holding states (&#x60;pending_approval&#x60;, &#x60;triage&#x60;) are excluded from &#x60;all&#x60;/default and returned only when requested as the exact status. (optional)
      * @param  int|null $limit Max items to return (1–500). (optional)
+     * @param  string|null $owner Narrow to items owned by one person OR one agent. Matches a person by &#x60;users.id&#x60;, email, or display name, and an agent by connector id, display name, or kebab-case handle — e.g. &#x60;owner&#x3D;Claude&#x60; or &#x60;owner&#x3D;alice@acme.dev&#x60;. Case-insensitive exact match, applied over the returned page. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listOpsItems'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return array of \Shipeasy\Admin\Generated\Model\ListOpsItemsResponseInner[]|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listOpsItemsWithHttpInfo($x_project_id = null, $type = null, $status = null, $limit = null, string $contentType = self::contentTypes['listOpsItems'][0])
+    public function listOpsItemsWithHttpInfo($x_project_id = null, $type = null, $status = null, $limit = null, $owner = null, string $contentType = self::contentTypes['listOpsItems'][0])
     {
-        $request = $this->listOpsItemsRequest($x_project_id, $type, $status, $limit, $contentType);
+        $request = $this->listOpsItemsRequest($x_project_id, $type, $status, $limit, $owner, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1456,16 +2219,17 @@ class OpsApi
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string|null $type Filter by item type (&#x60;bug&#x60;/&#x60;feature_request&#x60;/&#x60;error&#x60;/&#x60;alert&#x60;), or &#x60;all&#x60;. (optional)
-     * @param  string|null $status Filter by lifecycle status, or &#x60;all&#x60;. (optional)
+     * @param  string|null $status Filter by lifecycle status, or &#x60;all&#x60;. The human-gated holding states (&#x60;pending_approval&#x60;, &#x60;triage&#x60;) are excluded from &#x60;all&#x60;/default and returned only when requested as the exact status. (optional)
      * @param  int|null $limit Max items to return (1–500). (optional)
+     * @param  string|null $owner Narrow to items owned by one person OR one agent. Matches a person by &#x60;users.id&#x60;, email, or display name, and an agent by connector id, display name, or kebab-case handle — e.g. &#x60;owner&#x3D;Claude&#x60; or &#x60;owner&#x3D;alice@acme.dev&#x60;. Case-insensitive exact match, applied over the returned page. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listOpsItems'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listOpsItemsAsync($x_project_id = null, $type = null, $status = null, $limit = null, string $contentType = self::contentTypes['listOpsItems'][0])
+    public function listOpsItemsAsync($x_project_id = null, $type = null, $status = null, $limit = null, $owner = null, string $contentType = self::contentTypes['listOpsItems'][0])
     {
-        return $this->listOpsItemsAsyncWithHttpInfo($x_project_id, $type, $status, $limit, $contentType)
+        return $this->listOpsItemsAsyncWithHttpInfo($x_project_id, $type, $status, $limit, $owner, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1480,17 +2244,18 @@ class OpsApi
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string|null $type Filter by item type (&#x60;bug&#x60;/&#x60;feature_request&#x60;/&#x60;error&#x60;/&#x60;alert&#x60;), or &#x60;all&#x60;. (optional)
-     * @param  string|null $status Filter by lifecycle status, or &#x60;all&#x60;. (optional)
+     * @param  string|null $status Filter by lifecycle status, or &#x60;all&#x60;. The human-gated holding states (&#x60;pending_approval&#x60;, &#x60;triage&#x60;) are excluded from &#x60;all&#x60;/default and returned only when requested as the exact status. (optional)
      * @param  int|null $limit Max items to return (1–500). (optional)
+     * @param  string|null $owner Narrow to items owned by one person OR one agent. Matches a person by &#x60;users.id&#x60;, email, or display name, and an agent by connector id, display name, or kebab-case handle — e.g. &#x60;owner&#x3D;Claude&#x60; or &#x60;owner&#x3D;alice@acme.dev&#x60;. Case-insensitive exact match, applied over the returned page. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listOpsItems'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listOpsItemsAsyncWithHttpInfo($x_project_id = null, $type = null, $status = null, $limit = null, string $contentType = self::contentTypes['listOpsItems'][0])
+    public function listOpsItemsAsyncWithHttpInfo($x_project_id = null, $type = null, $status = null, $limit = null, $owner = null, string $contentType = self::contentTypes['listOpsItems'][0])
     {
         $returnType = '\Shipeasy\Admin\Generated\Model\ListOpsItemsResponseInner[]';
-        $request = $this->listOpsItemsRequest($x_project_id, $type, $status, $limit, $contentType);
+        $request = $this->listOpsItemsRequest($x_project_id, $type, $status, $limit, $owner, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1533,14 +2298,15 @@ class OpsApi
      *
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string|null $type Filter by item type (&#x60;bug&#x60;/&#x60;feature_request&#x60;/&#x60;error&#x60;/&#x60;alert&#x60;), or &#x60;all&#x60;. (optional)
-     * @param  string|null $status Filter by lifecycle status, or &#x60;all&#x60;. (optional)
+     * @param  string|null $status Filter by lifecycle status, or &#x60;all&#x60;. The human-gated holding states (&#x60;pending_approval&#x60;, &#x60;triage&#x60;) are excluded from &#x60;all&#x60;/default and returned only when requested as the exact status. (optional)
      * @param  int|null $limit Max items to return (1–500). (optional)
+     * @param  string|null $owner Narrow to items owned by one person OR one agent. Matches a person by &#x60;users.id&#x60;, email, or display name, and an agent by connector id, display name, or kebab-case handle — e.g. &#x60;owner&#x3D;Claude&#x60; or &#x60;owner&#x3D;alice@acme.dev&#x60;. Case-insensitive exact match, applied over the returned page. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listOpsItems'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listOpsItemsRequest($x_project_id = null, $type = null, $status = null, $limit = null, string $contentType = self::contentTypes['listOpsItems'][0])
+    public function listOpsItemsRequest($x_project_id = null, $type = null, $status = null, $limit = null, $owner = null, string $contentType = self::contentTypes['listOpsItems'][0])
     {
 
 
@@ -1553,6 +2319,7 @@ class OpsApi
             throw new \InvalidArgumentException('invalid value for "$limit" when calling OpsApi.listOpsItems, must be bigger than or equal to 1.');
         }
         
+
 
         $resourcePath = '/api/admin/ops';
         $formParams = [];
@@ -1584,6 +2351,15 @@ class OpsApi
             $limit,
             'limit', // param base name
             'integer', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $owner,
+            'owner', // param base name
+            'string', // openApiType
             'form', // style
             true, // explode
             false // required
@@ -2306,7 +3082,13 @@ class OpsApi
                 'Missing the required parameter $handle when calling updateOpsItem'
             );
         }
-
+        if (strlen($handle) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$handle" when calling OpsApi.updateOpsItem, must be smaller than or equal to 128.');
+        }
+        if (strlen($handle) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$handle" when calling OpsApi.updateOpsItem, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'update_ops_item_request' is set
         if ($update_ops_item_request === null || (is_array($update_ops_item_request) && count($update_ops_item_request) === 0)) {
             throw new \InvalidArgumentException(

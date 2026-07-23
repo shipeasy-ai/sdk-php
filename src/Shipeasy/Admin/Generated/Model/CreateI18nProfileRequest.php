@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * CreateI18nProfileRequest Class Doc Comment
  *
  * @category Class
- * @description Body for &#x60;POST /api/admin/i18n/profiles&#x60;. Only &#x60;name&#x60; is required.
+ * @description Body for &#x60;POST /api/admin/i18n/profiles&#x60;. Only &#x60;name&#x60; is accepted.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -58,9 +58,7 @@ class CreateI18nProfileRequest implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $openAPITypes = [
-        'name' => 'string',
-        'locales' => 'string[]',
-        'default_locale' => 'string'
+        'name' => 'string'
     ];
 
     /**
@@ -71,9 +69,7 @@ class CreateI18nProfileRequest implements ModelInterface, ArrayAccess, \JsonSeri
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'name' => null,
-        'locales' => null,
-        'default_locale' => null
+        'name' => null
     ];
 
     /**
@@ -82,9 +78,7 @@ class CreateI18nProfileRequest implements ModelInterface, ArrayAccess, \JsonSeri
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'name' => false,
-        'locales' => false,
-        'default_locale' => false
+        'name' => false
     ];
 
     /**
@@ -173,9 +167,7 @@ class CreateI18nProfileRequest implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $attributeMap = [
-        'name' => 'name',
-        'locales' => 'locales',
-        'default_locale' => 'default_locale'
+        'name' => 'name'
     ];
 
     /**
@@ -184,9 +176,7 @@ class CreateI18nProfileRequest implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $setters = [
-        'name' => 'setName',
-        'locales' => 'setLocales',
-        'default_locale' => 'setDefaultLocale'
+        'name' => 'setName'
     ];
 
     /**
@@ -195,9 +185,7 @@ class CreateI18nProfileRequest implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $getters = [
-        'name' => 'getName',
-        'locales' => 'getLocales',
-        'default_locale' => 'getDefaultLocale'
+        'name' => 'getName'
     ];
 
     /**
@@ -258,8 +246,6 @@ class CreateI18nProfileRequest implements ModelInterface, ArrayAccess, \JsonSeri
     public function __construct(?array $data = null)
     {
         $this->setIfExists('name', $data ?? [], null);
-        $this->setIfExists('locales', $data ?? [], null);
-        $this->setIfExists('default_locale', $data ?? [], null);
     }
 
     /**
@@ -292,6 +278,18 @@ class CreateI18nProfileRequest implements ModelInterface, ArrayAccess, \JsonSeri
         if ($this->container['name'] === null) {
             $invalidProperties[] = "'name' can't be null";
         }
+        if ((mb_strlen($this->container['name']) > 64)) {
+            $invalidProperties[] = "invalid value for 'name', the character length must be smaller than or equal to 64.";
+        }
+
+        if ((mb_strlen($this->container['name']) < 1)) {
+            $invalidProperties[] = "invalid value for 'name', the character length must be bigger than or equal to 1.";
+        }
+
+        if (!preg_match("/^[a-z0-9][a-z0-9_:.-]*$/", $this->container['name'])) {
+            $invalidProperties[] = "invalid value for 'name', must be conform to the pattern /^[a-z0-9][a-z0-9_:.-]*$/.";
+        }
+
         return $invalidProperties;
     }
 
@@ -320,7 +318,7 @@ class CreateI18nProfileRequest implements ModelInterface, ArrayAccess, \JsonSeri
     /**
      * Sets name
      *
-     * @param string $name Profile handle to create, e.g. `en:prod` or `fr:prod`.
+     * @param string $name Profile handle to create, e.g. `en:prod` or `fr:prod`. Lowercase alphanumeric start, then letters/digits/`_`/`:`/`.`/`-`; max 64 chars. The locale is encoded in the handle, so no separate locale fields are accepted.
      *
      * @return self
      */
@@ -329,61 +327,17 @@ class CreateI18nProfileRequest implements ModelInterface, ArrayAccess, \JsonSeri
         if (is_null($name)) {
             throw new \InvalidArgumentException('non-nullable name cannot be null');
         }
+        if ((mb_strlen($name) > 64)) {
+            throw new \InvalidArgumentException('invalid length for $name when calling CreateI18nProfileRequest., must be smaller than or equal to 64.');
+        }
+        if ((mb_strlen($name) < 1)) {
+            throw new \InvalidArgumentException('invalid length for $name when calling CreateI18nProfileRequest., must be bigger than or equal to 1.');
+        }
+        if ((!preg_match("/^[a-z0-9][a-z0-9_:.-]*$/", ObjectSerializer::toString($name)))) {
+            throw new \InvalidArgumentException("invalid value for \$name when calling CreateI18nProfileRequest., must conform to the pattern /^[a-z0-9][a-z0-9_:.-]*$/.");
+        }
+
         $this->container['name'] = $name;
-
-        return $this;
-    }
-
-    /**
-     * Gets locales
-     *
-     * @return string[]|null
-     */
-    public function getLocales()
-    {
-        return $this->container['locales'];
-    }
-
-    /**
-     * Sets locales
-     *
-     * @param string[]|null $locales Locales this profile carries, e.g. `[\"fr\", \"fr-CA\"]`. Defaults to `[\"en\"]`.
-     *
-     * @return self
-     */
-    public function setLocales($locales)
-    {
-        if (is_null($locales)) {
-            throw new \InvalidArgumentException('non-nullable locales cannot be null');
-        }
-        $this->container['locales'] = $locales;
-
-        return $this;
-    }
-
-    /**
-     * Gets default_locale
-     *
-     * @return string|null
-     */
-    public function getDefaultLocale()
-    {
-        return $this->container['default_locale'];
-    }
-
-    /**
-     * Sets default_locale
-     *
-     * @param string|null $default_locale Default locale for the profile. Defaults to the first entry of `locales`.
-     *
-     * @return self
-     */
-    public function setDefaultLocale($default_locale)
-    {
-        if (is_null($default_locale)) {
-            throw new \InvalidArgumentException('non-nullable default_locale cannot be null');
-        }
-        $this->container['default_locale'] = $default_locale;
 
         return $this;
     }

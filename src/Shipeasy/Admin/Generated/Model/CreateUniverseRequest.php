@@ -60,8 +60,11 @@ class CreateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $openAPITypes = [
         'name' => 'string',
         'folder' => 'string',
+        'description' => 'string',
         'unit_type' => 'string',
-        'holdout_range' => 'int[]'
+        'holdout_range' => 'int[]',
+        'recommended_headroom' => 'int',
+        'param_schema' => '\Shipeasy\Admin\Generated\Model\UniverseParam[]'
     ];
 
     /**
@@ -74,8 +77,11 @@ class CreateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $openAPIFormats = [
         'name' => null,
         'folder' => null,
+        'description' => null,
         'unit_type' => null,
-        'holdout_range' => null
+        'holdout_range' => null,
+        'recommended_headroom' => null,
+        'param_schema' => null
     ];
 
     /**
@@ -86,8 +92,11 @@ class CreateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static array $openAPINullables = [
         'name' => false,
         'folder' => true,
+        'description' => true,
         'unit_type' => false,
-        'holdout_range' => true
+        'holdout_range' => true,
+        'recommended_headroom' => false,
+        'param_schema' => true
     ];
 
     /**
@@ -178,8 +187,11 @@ class CreateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $attributeMap = [
         'name' => 'name',
         'folder' => 'folder',
+        'description' => 'description',
         'unit_type' => 'unit_type',
-        'holdout_range' => 'holdout_range'
+        'holdout_range' => 'holdout_range',
+        'recommended_headroom' => 'recommended_headroom',
+        'param_schema' => 'param_schema'
     ];
 
     /**
@@ -190,8 +202,11 @@ class CreateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $setters = [
         'name' => 'setName',
         'folder' => 'setFolder',
+        'description' => 'setDescription',
         'unit_type' => 'setUnitType',
-        'holdout_range' => 'setHoldoutRange'
+        'holdout_range' => 'setHoldoutRange',
+        'recommended_headroom' => 'setRecommendedHeadroom',
+        'param_schema' => 'setParamSchema'
     ];
 
     /**
@@ -202,8 +217,11 @@ class CreateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $getters = [
         'name' => 'getName',
         'folder' => 'getFolder',
+        'description' => 'getDescription',
         'unit_type' => 'getUnitType',
-        'holdout_range' => 'getHoldoutRange'
+        'holdout_range' => 'getHoldoutRange',
+        'recommended_headroom' => 'getRecommendedHeadroom',
+        'param_schema' => 'getParamSchema'
     ];
 
     /**
@@ -265,8 +283,11 @@ class CreateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
     {
         $this->setIfExists('name', $data ?? [], null);
         $this->setIfExists('folder', $data ?? [], null);
+        $this->setIfExists('description', $data ?? [], null);
         $this->setIfExists('unit_type', $data ?? [], 'user_id');
         $this->setIfExists('holdout_range', $data ?? [], null);
+        $this->setIfExists('recommended_headroom', $data ?? [], 0);
+        $this->setIfExists('param_schema', $data ?? [], null);
     }
 
     /**
@@ -315,12 +336,24 @@ class CreateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
             $invalidProperties[] = "invalid value for 'folder', must be conform to the pattern /^[a-zA-Z0-9_-]+$/.";
         }
 
+        if (!is_null($this->container['description']) && (mb_strlen($this->container['description']) > 2000)) {
+            $invalidProperties[] = "invalid value for 'description', the character length must be smaller than or equal to 2000.";
+        }
+
         if (!is_null($this->container['holdout_range']) && (count($this->container['holdout_range']) > 2)) {
             $invalidProperties[] = "invalid value for 'holdout_range', number of items must be less than or equal to 2.";
         }
 
         if (!is_null($this->container['holdout_range']) && (count($this->container['holdout_range']) < 2)) {
             $invalidProperties[] = "invalid value for 'holdout_range', number of items must be greater than or equal to 2.";
+        }
+
+        if (!is_null($this->container['recommended_headroom']) && ($this->container['recommended_headroom'] > 10000)) {
+            $invalidProperties[] = "invalid value for 'recommended_headroom', must be smaller than or equal to 10000.";
+        }
+
+        if (!is_null($this->container['recommended_headroom']) && ($this->container['recommended_headroom'] < 0)) {
+            $invalidProperties[] = "invalid value for 'recommended_headroom', must be bigger than or equal to 0.";
         }
 
         return $invalidProperties;
@@ -414,6 +447,44 @@ class CreateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
     }
 
     /**
+     * Gets description
+     *
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->container['description'];
+    }
+
+    /**
+     * Sets description
+     *
+     * @param string|null $description Human-readable blurb shown in the universe picker/hovercard.
+     *
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        if (is_null($description)) {
+            array_push($this->openAPINullablesSetToNull, 'description');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('description', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        if (!is_null($description) && (mb_strlen($description) > 2000)) {
+            throw new \InvalidArgumentException('invalid length for $description when calling CreateUniverseRequest., must be smaller than or equal to 2000.');
+        }
+
+        $this->container['description'] = $description;
+
+        return $this;
+    }
+
+    /**
      * Gets unit_type
      *
      * @return string|null
@@ -477,6 +548,75 @@ class CreateUniverseRequest implements ModelInterface, ArrayAccess, \JsonSeriali
             throw new \InvalidArgumentException('invalid length for $holdout_range when calling CreateUniverseRequest., number of items must be greater than or equal to 2.');
         }
         $this->container['holdout_range'] = $holdout_range;
+
+        return $this;
+    }
+
+    /**
+     * Gets recommended_headroom
+     *
+     * @return int|null
+     */
+    public function getRecommendedHeadroom()
+    {
+        return $this->container['recommended_headroom'];
+    }
+
+    /**
+     * Sets recommended_headroom
+     *
+     * @param int|null $recommended_headroom Basis points of reserved headroom seeded into each new experiment created in this universe (0 = none). Lets variants be appended into a running experiment without reshuffling.
+     *
+     * @return self
+     */
+    public function setRecommendedHeadroom($recommended_headroom)
+    {
+        if (is_null($recommended_headroom)) {
+            throw new \InvalidArgumentException('non-nullable recommended_headroom cannot be null');
+        }
+
+        if (($recommended_headroom > 10000)) {
+            throw new \InvalidArgumentException('invalid value for $recommended_headroom when calling CreateUniverseRequest., must be smaller than or equal to 10000.');
+        }
+        if (($recommended_headroom < 0)) {
+            throw new \InvalidArgumentException('invalid value for $recommended_headroom when calling CreateUniverseRequest., must be bigger than or equal to 0.');
+        }
+
+        $this->container['recommended_headroom'] = $recommended_headroom;
+
+        return $this;
+    }
+
+    /**
+     * Gets param_schema
+     *
+     * @return \Shipeasy\Admin\Generated\Model\UniverseParam[]|null
+     */
+    public function getParamSchema()
+    {
+        return $this->container['param_schema'];
+    }
+
+    /**
+     * Sets param_schema
+     *
+     * @param \Shipeasy\Admin\Generated\Model\UniverseParam[]|null $param_schema The universe-owned config schema — an ordered `{ name, type, default }[]`. Experiments may only override values per variant, never add fields. `null` starts an empty schema.
+     *
+     * @return self
+     */
+    public function setParamSchema($param_schema)
+    {
+        if (is_null($param_schema)) {
+            array_push($this->openAPINullablesSetToNull, 'param_schema');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('param_schema', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['param_schema'] = $param_schema;
 
         return $this;
     }

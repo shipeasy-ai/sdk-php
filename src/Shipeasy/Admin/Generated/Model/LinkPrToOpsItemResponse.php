@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * LinkPrToOpsItemResponse Class Doc Comment
  *
  * @category Class
- * @description Response for the update / link-pr endpoints.
+ * @description Response for &#x60;POST /api/admin/ops/{handle}/link-pr&#x60; — the item id and the resulting PR link.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -58,7 +58,8 @@ class LinkPrToOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $openAPITypes = [
-        'id' => 'string'
+        'id' => 'string',
+        'pr' => '\Shipeasy\Admin\Generated\Model\GithubPrLink'
     ];
 
     /**
@@ -69,7 +70,8 @@ class LinkPrToOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSeria
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'id' => null
+        'id' => null,
+        'pr' => null
     ];
 
     /**
@@ -78,7 +80,8 @@ class LinkPrToOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSeria
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'id' => false
+        'id' => false,
+        'pr' => true
     ];
 
     /**
@@ -167,7 +170,8 @@ class LinkPrToOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $attributeMap = [
-        'id' => 'id'
+        'id' => 'id',
+        'pr' => 'pr'
     ];
 
     /**
@@ -176,7 +180,8 @@ class LinkPrToOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $setters = [
-        'id' => 'setId'
+        'id' => 'setId',
+        'pr' => 'setPr'
     ];
 
     /**
@@ -185,7 +190,8 @@ class LinkPrToOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $getters = [
-        'id' => 'getId'
+        'id' => 'getId',
+        'pr' => 'getPr'
     ];
 
     /**
@@ -246,6 +252,7 @@ class LinkPrToOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSeria
     public function __construct(?array $data = null)
     {
         $this->setIfExists('id', $data ?? [], null);
+        $this->setIfExists('pr', $data ?? [], null);
     }
 
     /**
@@ -277,6 +284,9 @@ class LinkPrToOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSeria
 
         if ($this->container['id'] === null) {
             $invalidProperties[] = "'id' can't be null";
+        }
+        if ($this->container['pr'] === null && !$this->isNullableSetToNull('pr')) {
+            $invalidProperties[] = "'pr' is required";
         }
         return $invalidProperties;
     }
@@ -316,6 +326,40 @@ class LinkPrToOpsItemResponse implements ModelInterface, ArrayAccess, \JsonSeria
             throw new \InvalidArgumentException('non-nullable id cannot be null');
         }
         $this->container['id'] = $id;
+
+        return $this;
+    }
+
+    /**
+     * Gets pr
+     *
+     * @return \Shipeasy\Admin\Generated\Model\GithubPrLink|null
+     */
+    public function getPr()
+    {
+        return $this->container['pr'];
+    }
+
+    /**
+     * Sets pr
+     *
+     * @param \Shipeasy\Admin\Generated\Model\GithubPrLink|null $pr The PR link now recorded on the item (`connectorData.github.pr`), or `null` after an unlink (`prNumber: null`).
+     *
+     * @return self
+     */
+    public function setPr($pr)
+    {
+        if (is_null($pr)) {
+            array_push($this->openAPINullablesSetToNull, 'pr');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('pr', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $this->container['pr'] = $pr;
 
         return $this;
     }

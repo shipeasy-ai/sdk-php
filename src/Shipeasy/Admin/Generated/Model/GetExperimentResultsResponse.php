@@ -58,7 +58,7 @@ class GetExperimentResultsResponse implements ModelInterface, ArrayAccess, \Json
      */
     protected static $openAPITypes = [
         'experiment' => '\Shipeasy\Admin\Generated\Model\GetExperimentResultsResponseExperiment',
-        'results' => '\Shipeasy\Admin\Generated\Model\GetExperimentResultsResponseResultsInner[]',
+        'results' => '\Shipeasy\Admin\Generated\Model\ExperimentResultRow[]',
         'verdict' => 'string'
     ];
 
@@ -372,7 +372,7 @@ class GetExperimentResultsResponse implements ModelInterface, ArrayAccess, \Json
     /**
      * Gets results
      *
-     * @return \Shipeasy\Admin\Generated\Model\GetExperimentResultsResponseResultsInner[]
+     * @return \Shipeasy\Admin\Generated\Model\ExperimentResultRow[]
      */
     public function getResults()
     {
@@ -382,7 +382,7 @@ class GetExperimentResultsResponse implements ModelInterface, ArrayAccess, \Json
     /**
      * Sets results
      *
-     * @param \Shipeasy\Admin\Generated\Model\GetExperimentResultsResponseResultsInner[] $results results
+     * @param \Shipeasy\Admin\Generated\Model\ExperimentResultRow[] $results One analysis row per metric/group/day — the persisted `experiment_results` rows for this experiment.
      *
      * @return self
      */

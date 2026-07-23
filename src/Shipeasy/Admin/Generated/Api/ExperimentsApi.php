@@ -77,10 +77,16 @@ class ExperimentsApi
         'createExperiment' => [
             'application/json',
         ],
+        'createExperimentReadout' => [
+            'application/json',
+        ],
         'deleteExperiment' => [
             'application/json',
         ],
         'getExperiment' => [
+            'application/json',
+        ],
+        'getExperimentReadout' => [
             'application/json',
         ],
         'getExperimentResults' => [
@@ -518,6 +524,397 @@ class ExperimentsApi
     }
 
     /**
+     * Operation createExperimentReadout
+     *
+     * Mint a readout snapshot
+     *
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\CreateExperimentReadoutRequest $create_experiment_readout_request create_experiment_readout_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createExperimentReadout'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Shipeasy\Admin\Generated\Model\CreateExperimentReadoutResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     */
+    public function createExperimentReadout($id, $create_experiment_readout_request, $x_project_id = null, string $contentType = self::contentTypes['createExperimentReadout'][0])
+    {
+        list($response) = $this->createExperimentReadoutWithHttpInfo($id, $create_experiment_readout_request, $x_project_id, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation createExperimentReadoutWithHttpInfo
+     *
+     * Mint a readout snapshot
+     *
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\CreateExperimentReadoutRequest $create_experiment_readout_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createExperimentReadout'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of \Shipeasy\Admin\Generated\Model\CreateExperimentReadoutResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function createExperimentReadoutWithHttpInfo($id, $create_experiment_readout_request, $x_project_id = null, string $contentType = self::contentTypes['createExperimentReadout'][0])
+    {
+        $request = $this->createExperimentReadoutRequest($id, $create_experiment_readout_request, $x_project_id, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\CreateExperimentReadoutResponse',
+                        $request,
+                        $response,
+                    );
+                case 400:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 401:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 409:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Shipeasy\Admin\Generated\Model\CreateExperimentReadoutResponse',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\CreateExperimentReadoutResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+        
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation createExperimentReadoutAsync
+     *
+     * Mint a readout snapshot
+     *
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\CreateExperimentReadoutRequest $create_experiment_readout_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createExperimentReadout'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function createExperimentReadoutAsync($id, $create_experiment_readout_request, $x_project_id = null, string $contentType = self::contentTypes['createExperimentReadout'][0])
+    {
+        return $this->createExperimentReadoutAsyncWithHttpInfo($id, $create_experiment_readout_request, $x_project_id, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation createExperimentReadoutAsyncWithHttpInfo
+     *
+     * Mint a readout snapshot
+     *
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\CreateExperimentReadoutRequest $create_experiment_readout_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createExperimentReadout'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function createExperimentReadoutAsyncWithHttpInfo($id, $create_experiment_readout_request, $x_project_id = null, string $contentType = self::contentTypes['createExperimentReadout'][0])
+    {
+        $returnType = '\Shipeasy\Admin\Generated\Model\CreateExperimentReadoutResponse';
+        $request = $this->createExperimentReadoutRequest($id, $create_experiment_readout_request, $x_project_id, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'createExperimentReadout'
+     *
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  \Shipeasy\Admin\Generated\Model\CreateExperimentReadoutRequest $create_experiment_readout_request (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createExperimentReadout'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function createExperimentReadoutRequest($id, $create_experiment_readout_request, $x_project_id = null, string $contentType = self::contentTypes['createExperimentReadout'][0])
+    {
+
+        // verify the required parameter 'id' is set
+        if ($id === null || (is_array($id) && count($id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $id when calling createExperimentReadout'
+            );
+        }
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.createExperimentReadout, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.createExperimentReadout, must be bigger than or equal to 1.');
+        }
+        
+        // verify the required parameter 'create_experiment_readout_request' is set
+        if ($create_experiment_readout_request === null || (is_array($create_experiment_readout_request) && count($create_experiment_readout_request) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $create_experiment_readout_request when calling createExperimentReadout'
+            );
+        }
+
+
+
+        $resourcePath = '/api/admin/experiments/{id}/readouts';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // header params
+        if ($x_project_id !== null) {
+            $headerParams['X-Project-Id'] = ObjectSerializer::toHeaderValue($x_project_id);
+        }
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{id}',
+                ObjectSerializer::toPathValue($id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (isset($create_experiment_readout_request)) {
+            if (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the body
+                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($create_experiment_readout_request));
+            } else {
+                $httpBody = $create_experiment_readout_request;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (sdk_admin_*) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'POST',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation deleteExperiment
      *
      * Delete an experiment
@@ -800,7 +1197,13 @@ class ExperimentsApi
                 'Missing the required parameter $id when calling deleteExperiment'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.deleteExperiment, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.deleteExperiment, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/experiments/{id}';
@@ -888,13 +1291,13 @@ class ExperimentsApi
      *
      * Get one experiment
      *
-     * @param  string|null $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getExperiment'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
-     * @return \Shipeasy\Admin\Generated\Model\GetExperimentResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     * @return \Shipeasy\Admin\Generated\Model\ExperimentApiRow|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
     public function getExperiment($id, $x_project_id = null, string $contentType = self::contentTypes['getExperiment'][0])
     {
@@ -907,13 +1310,13 @@ class ExperimentsApi
      *
      * Get one experiment
      *
-     * @param  string|null $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getExperiment'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
-     * @return array of \Shipeasy\Admin\Generated\Model\GetExperimentResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Shipeasy\Admin\Generated\Model\ExperimentApiRow|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
     public function getExperimentWithHttpInfo($id, $x_project_id = null, string $contentType = self::contentTypes['getExperiment'][0])
     {
@@ -945,7 +1348,7 @@ class ExperimentsApi
             switch($statusCode) {
                 case 200:
                     return $this->handleResponseWithDataType(
-                        '\Shipeasy\Admin\Generated\Model\GetExperimentResponse',
+                        '\Shipeasy\Admin\Generated\Model\ExperimentApiRow',
                         $request,
                         $response,
                     );
@@ -1003,7 +1406,7 @@ class ExperimentsApi
             }
 
             return $this->handleResponseWithDataType(
-                '\Shipeasy\Admin\Generated\Model\GetExperimentResponse',
+                '\Shipeasy\Admin\Generated\Model\ExperimentApiRow',
                 $request,
                 $response,
             );
@@ -1012,7 +1415,7 @@ class ExperimentsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Shipeasy\Admin\Generated\Model\GetExperimentResponse',
+                        '\Shipeasy\Admin\Generated\Model\ExperimentApiRow',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -1077,7 +1480,7 @@ class ExperimentsApi
      *
      * Get one experiment
      *
-     * @param  string|null $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getExperiment'] to see the possible values for this operation
      *
@@ -1099,7 +1502,7 @@ class ExperimentsApi
      *
      * Get one experiment
      *
-     * @param  string|null $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getExperiment'] to see the possible values for this operation
      *
@@ -1108,7 +1511,7 @@ class ExperimentsApi
      */
     public function getExperimentAsyncWithHttpInfo($id, $x_project_id = null, string $contentType = self::contentTypes['getExperiment'][0])
     {
-        $returnType = '\Shipeasy\Admin\Generated\Model\GetExperimentResponse';
+        $returnType = '\Shipeasy\Admin\Generated\Model\ExperimentApiRow';
         $request = $this->getExperimentRequest($id, $x_project_id, $contentType);
 
         return $this->client
@@ -1150,7 +1553,7 @@ class ExperimentsApi
     /**
      * Create request for operation 'getExperiment'
      *
-     * @param  string|null $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getExperiment'] to see the possible values for this operation
      *
@@ -1166,7 +1569,13 @@ class ExperimentsApi
                 'Missing the required parameter $id when calling getExperiment'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.getExperiment, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.getExperiment, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/experiments/{id}';
@@ -1187,6 +1596,404 @@ class ExperimentsApi
             $resourcePath = str_replace(
                 '{id}',
                 ObjectSerializer::toPathValue($id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (sdk_admin_*) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation getExperimentReadout
+     *
+     * Get a readout snapshot
+     *
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  string $readout_id Readout snapshot id, as returned by &#x60;createExperimentReadout&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getExperimentReadout'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Shipeasy\Admin\Generated\Model\ExperimentReadoutApiRow|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
+     */
+    public function getExperimentReadout($id, $readout_id, $x_project_id = null, string $contentType = self::contentTypes['getExperimentReadout'][0])
+    {
+        list($response) = $this->getExperimentReadoutWithHttpInfo($id, $readout_id, $x_project_id, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation getExperimentReadoutWithHttpInfo
+     *
+     * Get a readout snapshot
+     *
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  string $readout_id Readout snapshot id, as returned by &#x60;createExperimentReadout&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getExperimentReadout'] to see the possible values for this operation
+     *
+     * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of \Shipeasy\Admin\Generated\Model\ExperimentReadoutApiRow|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function getExperimentReadoutWithHttpInfo($id, $readout_id, $x_project_id = null, string $contentType = self::contentTypes['getExperimentReadout'][0])
+    {
+        $request = $this->getExperimentReadoutRequest($id, $readout_id, $x_project_id, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\ExperimentReadoutApiRow',
+                        $request,
+                        $response,
+                    );
+                case 400:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 401:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 409:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+                case 422:
+                    return $this->handleResponseWithDataType(
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Shipeasy\Admin\Generated\Model\ExperimentReadoutApiRow',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\ExperimentReadoutApiRow',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Shipeasy\Admin\Generated\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+        
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation getExperimentReadoutAsync
+     *
+     * Get a readout snapshot
+     *
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  string $readout_id Readout snapshot id, as returned by &#x60;createExperimentReadout&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getExperimentReadout'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getExperimentReadoutAsync($id, $readout_id, $x_project_id = null, string $contentType = self::contentTypes['getExperimentReadout'][0])
+    {
+        return $this->getExperimentReadoutAsyncWithHttpInfo($id, $readout_id, $x_project_id, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation getExperimentReadoutAsyncWithHttpInfo
+     *
+     * Get a readout snapshot
+     *
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  string $readout_id Readout snapshot id, as returned by &#x60;createExperimentReadout&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getExperimentReadout'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getExperimentReadoutAsyncWithHttpInfo($id, $readout_id, $x_project_id = null, string $contentType = self::contentTypes['getExperimentReadout'][0])
+    {
+        $returnType = '\Shipeasy\Admin\Generated\Model\ExperimentReadoutApiRow';
+        $request = $this->getExperimentReadoutRequest($id, $readout_id, $x_project_id, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getExperimentReadout'
+     *
+     * @param  string $id Stable opaque experiment id (&#x60;exp_…&#x60;) or the experiment&#39;s &#x60;name&#x60;. (required)
+     * @param  string $readout_id Readout snapshot id, as returned by &#x60;createExperimentReadout&#x60;. (required)
+     * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getExperimentReadout'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function getExperimentReadoutRequest($id, $readout_id, $x_project_id = null, string $contentType = self::contentTypes['getExperimentReadout'][0])
+    {
+
+        // verify the required parameter 'id' is set
+        if ($id === null || (is_array($id) && count($id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $id when calling getExperimentReadout'
+            );
+        }
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.getExperimentReadout, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.getExperimentReadout, must be bigger than or equal to 1.');
+        }
+        
+        // verify the required parameter 'readout_id' is set
+        if ($readout_id === null || (is_array($readout_id) && count($readout_id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $readout_id when calling getExperimentReadout'
+            );
+        }
+        if (strlen($readout_id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$readout_id" when calling ExperimentsApi.getExperimentReadout, must be smaller than or equal to 128.');
+        }
+        if (strlen($readout_id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$readout_id" when calling ExperimentsApi.getExperimentReadout, must be bigger than or equal to 1.');
+        }
+        
+
+
+        $resourcePath = '/api/admin/experiments/{id}/readouts/{readoutId}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // header params
+        if ($x_project_id !== null) {
+            $headerParams['X-Project-Id'] = ObjectSerializer::toHeaderValue($x_project_id);
+        }
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{id}',
+                ObjectSerializer::toPathValue($id),
+                $resourcePath
+            );
+        }
+        // path params
+        if ($readout_id !== null) {
+            $resourcePath = str_replace(
+                '{readoutId}',
+                ObjectSerializer::toPathValue($readout_id),
                 $resourcePath
             );
         }
@@ -1532,7 +2339,13 @@ class ExperimentsApi
                 'Missing the required parameter $id when calling getExperimentResults'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.getExperimentResults, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.getExperimentResults, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/experiments/{id}/results';
@@ -1903,7 +2716,13 @@ class ExperimentsApi
                 'Missing the required parameter $id when calling getExperimentTimeseries'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.getExperimentTimeseries, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.getExperimentTimeseries, must be bigger than or equal to 1.');
+        }
+        
 
 
 
@@ -2004,15 +2823,17 @@ class ExperimentsApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $status Filter by lifecycle status. Pass &#x60;archived&#x60; to return the archive tab; any other value (or omitting it) returns the non-archived experiments. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listExperiments'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Shipeasy\Admin\Generated\Model\ListExperimentsResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
-    public function listExperiments($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listExperiments'][0])
+    public function listExperiments($x_project_id = null, $limit = 100, $cursor = null, $status = null, $q = null, string $contentType = self::contentTypes['listExperiments'][0])
     {
-        list($response) = $this->listExperimentsWithHttpInfo($x_project_id, $limit, $cursor, $contentType);
+        list($response) = $this->listExperimentsWithHttpInfo($x_project_id, $limit, $cursor, $status, $q, $contentType);
         return $response;
     }
 
@@ -2024,15 +2845,17 @@ class ExperimentsApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $status Filter by lifecycle status. Pass &#x60;archived&#x60; to return the archive tab; any other value (or omitting it) returns the non-archived experiments. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listExperiments'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return array of \Shipeasy\Admin\Generated\Model\ListExperimentsResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listExperimentsWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listExperiments'][0])
+    public function listExperimentsWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, $status = null, $q = null, string $contentType = self::contentTypes['listExperiments'][0])
     {
-        $request = $this->listExperimentsRequest($x_project_id, $limit, $cursor, $contentType);
+        $request = $this->listExperimentsRequest($x_project_id, $limit, $cursor, $status, $q, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -2195,14 +3018,16 @@ class ExperimentsApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $status Filter by lifecycle status. Pass &#x60;archived&#x60; to return the archive tab; any other value (or omitting it) returns the non-archived experiments. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listExperiments'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listExperimentsAsync($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listExperiments'][0])
+    public function listExperimentsAsync($x_project_id = null, $limit = 100, $cursor = null, $status = null, $q = null, string $contentType = self::contentTypes['listExperiments'][0])
     {
-        return $this->listExperimentsAsyncWithHttpInfo($x_project_id, $limit, $cursor, $contentType)
+        return $this->listExperimentsAsyncWithHttpInfo($x_project_id, $limit, $cursor, $status, $q, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -2218,15 +3043,17 @@ class ExperimentsApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $status Filter by lifecycle status. Pass &#x60;archived&#x60; to return the archive tab; any other value (or omitting it) returns the non-archived experiments. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listExperiments'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listExperimentsAsyncWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listExperiments'][0])
+    public function listExperimentsAsyncWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, $status = null, $q = null, string $contentType = self::contentTypes['listExperiments'][0])
     {
         $returnType = '\Shipeasy\Admin\Generated\Model\ListExperimentsResponse';
-        $request = $this->listExperimentsRequest($x_project_id, $limit, $cursor, $contentType);
+        $request = $this->listExperimentsRequest($x_project_id, $limit, $cursor, $status, $q, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -2270,12 +3097,14 @@ class ExperimentsApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $status Filter by lifecycle status. Pass &#x60;archived&#x60; to return the archive tab; any other value (or omitting it) returns the non-archived experiments. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listExperiments'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listExperimentsRequest($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listExperiments'][0])
+    public function listExperimentsRequest($x_project_id = null, $limit = 100, $cursor = null, $status = null, $q = null, string $contentType = self::contentTypes['listExperiments'][0])
     {
 
 
@@ -2287,6 +3116,11 @@ class ExperimentsApi
         }
         
 
+
+        if ($q !== null && strlen($q) > 100) {
+            throw new \InvalidArgumentException('invalid length for "$q" when calling ExperimentsApi.listExperiments, must be smaller than or equal to 100.');
+        }
+        
 
         $resourcePath = '/api/admin/experiments';
         $formParams = [];
@@ -2308,6 +3142,24 @@ class ExperimentsApi
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $cursor,
             'cursor', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $status,
+            'status', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $q,
+            'q', // param base name
             'string', // openApiType
             'form', // style
             true, // explode
@@ -2438,7 +3290,7 @@ class ExperimentsApi
 
 
             switch($statusCode) {
-                case 201:
+                case 200:
                     return $this->handleResponseWithDataType(
                         '\Shipeasy\Admin\Generated\Model\ReanalyzeExperimentResponse',
                         $request,
@@ -2504,7 +3356,7 @@ class ExperimentsApi
             );
         } catch (ApiException $e) {
             switch ($e->getCode()) {
-                case 201:
+                case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Shipeasy\Admin\Generated\Model\ReanalyzeExperimentResponse',
@@ -2661,7 +3513,13 @@ class ExperimentsApi
                 'Missing the required parameter $id when calling reanalyzeExperiment'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.reanalyzeExperiment, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.reanalyzeExperiment, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/experiments/{id}/reanalyze';
@@ -2806,7 +3664,7 @@ class ExperimentsApi
 
 
             switch($statusCode) {
-                case 201:
+                case 200:
                     return $this->handleResponseWithDataType(
                         '\Shipeasy\Admin\Generated\Model\SetExperimentMetricsResponse',
                         $request,
@@ -2872,7 +3730,7 @@ class ExperimentsApi
             );
         } catch (ApiException $e) {
             switch ($e->getCode()) {
-                case 201:
+                case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Shipeasy\Admin\Generated\Model\SetExperimentMetricsResponse',
@@ -3032,7 +3890,13 @@ class ExperimentsApi
                 'Missing the required parameter $id when calling setExperimentMetrics'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.setExperimentMetrics, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.setExperimentMetrics, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'set_experiment_metrics_request' is set
         if ($set_experiment_metrics_request === null || (is_array($set_experiment_metrics_request) && count($set_experiment_metrics_request) === 0)) {
             throw new \InvalidArgumentException(
@@ -3191,7 +4055,7 @@ class ExperimentsApi
 
 
             switch($statusCode) {
-                case 201:
+                case 200:
                     return $this->handleResponseWithDataType(
                         '\Shipeasy\Admin\Generated\Model\SetExperimentStatusResponse',
                         $request,
@@ -3257,7 +4121,7 @@ class ExperimentsApi
             );
         } catch (ApiException $e) {
             switch ($e->getCode()) {
-                case 201:
+                case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Shipeasy\Admin\Generated\Model\SetExperimentStatusResponse',
@@ -3417,7 +4281,13 @@ class ExperimentsApi
                 'Missing the required parameter $id when calling setExperimentStatus'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.setExperimentStatus, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.setExperimentStatus, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'set_experiment_status_request' is set
         if ($set_experiment_status_request === null || (is_array($set_experiment_status_request) && count($set_experiment_status_request) === 0)) {
             throw new \InvalidArgumentException(
@@ -3802,7 +4672,13 @@ class ExperimentsApi
                 'Missing the required parameter $id when calling updateExperiment'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.updateExperiment, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling ExperimentsApi.updateExperiment, must be bigger than or equal to 1.');
+        }
+        
         // verify the required parameter 'update_experiment_request' is set
         if ($update_experiment_request === null || (is_array($update_experiment_request) && count($update_experiment_request) === 0)) {
             throw new \InvalidArgumentException(

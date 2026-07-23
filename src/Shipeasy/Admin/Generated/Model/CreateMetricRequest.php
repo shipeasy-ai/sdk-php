@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * CreateMetricRequest Class Doc Comment
  *
  * @category Class
- * @description Body for &#x60;POST /api/admin/metrics&#x60;. Requires &#x60;name&#x60;, &#x60;event_name&#x60;, and exactly one of &#x60;query&#x60; / &#x60;query_ir&#x60;.
+ * @description Body for &#x60;POST /api/admin/metrics&#x60;. Requires &#x60;name&#x60;, &#x60;event_name&#x60;, and exactly one of &#x60;query&#x60; / &#x60;query_ir&#x60; — modelled as a &#x60;oneOf&#x60; of two strict variants, so supplying both (or neither) is rejected.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -62,10 +62,11 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         'folder' => 'string',
         'event_name' => 'string',
         'query' => 'string',
-        'query_ir' => '\Shipeasy\Admin\Generated\Model\ListMetricsResponseInnerQueryIr',
         'winsorize_pct' => 'int',
-        'min_detectable_effect' => 'float',
-        'direction' => 'string'
+        'default_min_effect_of_interest' => 'float',
+        'direction' => '\Shipeasy\Admin\Generated\Model\MetricDirection',
+        'unit' => 'string',
+        'query_ir' => '\Shipeasy\Admin\Generated\Model\QueryIr'
     ];
 
     /**
@@ -80,10 +81,11 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         'folder' => null,
         'event_name' => null,
         'query' => null,
-        'query_ir' => null,
         'winsorize_pct' => null,
-        'min_detectable_effect' => null,
-        'direction' => null
+        'default_min_effect_of_interest' => null,
+        'direction' => null,
+        'unit' => null,
+        'query_ir' => null
     ];
 
     /**
@@ -93,13 +95,14 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
      */
     protected static array $openAPINullables = [
         'name' => false,
-        'folder' => true,
+        'folder' => false,
         'event_name' => false,
         'query' => false,
-        'query_ir' => false,
         'winsorize_pct' => false,
-        'min_detectable_effect' => true,
-        'direction' => false
+        'default_min_effect_of_interest' => false,
+        'direction' => false,
+        'unit' => false,
+        'query_ir' => false
     ];
 
     /**
@@ -192,10 +195,11 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         'folder' => 'folder',
         'event_name' => 'event_name',
         'query' => 'query',
-        'query_ir' => 'query_ir',
         'winsorize_pct' => 'winsorize_pct',
-        'min_detectable_effect' => 'min_detectable_effect',
-        'direction' => 'direction'
+        'default_min_effect_of_interest' => 'default_min_effect_of_interest',
+        'direction' => 'direction',
+        'unit' => 'unit',
+        'query_ir' => 'query_ir'
     ];
 
     /**
@@ -208,10 +212,11 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         'folder' => 'setFolder',
         'event_name' => 'setEventName',
         'query' => 'setQuery',
-        'query_ir' => 'setQueryIr',
         'winsorize_pct' => 'setWinsorizePct',
-        'min_detectable_effect' => 'setMinDetectableEffect',
-        'direction' => 'setDirection'
+        'default_min_effect_of_interest' => 'setDefaultMinEffectOfInterest',
+        'direction' => 'setDirection',
+        'unit' => 'setUnit',
+        'query_ir' => 'setQueryIr'
     ];
 
     /**
@@ -224,10 +229,11 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         'folder' => 'getFolder',
         'event_name' => 'getEventName',
         'query' => 'getQuery',
-        'query_ir' => 'getQueryIr',
         'winsorize_pct' => 'getWinsorizePct',
-        'min_detectable_effect' => 'getMinDetectableEffect',
-        'direction' => 'getDirection'
+        'default_min_effect_of_interest' => 'getDefaultMinEffectOfInterest',
+        'direction' => 'getDirection',
+        'unit' => 'getUnit',
+        'query_ir' => 'getQueryIr'
     ];
 
     /**
@@ -271,23 +277,6 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         return self::$openAPIModelName;
     }
 
-    public const DIRECTION_HIGHER_BETTER = 'higher_better';
-    public const DIRECTION_LOWER_BETTER = 'lower_better';
-    public const DIRECTION_NEUTRAL = 'neutral';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getDirectionAllowableValues()
-    {
-        return [
-            self::DIRECTION_HIGHER_BETTER,
-            self::DIRECTION_LOWER_BETTER,
-            self::DIRECTION_NEUTRAL,
-        ];
-    }
 
     /**
      * Associative array for storing property values
@@ -308,10 +297,11 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         $this->setIfExists('folder', $data ?? [], null);
         $this->setIfExists('event_name', $data ?? [], null);
         $this->setIfExists('query', $data ?? [], null);
-        $this->setIfExists('query_ir', $data ?? [], null);
         $this->setIfExists('winsorize_pct', $data ?? [], 99);
-        $this->setIfExists('min_detectable_effect', $data ?? [], null);
-        $this->setIfExists('direction', $data ?? [], 'higher_better');
+        $this->setIfExists('default_min_effect_of_interest', $data ?? [], null);
+        $this->setIfExists('direction', $data ?? [], null);
+        $this->setIfExists('unit', $data ?? [], null);
+        $this->setIfExists('query_ir', $data ?? [], null);
     }
 
     /**
@@ -367,11 +357,14 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
             $invalidProperties[] = "invalid value for 'event_name', the character length must be bigger than or equal to 1.";
         }
 
-        if (!is_null($this->container['query']) && (mb_strlen($this->container['query']) > 4096)) {
+        if ($this->container['query'] === null) {
+            $invalidProperties[] = "'query' can't be null";
+        }
+        if ((mb_strlen($this->container['query']) > 4096)) {
             $invalidProperties[] = "invalid value for 'query', the character length must be smaller than or equal to 4096.";
         }
 
-        if (!is_null($this->container['query']) && (mb_strlen($this->container['query']) < 1)) {
+        if ((mb_strlen($this->container['query']) < 1)) {
             $invalidProperties[] = "invalid value for 'query', the character length must be bigger than or equal to 1.";
         }
 
@@ -383,15 +376,9 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
             $invalidProperties[] = "invalid value for 'winsorize_pct', must be bigger than or equal to 1.";
         }
 
-        $allowedValues = $this->getDirectionAllowableValues();
-        if (!is_null($this->container['direction']) && !in_array($this->container['direction'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'direction', must be one of '%s'",
-                $this->container['direction'],
-                implode("', '", $allowedValues)
-            );
+        if ($this->container['query_ir'] === null) {
+            $invalidProperties[] = "'query_ir' can't be null";
         }
-
         return $invalidProperties;
     }
 
@@ -461,19 +448,12 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     public function setFolder($folder)
     {
         if (is_null($folder)) {
-            array_push($this->openAPINullablesSetToNull, 'folder');
-        } else {
-            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
-            $index = array_search('folder', $nullablesSetToNull);
-            if ($index !== FALSE) {
-                unset($nullablesSetToNull[$index]);
-                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
-            }
+            throw new \InvalidArgumentException('non-nullable folder cannot be null');
         }
-        if (!is_null($folder) && (mb_strlen($folder) > 256)) {
+        if ((mb_strlen($folder) > 256)) {
             throw new \InvalidArgumentException('invalid length for $folder when calling CreateMetricRequest., must be smaller than or equal to 256.');
         }
-        if (!is_null($folder) && (!preg_match("/^[a-zA-Z0-9_-]+$/", ObjectSerializer::toString($folder)))) {
+        if ((!preg_match("/^[a-zA-Z0-9_-]+$/", ObjectSerializer::toString($folder)))) {
             throw new \InvalidArgumentException("invalid value for \$folder when calling CreateMetricRequest., must conform to the pattern /^[a-zA-Z0-9_-]+$/.");
         }
 
@@ -517,7 +497,7 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Gets query
      *
-     * @return string|null
+     * @return string
      */
     public function getQuery()
     {
@@ -527,7 +507,7 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Sets query
      *
-     * @param string|null $query Metric query DSL string, e.g. `sum(purchase, amount)`. Provide this OR `query_ir`.
+     * @param string $query Metric query DSL string, e.g. `sum(purchase, amount)`. The alternative to `query_ir`. Every label the query references — in filters, the value position, `by (…)`, or `without (…)` — must exist as a property on the tracked event's payload; a query over a label the event never carries validates fine but returns empty results.
      *
      * @return self
      */
@@ -544,33 +524,6 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         }
 
         $this->container['query'] = $query;
-
-        return $this;
-    }
-
-    /**
-     * Gets query_ir
-     *
-     * @return \Shipeasy\Admin\Generated\Model\ListMetricsResponseInnerQueryIr|null
-     */
-    public function getQueryIr()
-    {
-        return $this->container['query_ir'];
-    }
-
-    /**
-     * Sets query_ir
-     *
-     * @param \Shipeasy\Admin\Generated\Model\ListMetricsResponseInnerQueryIr|null $query_ir query_ir
-     *
-     * @return self
-     */
-    public function setQueryIr($query_ir)
-    {
-        if (is_null($query_ir)) {
-            throw new \InvalidArgumentException('non-nullable query_ir cannot be null');
-        }
-        $this->container['query_ir'] = $query_ir;
 
         return $this;
     }
@@ -611,35 +564,28 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     }
 
     /**
-     * Gets min_detectable_effect
+     * Gets default_min_effect_of_interest
      *
      * @return float|null
      */
-    public function getMinDetectableEffect()
+    public function getDefaultMinEffectOfInterest()
     {
-        return $this->container['min_detectable_effect'];
+        return $this->container['default_min_effect_of_interest'];
     }
 
     /**
-     * Sets min_detectable_effect
+     * Sets default_min_effect_of_interest
      *
-     * @param float|null $min_detectable_effect Minimum detectable effect (relative, 0–1) for power planning. `null` to omit.
+     * @param float|null $default_min_effect_of_interest Default minimum effect of interest (relative, 0–1) — the smallest change in this metric worth acting on, used as the power-planning baseline. Intrinsic to the metric; an experiment overrides it per-attachment with `min_effect_of_interest` when a specific decision has a different cost/risk bar. `null` to omit.
      *
      * @return self
      */
-    public function setMinDetectableEffect($min_detectable_effect)
+    public function setDefaultMinEffectOfInterest($default_min_effect_of_interest)
     {
-        if (is_null($min_detectable_effect)) {
-            array_push($this->openAPINullablesSetToNull, 'min_detectable_effect');
-        } else {
-            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
-            $index = array_search('min_detectable_effect', $nullablesSetToNull);
-            if ($index !== FALSE) {
-                unset($nullablesSetToNull[$index]);
-                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
-            }
+        if (is_null($default_min_effect_of_interest)) {
+            throw new \InvalidArgumentException('non-nullable default_min_effect_of_interest cannot be null');
         }
-        $this->container['min_detectable_effect'] = $min_detectable_effect;
+        $this->container['default_min_effect_of_interest'] = $default_min_effect_of_interest;
 
         return $this;
     }
@@ -647,7 +593,7 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Gets direction
      *
-     * @return string|null
+     * @return \Shipeasy\Admin\Generated\Model\MetricDirection|null
      */
     public function getDirection()
     {
@@ -657,7 +603,7 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Sets direction
      *
-     * @param string|null $direction Desired direction of movement. `higher_better` (default), `lower_better`, or `neutral` (guardrail).
+     * @param \Shipeasy\Admin\Generated\Model\MetricDirection|null $direction direction
      *
      * @return self
      */
@@ -666,17 +612,61 @@ class CreateMetricRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         if (is_null($direction)) {
             throw new \InvalidArgumentException('non-nullable direction cannot be null');
         }
-        $allowedValues = $this->getDirectionAllowableValues();
-        if (!in_array($direction, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'direction', must be one of '%s'",
-                    $direction,
-                    implode("', '", $allowedValues)
-                )
-            );
-        }
         $this->container['direction'] = $direction;
+
+        return $this;
+    }
+
+    /**
+     * Gets unit
+     *
+     * @return string|null
+     */
+    public function getUnit()
+    {
+        return $this->container['unit'];
+    }
+
+    /**
+     * Sets unit
+     *
+     * @param string|null $unit Optional gate name (a `targeting`-type flag). Only callers that pass the gate are enrolled in the experiment.
+     *
+     * @return self
+     */
+    public function setUnit($unit)
+    {
+        if (is_null($unit)) {
+            throw new \InvalidArgumentException('non-nullable unit cannot be null');
+        }
+        $this->container['unit'] = $unit;
+
+        return $this;
+    }
+
+    /**
+     * Gets query_ir
+     *
+     * @return \Shipeasy\Admin\Generated\Model\QueryIr
+     */
+    public function getQueryIr()
+    {
+        return $this->container['query_ir'];
+    }
+
+    /**
+     * Sets query_ir
+     *
+     * @param \Shipeasy\Admin\Generated\Model\QueryIr $query_ir query_ir
+     *
+     * @return self
+     */
+    public function setQueryIr($query_ir)
+    {
+        if (is_null($query_ir)) {
+            throw new \InvalidArgumentException('non-nullable query_ir cannot be null');
+        }
+        $this->container['query_ir'] = $query_ir;
 
         return $this;
     }

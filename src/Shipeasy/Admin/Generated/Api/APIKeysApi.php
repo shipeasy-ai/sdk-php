@@ -504,15 +504,16 @@ class APIKeysApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listKeys'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Shipeasy\Admin\Generated\Model\ListKeysResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
-    public function listKeys($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listKeys'][0])
+    public function listKeys($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listKeys'][0])
     {
-        list($response) = $this->listKeysWithHttpInfo($x_project_id, $limit, $cursor, $contentType);
+        list($response) = $this->listKeysWithHttpInfo($x_project_id, $limit, $cursor, $q, $contentType);
         return $response;
     }
 
@@ -524,15 +525,16 @@ class APIKeysApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listKeys'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return array of \Shipeasy\Admin\Generated\Model\ListKeysResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listKeysWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listKeys'][0])
+    public function listKeysWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listKeys'][0])
     {
-        $request = $this->listKeysRequest($x_project_id, $limit, $cursor, $contentType);
+        $request = $this->listKeysRequest($x_project_id, $limit, $cursor, $q, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -695,14 +697,15 @@ class APIKeysApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listKeys'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listKeysAsync($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listKeys'][0])
+    public function listKeysAsync($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listKeys'][0])
     {
-        return $this->listKeysAsyncWithHttpInfo($x_project_id, $limit, $cursor, $contentType)
+        return $this->listKeysAsyncWithHttpInfo($x_project_id, $limit, $cursor, $q, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -718,15 +721,16 @@ class APIKeysApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listKeys'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listKeysAsyncWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listKeys'][0])
+    public function listKeysAsyncWithHttpInfo($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listKeys'][0])
     {
         $returnType = '\Shipeasy\Admin\Generated\Model\ListKeysResponse';
-        $request = $this->listKeysRequest($x_project_id, $limit, $cursor, $contentType);
+        $request = $this->listKeysRequest($x_project_id, $limit, $cursor, $q, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -770,12 +774,13 @@ class APIKeysApi
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  int|null $limit Page size (1–500). Defaults to 100. (optional, default to 100)
      * @param  string|null $cursor Opaque cursor returned in the previous page&#39;s &#x60;next_cursor&#x60;. Omit for the first page. (optional)
+     * @param  string|null $q Case-insensitive substring filter across the resource&#39;s human-readable text columns (e.g. &#x60;name&#x60;, &#x60;title&#x60;, &#x60;description&#x60;). OR-matched across those columns; omit to return everything. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listKeys'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listKeysRequest($x_project_id = null, $limit = 100, $cursor = null, string $contentType = self::contentTypes['listKeys'][0])
+    public function listKeysRequest($x_project_id = null, $limit = 100, $cursor = null, $q = null, string $contentType = self::contentTypes['listKeys'][0])
     {
 
 
@@ -787,6 +792,10 @@ class APIKeysApi
         }
         
 
+        if ($q !== null && strlen($q) > 100) {
+            throw new \InvalidArgumentException('invalid length for "$q" when calling APIKeysApi.listKeys, must be smaller than or equal to 100.');
+        }
+        
 
         $resourcePath = '/api/admin/keys';
         $formParams = [];
@@ -808,6 +817,15 @@ class APIKeysApi
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $cursor,
             'cursor', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $q,
+            'q', // param base name
             'string', // openApiType
             'form', // style
             true, // explode
@@ -883,7 +901,7 @@ class APIKeysApi
      *
      * Revoke an API key
      *
-     * @param  string|null $id Stable opaque key id (UUID) returned by &#x60;create&#x60; / &#x60;list&#x60;. (required)
+     * @param  string $id Stable opaque key id (UUID) returned by &#x60;create&#x60; / &#x60;list&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['revokeKey'] to see the possible values for this operation
      *
@@ -902,7 +920,7 @@ class APIKeysApi
      *
      * Revoke an API key
      *
-     * @param  string|null $id Stable opaque key id (UUID) returned by &#x60;create&#x60; / &#x60;list&#x60;. (required)
+     * @param  string $id Stable opaque key id (UUID) returned by &#x60;create&#x60; / &#x60;list&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['revokeKey'] to see the possible values for this operation
      *
@@ -1072,7 +1090,7 @@ class APIKeysApi
      *
      * Revoke an API key
      *
-     * @param  string|null $id Stable opaque key id (UUID) returned by &#x60;create&#x60; / &#x60;list&#x60;. (required)
+     * @param  string $id Stable opaque key id (UUID) returned by &#x60;create&#x60; / &#x60;list&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['revokeKey'] to see the possible values for this operation
      *
@@ -1094,7 +1112,7 @@ class APIKeysApi
      *
      * Revoke an API key
      *
-     * @param  string|null $id Stable opaque key id (UUID) returned by &#x60;create&#x60; / &#x60;list&#x60;. (required)
+     * @param  string $id Stable opaque key id (UUID) returned by &#x60;create&#x60; / &#x60;list&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['revokeKey'] to see the possible values for this operation
      *
@@ -1145,7 +1163,7 @@ class APIKeysApi
     /**
      * Create request for operation 'revokeKey'
      *
-     * @param  string|null $id Stable opaque key id (UUID) returned by &#x60;create&#x60; / &#x60;list&#x60;. (required)
+     * @param  string $id Stable opaque key id (UUID) returned by &#x60;create&#x60; / &#x60;list&#x60;. (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['revokeKey'] to see the possible values for this operation
      *
@@ -1161,7 +1179,13 @@ class APIKeysApi
                 'Missing the required parameter $id when calling revokeKey'
             );
         }
-
+        if (strlen($id) > 128) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling APIKeysApi.revokeKey, must be smaller than or equal to 128.');
+        }
+        if (strlen($id) < 1) {
+            throw new \InvalidArgumentException('invalid length for "$id" when calling APIKeysApi.revokeKey, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/admin/keys/{id}/revoke';
