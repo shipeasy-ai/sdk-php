@@ -141,7 +141,7 @@ php artisan shipeasy:install
 ```
 
 ```dotenv
-# 3. Set your keys in .env (minted at https://app.shipeasy.ai → Settings → SDK keys):
+# 3. Set your keys in .env (minted at https://shipeasy.ai → Connect → SDK Keys):
 SHIPEASY_SERVER_KEY=...          # server-side secret — NEVER sent to the browser
 SHIPEASY_CLIENT_KEY=...          # public client key — only used by @shipeasyI18n (with --i18n)
 ```

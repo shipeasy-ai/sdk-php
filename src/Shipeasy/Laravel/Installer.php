@@ -79,7 +79,7 @@ final class Installer
         $lines[] = 'Shipeasy installed.';
         $lines[] = '';
         $lines[] = 'Next steps:';
-        $lines[] = '  1. Mint your keys: https://app.shipeasy.ai -> Settings -> SDK keys';
+        $lines[] = '  1. Mint your keys: https://shipeasy.ai -> Connect -> SDK Keys';
         $lines[] = '  2. Set them in .env:';
         $lines[] = '       SHIPEASY_SERVER_KEY=...   (server-side secret; never sent to the browser)';
         if ($i18n) {
