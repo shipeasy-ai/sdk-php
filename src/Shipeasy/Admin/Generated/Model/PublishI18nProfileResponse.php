@@ -60,7 +60,6 @@ class PublishI18nProfileResponse implements ModelInterface, ArrayAccess, \JsonSe
     protected static $openAPITypes = [
         'ok' => 'bool',
         'profile_id' => 'string',
-        'chunk' => 'string',
         'published_at' => 'string',
         'version' => 'string',
         'key_count' => 'float',
@@ -80,7 +79,6 @@ class PublishI18nProfileResponse implements ModelInterface, ArrayAccess, \JsonSe
     protected static $openAPIFormats = [
         'ok' => null,
         'profile_id' => null,
-        'chunk' => null,
         'published_at' => null,
         'version' => null,
         'key_count' => null,
@@ -98,7 +96,6 @@ class PublishI18nProfileResponse implements ModelInterface, ArrayAccess, \JsonSe
     protected static array $openAPINullables = [
         'ok' => false,
         'profile_id' => false,
-        'chunk' => true,
         'published_at' => false,
         'version' => false,
         'key_count' => false,
@@ -196,7 +193,6 @@ class PublishI18nProfileResponse implements ModelInterface, ArrayAccess, \JsonSe
     protected static $attributeMap = [
         'ok' => 'ok',
         'profile_id' => 'profile_id',
-        'chunk' => 'chunk',
         'published_at' => 'published_at',
         'version' => 'version',
         'key_count' => 'key_count',
@@ -214,7 +210,6 @@ class PublishI18nProfileResponse implements ModelInterface, ArrayAccess, \JsonSe
     protected static $setters = [
         'ok' => 'setOk',
         'profile_id' => 'setProfileId',
-        'chunk' => 'setChunk',
         'published_at' => 'setPublishedAt',
         'version' => 'setVersion',
         'key_count' => 'setKeyCount',
@@ -232,7 +227,6 @@ class PublishI18nProfileResponse implements ModelInterface, ArrayAccess, \JsonSe
     protected static $getters = [
         'ok' => 'getOk',
         'profile_id' => 'getProfileId',
-        'chunk' => 'getChunk',
         'published_at' => 'getPublishedAt',
         'version' => 'getVersion',
         'key_count' => 'getKeyCount',
@@ -331,7 +325,6 @@ class PublishI18nProfileResponse implements ModelInterface, ArrayAccess, \JsonSe
     {
         $this->setIfExists('ok', $data ?? [], null);
         $this->setIfExists('profile_id', $data ?? [], null);
-        $this->setIfExists('chunk', $data ?? [], null);
         $this->setIfExists('published_at', $data ?? [], null);
         $this->setIfExists('version', $data ?? [], null);
         $this->setIfExists('key_count', $data ?? [], null);
@@ -382,9 +375,6 @@ class PublishI18nProfileResponse implements ModelInterface, ArrayAccess, \JsonSe
 
         if ($this->container['profile_id'] === null) {
             $invalidProperties[] = "'profile_id' can't be null";
-        }
-        if ($this->container['chunk'] === null && !$this->isNullableSetToNull('chunk')) {
-            $invalidProperties[] = "'chunk' is required";
         }
         if ($this->container['published_at'] === null) {
             $invalidProperties[] = "'published_at' can't be null";
@@ -488,40 +478,6 @@ class PublishI18nProfileResponse implements ModelInterface, ArrayAccess, \JsonSe
             throw new \InvalidArgumentException('non-nullable profile_id cannot be null');
         }
         $this->container['profile_id'] = $profile_id;
-
-        return $this;
-    }
-
-    /**
-     * Gets chunk
-     *
-     * @return string|null
-     */
-    public function getChunk()
-    {
-        return $this->container['chunk'];
-    }
-
-    /**
-     * Sets chunk
-     *
-     * @param string|null $chunk Audit chunk label, or `null` when none was given.
-     *
-     * @return self
-     */
-    public function setChunk($chunk)
-    {
-        if (is_null($chunk)) {
-            array_push($this->openAPINullablesSetToNull, 'chunk');
-        } else {
-            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
-            $index = array_search('chunk', $nullablesSetToNull);
-            if ($index !== FALSE) {
-                unset($nullablesSetToNull[$index]);
-                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
-            }
-        }
-        $this->container['chunk'] = $chunk;
 
         return $this;
     }

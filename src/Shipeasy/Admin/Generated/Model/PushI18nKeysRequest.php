@@ -59,7 +59,6 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
      */
     protected static $openAPITypes = [
         'profile_id' => 'string',
-        'chunk' => 'string',
         'keys' => '\Shipeasy\Admin\Generated\Model\PushI18nKeysRequestKeysInner[]'
     ];
 
@@ -72,7 +71,6 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
      */
     protected static $openAPIFormats = [
         'profile_id' => null,
-        'chunk' => null,
         'keys' => null
     ];
 
@@ -83,7 +81,6 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
      */
     protected static array $openAPINullables = [
         'profile_id' => false,
-        'chunk' => false,
         'keys' => false
     ];
 
@@ -174,7 +171,6 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
      */
     protected static $attributeMap = [
         'profile_id' => 'profile_id',
-        'chunk' => 'chunk',
         'keys' => 'keys'
     ];
 
@@ -185,7 +181,6 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
      */
     protected static $setters = [
         'profile_id' => 'setProfileId',
-        'chunk' => 'setChunk',
         'keys' => 'setKeys'
     ];
 
@@ -196,7 +191,6 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
      */
     protected static $getters = [
         'profile_id' => 'getProfileId',
-        'chunk' => 'getChunk',
         'keys' => 'getKeys'
     ];
 
@@ -258,7 +252,6 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     public function __construct(?array $data = null)
     {
         $this->setIfExists('profile_id', $data ?? [], null);
-        $this->setIfExists('chunk', $data ?? [], null);
         $this->setIfExists('keys', $data ?? [], null);
     }
 
@@ -333,33 +326,6 @@ class PushI18nKeysRequest implements ModelInterface, ArrayAccess, \JsonSerializa
             throw new \InvalidArgumentException('non-nullable profile_id cannot be null');
         }
         $this->container['profile_id'] = $profile_id;
-
-        return $this;
-    }
-
-    /**
-     * Gets chunk
-     *
-     * @return string|null
-     */
-    public function getChunk()
-    {
-        return $this->container['chunk'];
-    }
-
-    /**
-     * Sets chunk
-     *
-     * @param string|null $chunk Logical grouping the new keys are filed under. Defaults to `default`.
-     *
-     * @return self
-     */
-    public function setChunk($chunk)
-    {
-        if (is_null($chunk)) {
-            throw new \InvalidArgumentException('non-nullable chunk cannot be null');
-        }
-        $this->container['chunk'] = $chunk;
 
         return $this;
     }

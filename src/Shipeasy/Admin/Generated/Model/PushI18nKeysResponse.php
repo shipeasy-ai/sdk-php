@@ -61,8 +61,7 @@ class PushI18nKeysResponse implements ModelInterface, ArrayAccess, \JsonSerializ
         'added' => 'string[]',
         'skipped' => 'string[]',
         'pushed_count' => 'float',
-        'skipped_count' => 'float',
-        'chunk' => 'string'
+        'skipped_count' => 'float'
     ];
 
     /**
@@ -76,8 +75,7 @@ class PushI18nKeysResponse implements ModelInterface, ArrayAccess, \JsonSerializ
         'added' => null,
         'skipped' => null,
         'pushed_count' => null,
-        'skipped_count' => null,
-        'chunk' => null
+        'skipped_count' => null
     ];
 
     /**
@@ -89,8 +87,7 @@ class PushI18nKeysResponse implements ModelInterface, ArrayAccess, \JsonSerializ
         'added' => false,
         'skipped' => false,
         'pushed_count' => false,
-        'skipped_count' => false,
-        'chunk' => false
+        'skipped_count' => false
     ];
 
     /**
@@ -182,8 +179,7 @@ class PushI18nKeysResponse implements ModelInterface, ArrayAccess, \JsonSerializ
         'added' => 'added',
         'skipped' => 'skipped',
         'pushed_count' => 'pushed_count',
-        'skipped_count' => 'skipped_count',
-        'chunk' => 'chunk'
+        'skipped_count' => 'skipped_count'
     ];
 
     /**
@@ -195,8 +191,7 @@ class PushI18nKeysResponse implements ModelInterface, ArrayAccess, \JsonSerializ
         'added' => 'setAdded',
         'skipped' => 'setSkipped',
         'pushed_count' => 'setPushedCount',
-        'skipped_count' => 'setSkippedCount',
-        'chunk' => 'setChunk'
+        'skipped_count' => 'setSkippedCount'
     ];
 
     /**
@@ -208,8 +203,7 @@ class PushI18nKeysResponse implements ModelInterface, ArrayAccess, \JsonSerializ
         'added' => 'getAdded',
         'skipped' => 'getSkipped',
         'pushed_count' => 'getPushedCount',
-        'skipped_count' => 'getSkippedCount',
-        'chunk' => 'getChunk'
+        'skipped_count' => 'getSkippedCount'
     ];
 
     /**
@@ -273,7 +267,6 @@ class PushI18nKeysResponse implements ModelInterface, ArrayAccess, \JsonSerializ
         $this->setIfExists('skipped', $data ?? [], null);
         $this->setIfExists('pushed_count', $data ?? [], null);
         $this->setIfExists('skipped_count', $data ?? [], null);
-        $this->setIfExists('chunk', $data ?? [], null);
     }
 
     /**
@@ -434,33 +427,6 @@ class PushI18nKeysResponse implements ModelInterface, ArrayAccess, \JsonSerializ
             throw new \InvalidArgumentException('non-nullable skipped_count cannot be null');
         }
         $this->container['skipped_count'] = $skipped_count;
-
-        return $this;
-    }
-
-    /**
-     * Gets chunk
-     *
-     * @return string|null
-     */
-    public function getChunk()
-    {
-        return $this->container['chunk'];
-    }
-
-    /**
-     * Sets chunk
-     *
-     * @param string|null $chunk The chunk the keys were filed under.
-     *
-     * @return self
-     */
-    public function setChunk($chunk)
-    {
-        if (is_null($chunk)) {
-            throw new \InvalidArgumentException('non-nullable chunk cannot be null');
-        }
-        $this->container['chunk'] = $chunk;
 
         return $this;
     }

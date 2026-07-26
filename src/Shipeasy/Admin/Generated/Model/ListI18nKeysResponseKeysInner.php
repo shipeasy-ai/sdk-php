@@ -64,7 +64,6 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         'description' => 'string',
         'variables' => 'string[]',
         'profile_id' => 'string',
-        'chunk_id' => 'string',
         'updated_at' => 'string',
         'updated_by' => 'string'
     ];
@@ -83,7 +82,6 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         'description' => null,
         'variables' => null,
         'profile_id' => null,
-        'chunk_id' => null,
         'updated_at' => null,
         'updated_by' => null
     ];
@@ -100,7 +98,6 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         'description' => true,
         'variables' => true,
         'profile_id' => false,
-        'chunk_id' => false,
         'updated_at' => false,
         'updated_by' => false
     ];
@@ -197,7 +194,6 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         'description' => 'description',
         'variables' => 'variables',
         'profile_id' => 'profileId',
-        'chunk_id' => 'chunkId',
         'updated_at' => 'updatedAt',
         'updated_by' => 'updatedBy'
     ];
@@ -214,7 +210,6 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         'description' => 'setDescription',
         'variables' => 'setVariables',
         'profile_id' => 'setProfileId',
-        'chunk_id' => 'setChunkId',
         'updated_at' => 'setUpdatedAt',
         'updated_by' => 'setUpdatedBy'
     ];
@@ -231,7 +226,6 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         'description' => 'getDescription',
         'variables' => 'getVariables',
         'profile_id' => 'getProfileId',
-        'chunk_id' => 'getChunkId',
         'updated_at' => 'getUpdatedAt',
         'updated_by' => 'getUpdatedBy'
     ];
@@ -299,7 +293,6 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
         $this->setIfExists('description', $data ?? [], null);
         $this->setIfExists('variables', $data ?? [], null);
         $this->setIfExists('profile_id', $data ?? [], null);
-        $this->setIfExists('chunk_id', $data ?? [], null);
         $this->setIfExists('updated_at', $data ?? [], null);
         $this->setIfExists('updated_by', $data ?? [], null);
     }
@@ -527,33 +520,6 @@ class ListI18nKeysResponseKeysInner implements ModelInterface, ArrayAccess, \Jso
             throw new \InvalidArgumentException('non-nullable profile_id cannot be null');
         }
         $this->container['profile_id'] = $profile_id;
-
-        return $this;
-    }
-
-    /**
-     * Gets chunk_id
-     *
-     * @return string|null
-     */
-    public function getChunkId()
-    {
-        return $this->container['chunk_id'];
-    }
-
-    /**
-     * Sets chunk_id
-     *
-     * @param string|null $chunk_id Owning chunk (authoring grouping) id.
-     *
-     * @return self
-     */
-    public function setChunkId($chunk_id)
-    {
-        if (is_null($chunk_id)) {
-            throw new \InvalidArgumentException('non-nullable chunk_id cannot be null');
-        }
-        $this->container['chunk_id'] = $chunk_id;
 
         return $this;
     }

@@ -848,17 +848,17 @@ class ProfilesApi
      * Publish a profile live
      *
      * @param  string|null $profile_id The profile id to publish. (required)
-     * @param  \Shipeasy\Admin\Generated\Model\PublishI18nProfileRequest $publish_i18n_profile_request publish_i18n_profile_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  object|null $body body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['publishI18nProfile'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Shipeasy\Admin\Generated\Model\PublishI18nProfileResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error
      */
-    public function publishI18nProfile($profile_id, $publish_i18n_profile_request, $x_project_id = null, string $contentType = self::contentTypes['publishI18nProfile'][0])
+    public function publishI18nProfile($profile_id, $x_project_id = null, $body = null, string $contentType = self::contentTypes['publishI18nProfile'][0])
     {
-        list($response) = $this->publishI18nProfileWithHttpInfo($profile_id, $publish_i18n_profile_request, $x_project_id, $contentType);
+        list($response) = $this->publishI18nProfileWithHttpInfo($profile_id, $x_project_id, $body, $contentType);
         return $response;
     }
 
@@ -868,17 +868,17 @@ class ProfilesApi
      * Publish a profile live
      *
      * @param  string|null $profile_id The profile id to publish. (required)
-     * @param  \Shipeasy\Admin\Generated\Model\PublishI18nProfileRequest $publish_i18n_profile_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  object|null $body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['publishI18nProfile'] to see the possible values for this operation
      *
      * @throws \Shipeasy\Admin\Generated\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return array of \Shipeasy\Admin\Generated\Model\PublishI18nProfileResponse|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error|\Shipeasy\Admin\Generated\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function publishI18nProfileWithHttpInfo($profile_id, $publish_i18n_profile_request, $x_project_id = null, string $contentType = self::contentTypes['publishI18nProfile'][0])
+    public function publishI18nProfileWithHttpInfo($profile_id, $x_project_id = null, $body = null, string $contentType = self::contentTypes['publishI18nProfile'][0])
     {
-        $request = $this->publishI18nProfileRequest($profile_id, $publish_i18n_profile_request, $x_project_id, $contentType);
+        $request = $this->publishI18nProfileRequest($profile_id, $x_project_id, $body, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1039,16 +1039,16 @@ class ProfilesApi
      * Publish a profile live
      *
      * @param  string|null $profile_id The profile id to publish. (required)
-     * @param  \Shipeasy\Admin\Generated\Model\PublishI18nProfileRequest $publish_i18n_profile_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  object|null $body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['publishI18nProfile'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function publishI18nProfileAsync($profile_id, $publish_i18n_profile_request, $x_project_id = null, string $contentType = self::contentTypes['publishI18nProfile'][0])
+    public function publishI18nProfileAsync($profile_id, $x_project_id = null, $body = null, string $contentType = self::contentTypes['publishI18nProfile'][0])
     {
-        return $this->publishI18nProfileAsyncWithHttpInfo($profile_id, $publish_i18n_profile_request, $x_project_id, $contentType)
+        return $this->publishI18nProfileAsyncWithHttpInfo($profile_id, $x_project_id, $body, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1062,17 +1062,17 @@ class ProfilesApi
      * Publish a profile live
      *
      * @param  string|null $profile_id The profile id to publish. (required)
-     * @param  \Shipeasy\Admin\Generated\Model\PublishI18nProfileRequest $publish_i18n_profile_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  object|null $body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['publishI18nProfile'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function publishI18nProfileAsyncWithHttpInfo($profile_id, $publish_i18n_profile_request, $x_project_id = null, string $contentType = self::contentTypes['publishI18nProfile'][0])
+    public function publishI18nProfileAsyncWithHttpInfo($profile_id, $x_project_id = null, $body = null, string $contentType = self::contentTypes['publishI18nProfile'][0])
     {
         $returnType = '\Shipeasy\Admin\Generated\Model\PublishI18nProfileResponse';
-        $request = $this->publishI18nProfileRequest($profile_id, $publish_i18n_profile_request, $x_project_id, $contentType);
+        $request = $this->publishI18nProfileRequest($profile_id, $x_project_id, $body, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1114,14 +1114,14 @@ class ProfilesApi
      * Create request for operation 'publishI18nProfile'
      *
      * @param  string|null $profile_id The profile id to publish. (required)
-     * @param  \Shipeasy\Admin\Generated\Model\PublishI18nProfileRequest $publish_i18n_profile_request (required)
      * @param  string|null $x_project_id Project the request operates on. Optional — defaults to the project the SDK key belongs to; pass it only to scope a multi-project key (the generated client sets it once from its configuration, so per-call callers never thread it). (optional)
+     * @param  object|null $body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['publishI18nProfile'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function publishI18nProfileRequest($profile_id, $publish_i18n_profile_request, $x_project_id = null, string $contentType = self::contentTypes['publishI18nProfile'][0])
+    public function publishI18nProfileRequest($profile_id, $x_project_id = null, $body = null, string $contentType = self::contentTypes['publishI18nProfile'][0])
     {
 
         // verify the required parameter 'profile_id' is set
@@ -1131,12 +1131,6 @@ class ProfilesApi
             );
         }
 
-        // verify the required parameter 'publish_i18n_profile_request' is set
-        if ($publish_i18n_profile_request === null || (is_array($publish_i18n_profile_request) && count($publish_i18n_profile_request) === 0)) {
-            throw new \InvalidArgumentException(
-                'Missing the required parameter $publish_i18n_profile_request when calling publishI18nProfile'
-            );
-        }
 
 
 
@@ -1170,12 +1164,12 @@ class ProfilesApi
         );
 
         // for model (json/xml)
-        if (isset($publish_i18n_profile_request)) {
+        if (isset($body)) {
             if (stripos($headers['Content-Type'], 'application/json') !== false) {
                 # if Content-Type contains "application/json", json_encode the body
-                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($publish_i18n_profile_request));
+                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($body));
             } else {
-                $httpBody = $publish_i18n_profile_request;
+                $httpBody = $body;
             }
         } elseif (count($formParams) > 0) {
             if ($multipart) {
