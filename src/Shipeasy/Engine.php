@@ -16,7 +16,7 @@ namespace Shipeasy;
 class Engine
 {
     private const DEFAULT_BASE_URL = 'https://api.shipeasy.ai';
-    // CDN origin serving the static loader scripts (/sdk/bootstrap.js,
+    // CDN origin serving the static loader scripts (/sdk/runtime.js,
     // /sdk/i18n/loader.js) — distinct from the edge API the blobs are fetched from.
     private const DEFAULT_CDN_BASE = 'https://cdn.shipeasy.ai';
 
@@ -873,8 +873,9 @@ class Engine
 
     /**
      * Return the cross-platform SSR bootstrap <script> tag for a request:
-     * se-bootstrap.js reads its data-* attributes and hydrates
-     * window.__SE_BOOTSTRAP (and writes the anon cookie). No key is embedded.
+     * /sdk/runtime.js reads its data-* attributes, installs window.shipeasy,
+     * republishes window.__SE_BOOTSTRAP for the npm client SDK and writes the
+     * anon cookie. No key is embedded.
      *
      * $opts: ['anonId' => string, 'i18nProfile' => 'en:prod', 'baseUrl' => '...'].
      */
@@ -885,6 +886,7 @@ class Engine
         $profile = $opts['i18nProfile'] ?? $this->profile ?? 'en:prod';
         $attrs = [
             'data-se-bootstrap',
+            'data-se-boot',
             self::attr('data-flags', json_encode($payload['flags'])),
             self::attr('data-configs', json_encode($payload['configs'])),
             self::attr('data-experiments', json_encode($payload['experiments'])),
@@ -902,7 +904,7 @@ class Engine
         if ($dataUser !== null) {
             $attrs[] = self::attr('data-user', $dataUser);
         }
-        $src = htmlspecialchars($base . '/sdk/bootstrap.js', ENT_QUOTES);
+        $src = htmlspecialchars($base . '/sdk/runtime.js', ENT_QUOTES);
         return '<script src="' . $src . '" ' . implode(' ', $attrs) . '></script>';
     }
 

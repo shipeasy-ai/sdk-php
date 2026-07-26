@@ -36,7 +36,7 @@ final class BootstrapTest extends TestCase
     public function testBootstrapScriptTagAttrs(): void
     {
         $tag = $this->client()->bootstrapScriptTag(['user_id' => 'u1'], ['anonId' => 'anon-1']);
-        $this->assertStringContainsString('src="https://cdn.shipeasy.ai/sdk/bootstrap.js"', $tag);
+        $this->assertStringContainsString('src="https://cdn.shipeasy.ai/sdk/runtime.js"', $tag);
         $this->assertStringContainsString('data-se-bootstrap', $tag);
         $this->assertStringContainsString('data-anon-id="anon-1"', $tag);
         $this->assertStringContainsString('data-i18n-profile="en:prod"', $tag);
@@ -133,7 +133,7 @@ final class BootstrapTest extends TestCase
     public function testBootstrapScriptTagNeedsNoUser(): void
     {
         $tag = $this->configured()->bootstrapScriptTag();
-        $this->assertStringContainsString('src="https://cdn.example.test/sdk/bootstrap.js"', $tag);
+        $this->assertStringContainsString('src="https://cdn.example.test/sdk/runtime.js"', $tag);
         $this->assertStringContainsString('data-i18n-profile="fr:prod"', $tag);
         $this->assertStringNotContainsString('data-user', $tag);
     }
