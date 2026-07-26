@@ -46,7 +46,10 @@ const VERSION = Engine::VERSION;
  *        to Shipeasy's own project, not yours) — default ON. `isNetworkEnabled`
  *        and `disableTelemetry` default to environment-derived values (egress ON
  *        in production, OFF everywhere else — see {@see Env}); pass explicit
- *        booleans to override.
+ *        booleans to override. `clientKey` (the PUBLIC client key), `profile`,
+ *        `projectId` and `cdnBaseUrl` are the defaults the SSR tag helpers
+ *        ({@see i18nScriptTag()}, {@see bootstrapScriptTag()},
+ *        {@see devtoolsScriptTag()}) use when the callsite passes no argument.
  */
 function configure(string $apiKey, ?callable $attributes = null, array $opts = []): Engine
 {
@@ -143,10 +146,14 @@ function onChange(callable $fn): callable
  * Return the cross-platform SSR bootstrap `<script>` tag for a request (no key
  * embedded), via the configured global engine — call {@see configure()} first.
  *
+ * Every argument is optional: no $user renders an anonymous request, and
+ * $opts['i18nProfile'] / $opts['baseUrl'] fall back to the `profile` /
+ * `cdnBaseUrl` passed to configure().
+ *
  * @param array<string, mixed> $user
  * @param array<string, mixed> $opts
  */
-function bootstrapScriptTag(array $user, array $opts = []): string
+function bootstrapScriptTag(array $user = [], array $opts = []): string
 {
     return _requireGlobal('bootstrapScriptTag')->bootstrapScriptTag($user, $opts);
 }
@@ -155,11 +162,31 @@ function bootstrapScriptTag(array $user, array $opts = []): string
  * Return the i18n loader `<script>` tag (public client key) for SSR, via the
  * configured global engine — call {@see configure()} first.
  *
+ * Every argument is optional — $clientKey, $profile and $opts['baseUrl'] fall
+ * back to the `clientKey` / `profile` / `cdnBaseUrl` passed to configure(), so
+ * the normal call is `i18nScriptTag()`.
+ *
  * @param array<string, mixed> $opts
  */
-function i18nScriptTag(string $clientKey, string $profile = 'en:prod', array $opts = []): string
+function i18nScriptTag(?string $clientKey = null, ?string $profile = null, array $opts = []): string
 {
     return _requireGlobal('i18nScriptTag')->i18nScriptTag($clientKey, $profile, $opts);
+}
+
+/**
+ * Return the devtools overlay `<script>` tag (hosted se-devtools.js; opens with
+ * Shift+Alt+S or `?se=1`), via the configured global engine — call
+ * {@see configure()} first.
+ *
+ * Every argument is optional — $projectId, $opts['clientKey'] and
+ * $opts['baseUrl'] fall back to the `projectId` / `clientKey` / `cdnBaseUrl`
+ * passed to configure(). $opts['defer'] defaults to true.
+ *
+ * @param array<string, mixed> $opts
+ */
+function devtoolsScriptTag(?string $projectId = null, array $opts = []): string
+{
+    return _requireGlobal('devtoolsScriptTag')->devtoolsScriptTag($projectId, $opts);
 }
 
 /**

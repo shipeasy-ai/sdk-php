@@ -108,4 +108,75 @@ final class BootstrapTest extends TestCase
         $this->assertStringContainsString('data-key="client_pub"', $tag);
         $this->assertStringContainsString('data-profile="fr:prod"', $tag);
     }
+
+    // --- every argument is optional: the tags read what configure() set ------
+
+    /** A test-mode engine carrying the SSR tag defaults, installed globally. */
+    private function configured(): Engine
+    {
+        return Engine::configureForTesting([
+            'clientKey' => 'sdk_client_cfg',
+            'projectId' => 'proj_cfg',
+            'profile' => 'fr:prod',
+            'cdnBaseUrl' => 'https://cdn.example.test',
+        ]);
+    }
+
+    public function testI18nScriptTagDefaultsFromConfigure(): void
+    {
+        $tag = $this->configured()->i18nScriptTag();
+        $this->assertStringContainsString('src="https://cdn.example.test/sdk/i18n/loader.js"', $tag);
+        $this->assertStringContainsString('data-key="sdk_client_cfg"', $tag);
+        $this->assertStringContainsString('data-profile="fr:prod"', $tag);
+    }
+
+    public function testBootstrapScriptTagNeedsNoUser(): void
+    {
+        $tag = $this->configured()->bootstrapScriptTag();
+        $this->assertStringContainsString('src="https://cdn.example.test/sdk/bootstrap.js"', $tag);
+        $this->assertStringContainsString('data-i18n-profile="fr:prod"', $tag);
+        $this->assertStringNotContainsString('data-user', $tag);
+    }
+
+    public function testDevtoolsScriptTagDefaultsFromConfigure(): void
+    {
+        $tag = $this->configured()->devtoolsScriptTag();
+        $this->assertStringContainsString('src="https://cdn.example.test/se-devtools.js"', $tag);
+        $this->assertStringContainsString('data-project-id="proj_cfg"', $tag);
+        $this->assertStringContainsString('data-client-api-key="sdk_client_cfg"', $tag);
+        $this->assertStringContainsString('defer', $tag);
+    }
+
+    public function testExplicitArgumentsStillWin(): void
+    {
+        $engine = $this->configured();
+        $i18n = $engine->i18nScriptTag('other_key', 'de:prod');
+        $this->assertStringContainsString('data-key="other_key"', $i18n);
+        $this->assertStringContainsString('data-profile="de:prod"', $i18n);
+
+        $boot = $engine->bootstrapScriptTag(['user_id' => 'u1'], ['i18nProfile' => 'de:prod']);
+        $this->assertStringContainsString('data-i18n-profile="de:prod"', $boot);
+
+        $dev = $engine->devtoolsScriptTag('proj_other', ['clientKey' => 'other_key', 'defer' => false]);
+        $this->assertStringContainsString('data-project-id="proj_other"', $dev);
+        $this->assertStringContainsString('data-client-api-key="other_key"', $dev);
+        $this->assertStringNotContainsString('defer', $dev);
+    }
+
+    public function testDevtoolsTagStillRendersWhenUnconfigured(): void
+    {
+        // A missing project id / client key renders anyway (the browser bundle
+        // reports what it needs) — it must never throw into a template.
+        $tag = $this->client()->devtoolsScriptTag();
+        $this->assertStringContainsString('src="https://cdn.shipeasy.ai/se-devtools.js"', $tag);
+        $this->assertStringContainsString('data-project-id=""', $tag);
+    }
+
+    public function testPackageLevelTagsTakeNoArguments(): void
+    {
+        $this->configured();
+        $this->assertStringContainsString('data-key="sdk_client_cfg"', \Shipeasy\i18nScriptTag());
+        $this->assertStringContainsString('data-se-bootstrap', \Shipeasy\bootstrapScriptTag());
+        $this->assertStringContainsString('data-project-id="proj_cfg"', \Shipeasy\devtoolsScriptTag());
+    }
 }

@@ -67,6 +67,11 @@ class ShipeasyServiceProvider extends ServiceProvider
             'env' => (string) ($this->config('shipeasy.env') ?? 'prod'),
             'logLevel' => (string) ($this->config('shipeasy.log_level') ?? 'warn'),
             'disableInternalErrorReporting' => (bool) $this->config('shipeasy.disable_internal_error_reporting'),
+            // SSR tag defaults, so @shipeasyI18n / @shipeasyDevtools render from
+            // config without the layout repeating the key or profile.
+            'clientKey' => (string) ($this->config('shipeasy.client_key') ?? ''),
+            'profile' => (string) ($this->config('shipeasy.i18n_profile') ?? 'en:prod'),
+            'projectId' => (string) ($this->config('shipeasy.project_id') ?? ''),
         ];
 
         // Master network egress switch. Only forward it when explicitly set so an
@@ -108,6 +113,7 @@ class ShipeasyServiceProvider extends ServiceProvider
      * Register the layout helpers the user places in their Blade <head>:
      *   @shipeasyBootstrap($user) — SSR flags/experiments bootstrap tag
      *   @shipeasyI18n             — i18n loader tag (public client key + profile)
+     *   @shipeasyDevtools         — devtools overlay tag (Shift+Alt+S or ?se=1)
      */
     private function registerBladeDirectives(): void
     {
@@ -121,10 +127,15 @@ class ShipeasyServiceProvider extends ServiceProvider
         });
 
         Blade::directive('shipeasyI18n', static function (string $expression): string {
-            // Reads the client key + profile from config at render time.
-            return "<?php echo \\Shipeasy\\i18nScriptTag("
-                . "(string) config('shipeasy.client_key', ''), "
-                . "(string) config('shipeasy.i18n_profile', 'en:prod')); ?>";
+            // The client key + profile are already on the engine (configureSdk
+            // forwards them), so the tag needs no arguments.
+            return "<?php echo \\Shipeasy\\i18nScriptTag(); ?>";
+        });
+
+        Blade::directive('shipeasyDevtools', static function (string $expression): string {
+            // Project id + client key come from config via configureSdk. Gate the
+            // directive in your layout (e.g. @if(auth()->user()?->isStaff())).
+            return "<?php echo \\Shipeasy\\devtoolsScriptTag(); ?>";
         });
     }
 

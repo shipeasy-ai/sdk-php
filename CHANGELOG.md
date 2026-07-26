@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.20.0 — 2026-07-26
+
+### The SSR tag helpers take every argument from `configure()`, plus a devtools tag
+
+- **`i18nScriptTag()` and `bootstrapScriptTag()` now take no required
+  arguments.** Each falls back to what `configure()` set — `$clientKey` →
+  `clientKey`, `$profile` / `'i18nProfile'` → `profile`, `'baseUrl'` →
+  `cdnBaseUrl`, and `bootstrapScriptTag`'s `$user` → an anonymous request. Every
+  argument is still accepted and an explicit one wins, so a template calls
+  `Shipeasy\i18nScriptTag()` instead of repeating configuration at each callsite.
+- **New `Shipeasy\devtoolsScriptTag()`** emits the hosted devtools overlay bundle
+  (`se-devtools.js`) with `data-project-id` + `data-client-api-key`, `defer` by
+  default. The overlay opens with **Shift+Alt+S** or on any page loaded with
+  `?se=1`. Its arguments are optional the same way.
+- **New `configure()` options** feeding those defaults: `clientKey` (the PUBLIC
+  client key), `profile`, `projectId`, `cdnBaseUrl` — also accepted by
+  `configureForTesting` / `configureForOffline`.
+- **Laravel:** a new `@shipeasyDevtools` Blade directive, and the service
+  provider now forwards `shipeasy.client_key` / `shipeasy.i18n_profile` / the new
+  `shipeasy.project_id` config into `configure()`, so `@shipeasyI18n` and
+  `@shipeasyDevtools` render with no arguments.
+- A tag built with a missing key / project id still renders, and the SDK logs a
+  warning naming the option to fill in — once per option, not once per render.
+- No behaviour change for existing callsites: an explicitly passed key/profile
+  still wins, and the profile fallback is still `'en:prod'` when nothing is
+  configured. Mirrors the Ruby SDK 3.7.0 and the Python SDK 0.21.0.
+
 ## 0.19.0 — 2026-07-19
 
 ### Carry the server-identified user on the SSR bootstrap tag

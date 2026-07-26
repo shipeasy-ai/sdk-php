@@ -25,7 +25,7 @@ class Engine
      * This is the single runtime source of truth — keep it in sync with the
      * `version` field in composer.json (composer exposes no runtime constant).
      */
-    public const VERSION = '0.19.0';
+    public const VERSION = '0.20.0';
 
     private string $apiKey;
     private string $baseUrl;
@@ -71,6 +71,21 @@ class Engine
     /** @var array<int, callable> change listeners, keyed by registration id */
     private array $changeListeners = [];
     private int $nextListenerId = 0;
+
+    /**
+     * SSR tag defaults, set from the configure() options. The tag helpers
+     * (i18n / bootstrap / devtools) take every argument from here unless the
+     * callsite passes one, so a template calls i18nScriptTag() instead of
+     * repeating configuration. $clientKey is the PUBLIC client key — never the
+     * server key, which must not reach a browser.
+     */
+    private ?string $clientKey = null;
+    private ?string $profile = null;
+    private ?string $projectId = null;
+    private ?string $cdnBaseUrl = null;
+
+    /** @var array<string, bool> missing-setting warnings already logged */
+    private array $warnedTagSettings = [];
 
     /**
      * Per-process exposure dedup set (bounded; cleared at ~5000 entries). Keyed
@@ -255,6 +270,9 @@ class Engine
             (bool) ($opts['disableInternalErrorReporting'] ?? false),
             isset($opts['isNetworkEnabled']) ? (bool) $opts['isNetworkEnabled'] : null,
         );
+        // SSR tag defaults (clientKey / profile / projectId / cdnBaseUrl) so the
+        // tag helpers can be called with no arguments.
+        $engine->applyTagOptions($opts);
         self::setDefaultIfAbsent($engine);
         self::$attributesTransform = $attributes;
 
@@ -280,6 +298,7 @@ class Engine
      */
     private static function installGlobal(Engine $engine, array $opts): Engine
     {
+        $engine->applyTagOptions($opts);
         foreach (($opts['flags'] ?? []) as $name => $value) {
             $engine->overrideFlag((string) $name, (bool) $value);
         }
@@ -859,11 +878,11 @@ class Engine
      *
      * $opts: ['anonId' => string, 'i18nProfile' => 'en:prod', 'baseUrl' => '...'].
      */
-    public function bootstrapScriptTag(array $user, array $opts = []): string
+    public function bootstrapScriptTag(array $user = [], array $opts = []): string
     {
         $payload = $this->evaluate($user);
-        $base = self::cdnBase($opts['baseUrl'] ?? null);
-        $profile = $opts['i18nProfile'] ?? 'en:prod';
+        $base = self::cdnBase($opts['baseUrl'] ?? $this->cdnBaseUrl);
+        $profile = $opts['i18nProfile'] ?? $this->profile ?? 'en:prod';
         $attrs = [
             'data-se-bootstrap',
             self::attr('data-flags', json_encode($payload['flags'])),
@@ -890,14 +909,85 @@ class Engine
     /**
      * Return the i18n loader <script> tag. The loader fetches translations for
      * the profile using the PUBLIC client key (safe to embed in HTML).
+     *
+     * Every argument is OPTIONAL and falls back to what configure() set:
+     * $clientKey to the configured `clientKey`, $profile to `profile`,
+     * $opts['baseUrl'] to `cdnBaseUrl`.
      */
-    public function i18nScriptTag(string $clientKey, string $profile = 'en:prod', array $opts = []): string
+    public function i18nScriptTag(?string $clientKey = null, ?string $profile = null, array $opts = []): string
     {
-        $base = self::cdnBase($opts['baseUrl'] ?? null);
+        $base = self::cdnBase($opts['baseUrl'] ?? $this->cdnBaseUrl);
+        $key = $clientKey ?? $this->clientKey ?? '';
+        $this->warnMissingTagSetting('i18nScriptTag', 'clientKey', $key);
         $src = htmlspecialchars($base . '/sdk/i18n/loader.js', ENT_QUOTES);
         return '<script src="' . $src . '" '
-            . self::attr('data-key', $clientKey) . ' '
-            . self::attr('data-profile', $profile) . '></script>';
+            . self::attr('data-key', $key) . ' '
+            . self::attr('data-profile', $profile ?? $this->profile ?? 'en:prod') . '></script>';
+    }
+
+    /**
+     * Return the devtools overlay <script> tag. se-devtools.js is a hosted,
+     * self-executing bundle — nothing to install — that reads the project and
+     * the PUBLIC client key off the tag. The overlay opens with Shift+Alt+S or
+     * on any page loaded with `?se=1`.
+     *
+     * Every argument is OPTIONAL and falls back to what configure() set:
+     * $projectId to the configured `projectId`, $opts['clientKey'] to
+     * `clientKey`, $opts['baseUrl'] to `cdnBaseUrl`. $opts['defer'] (default
+     * true) keeps the overlay off the critical rendering path — a developer tool
+     * is never needed for first paint.
+     *
+     * $opts: ['clientKey' => string, 'baseUrl' => string, 'defer' => bool].
+     */
+    public function devtoolsScriptTag(?string $projectId = null, array $opts = []): string
+    {
+        $base = self::cdnBase($opts['baseUrl'] ?? $this->cdnBaseUrl);
+        $pid = $projectId ?? $this->projectId ?? '';
+        $key = $opts['clientKey'] ?? $this->clientKey ?? '';
+        $this->warnMissingTagSetting('devtoolsScriptTag', 'projectId', $pid);
+        $this->warnMissingTagSetting('devtoolsScriptTag', 'clientKey', $key);
+        $attrs = [
+            self::attr('data-project-id', $pid),
+            self::attr('data-client-api-key', $key),
+        ];
+        if ($opts['defer'] ?? true) {
+            $attrs[] = 'defer';
+        }
+        $src = htmlspecialchars($base . '/se-devtools.js', ENT_QUOTES);
+        return '<script src="' . $src . '" ' . implode(' ', $attrs) . '></script>';
+    }
+
+    /**
+     * Store the SSR tag defaults from a configure() options array, so the tag
+     * helpers can be called with no arguments at all.
+     *
+     * @param array<string, mixed> $opts
+     */
+    private function applyTagOptions(array $opts): void
+    {
+        $this->clientKey = isset($opts['clientKey']) ? (string) $opts['clientKey'] : $this->clientKey;
+        $this->profile = isset($opts['profile']) ? (string) $opts['profile'] : $this->profile;
+        $this->projectId = isset($opts['projectId']) ? (string) $opts['projectId'] : $this->projectId;
+        $this->cdnBaseUrl = isset($opts['cdnBaseUrl']) ? (string) $opts['cdnBaseUrl'] : $this->cdnBaseUrl;
+    }
+
+    /**
+     * A tag built with no key / project id is not an error — it renders, and the
+     * browser bundle reports what it needs — but it is never what the caller
+     * wanted. Logged once per (helper, setting): a tag helper runs on every
+     * render, and one misconfiguration must not log a line per request.
+     */
+    private function warnMissingTagSetting(string $fnName, string $setting, string $value): void
+    {
+        if ($value !== '') {
+            return;
+        }
+        $seen = "$fnName.$setting";
+        if (isset($this->warnedTagSettings[$seen])) {
+            return;
+        }
+        $this->warnedTagSettings[$seen] = true;
+        Logger::warn("$fnName(): no $setting — pass it, or set '$setting' in configure() opts; the tag will render without it");
     }
 
     /**

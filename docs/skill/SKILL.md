@@ -161,10 +161,14 @@ Server-side: emit the bootstrap + i18n loader tags (the i18n tag carries the
 
 ```php
 use function Shipeasy\bootstrapScriptTag;
+use function Shipeasy\devtoolsScriptTag;
 use function Shipeasy\i18nScriptTag;
 
+// Every argument is optional — clientKey / profile / projectId / cdnBaseUrl all
+// come from the configure() opts.
 $head = bootstrapScriptTag($user, ['anonId' => $anonId])
-      . i18nScriptTag($clientKey, 'en:prod');
+      . i18nScriptTag()
+      . devtoolsScriptTag();   // devtools overlay: Shift+Alt+S or ?se=1
 ```
 
 Reference: <https://shipeasy-ai.github.io/sdk-php/pages/i18n.md> ·

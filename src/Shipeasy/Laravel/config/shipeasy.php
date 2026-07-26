@@ -39,12 +39,24 @@ return [
     | Client key (optional — i18n only)
     |--------------------------------------------------------------------------
     |
-    | The PUBLIC client key. It is NOT passed to configure(); it is only used by
-    | the `@shipeasyI18n` Blade directive to emit the i18n loader <script>. Safe
-    | to expose to the browser.
+    | The PUBLIC client key. It never authenticates a read — it is the key the
+    | `@shipeasyI18n` and `@shipeasyDevtools` Blade directives put on their
+    | <script> tags. Safe to expose to the browser.
     |
     */
     'client_key' => env('SHIPEASY_CLIENT_KEY'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Project id (optional — devtools only)
+    |--------------------------------------------------------------------------
+    |
+    | Your Shipeasy project id (`proj_...`). Read by the `@shipeasyDevtools`
+    | Blade directive, which emits the hosted devtools overlay <script> (opens
+    | with Shift+Alt+S or on any page loaded with `?se=1`).
+    |
+    */
+    'project_id' => env('SHIPEASY_PROJECT_ID'),
 
     /*
     |--------------------------------------------------------------------------
@@ -86,6 +98,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | The locale profile the `@shipeasyI18n` loader tag requests, e.g. 'en:prod'.
+    | It is also the default carried by the SSR bootstrap tag.
     |
     */
     'i18n_profile' => env('SHIPEASY_I18N_PROFILE', 'en:prod'),

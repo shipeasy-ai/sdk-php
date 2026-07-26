@@ -143,7 +143,8 @@ php artisan shipeasy:install
 ```dotenv
 # 3. Set your keys in .env (minted at https://shipeasy.ai → Connect → SDK Keys):
 SHIPEASY_SERVER_KEY=...          # server-side secret — NEVER sent to the browser
-SHIPEASY_CLIENT_KEY=...          # public client key — only used by @shipeasyI18n (with --i18n)
+SHIPEASY_CLIENT_KEY=...          # public client key — used by @shipeasyI18n / @shipeasyDevtools
+SHIPEASY_PROJECT_ID=...          # project id — used by @shipeasyDevtools
 ```
 
 Once `SHIPEASY_SERVER_KEY` is set the provider calls `Shipeasy\configure()` for
@@ -168,15 +169,18 @@ public function checkout(\Illuminate\Http\Request $request)
 <head>
     @shipeasyBootstrap($user)   {{-- SSR flags/experiments bootstrap tag --}}
     @shipeasyI18n               {{-- i18n loader tag (with --i18n; reads config) --}}
+    @shipeasyDevtools           {{-- devtools overlay: Shift+Alt+S or ?se=1 --}}
     {{-- … --}}
 </head>
 ```
 
-`@shipeasyBootstrap($user)` echoes `Shipeasy\bootstrapScriptTag($user)` and
-`@shipeasyI18n` echoes `Shipeasy\i18nScriptTag(config('shipeasy.client_key'),
-config('shipeasy.i18n_profile'))`. Following the Laravel convention, the install
-command does **not** edit your layout — it tells you where to place the
-directives.
+`@shipeasyBootstrap($user)` echoes `Shipeasy\bootstrapScriptTag($user)`,
+`@shipeasyI18n` echoes `Shipeasy\i18nScriptTag()` and `@shipeasyDevtools` echoes
+`Shipeasy\devtoolsScriptTag()` — the provider forwards `shipeasy.client_key`,
+`shipeasy.i18n_profile` and `shipeasy.project_id` into `configure()`, so the tags
+need no arguments. Gate the devtools directive on your own staff check. Following
+the Laravel convention, the install command does **not** edit your layout — it
+tells you where to place the directives.
 
 #### Mapping your user model
 

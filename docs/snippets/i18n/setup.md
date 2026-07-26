@@ -4,16 +4,19 @@ Assumes `Shipeasy\configure()` ran at startup — see Installation.
 
 ```php
 use function Shipeasy\bootstrapScriptTag;
+use function Shipeasy\devtoolsScriptTag;
 use function Shipeasy\i18nScriptTag;
 
-// Package-level helpers — backed by the SDK that configure() set up.
-// $clientKey is the PUBLIC client key (NOT the server key).
+// Package-level helpers — backed by the SDK that configure() set up. EVERY
+// argument is optional: the PUBLIC client key, profile and CDN origin come from
+// configure(['clientKey' => ..., 'profile' => '{{PROFILE}}', 'projectId' => ...]).
 $head = bootstrapScriptTag(
-            ['user_id' => 'u_123'],       // the request's evaluated user/attribute map
+            ['user_id' => 'u_123'],       // optional: the request's user/attribute map
             ['anonId' => $anonId],        // optional opts: anonId, i18nProfile, baseUrl
         )
-      . i18nScriptTag(
-            $clientKey,                    // PUBLIC client key — embedded in the page
-            '{{PROFILE}}',                 // locale profile to load (e.g. en:prod)
-        );
+      . i18nScriptTag();                  // optional: ($clientKey, $profile, $opts)
+
+// Devtools overlay (Shift+Alt+S or ?se=1) — render it for your own team only.
+// optional: ($projectId, ['clientKey' => ..., 'baseUrl' => ..., 'defer' => true])
+$head .= devtoolsScriptTag();
 ```

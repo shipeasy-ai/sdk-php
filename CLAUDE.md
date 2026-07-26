@@ -24,8 +24,9 @@ Users are taught exactly **two** things, and the docs must never drift from them
 
 Plus the package-level functions that let users avoid the heavyweight object:
 `Shipeasy\overrideFlag` / `overrideConfig` / `overrideExperiment` /
-`clearOverrides`, `onChange`, `bootstrapScriptTag` / `i18nScriptTag`, the
-global-form `ShipeasyProvider` (OpenFeature), and the `see()` family.
+`clearOverrides`, `onChange`, `bootstrapScriptTag` / `i18nScriptTag` /
+`devtoolsScriptTag`, the global-form `ShipeasyProvider` (OpenFeature), and the
+`see()` family.
 
 **The `Engine` class is an internal detail. Do NOT document it.** It stays public
 for advanced/back-compat use, but no page, snippet, skill, or the README should
