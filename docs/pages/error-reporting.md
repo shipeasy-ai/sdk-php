@@ -18,32 +18,51 @@ try {
     chargeCard($order);
 } catch (\Throwable $e) {
     see($e)
-        ->causesThe('checkout')        // the subject — what the error affected (default: 'app')
-        ->extras(['order_id' => $id])  // structured debug context attached to the report
-        ->to('failed to charge');      // terminal: the consequence (default: 'hit an error')
+        ->causesThe('checkout')                        // the subject — what the error affected (default: 'app')
+        ->to('failed to charge', ['order_id' => $id]); // terminal: the consequence + debug context
 
     return back()->withError('Payment failed');
 }
 ```
 
-The chain is `see($problem)->causesThe($subject)->extras($extras)->to($outcome)`:
+The chain is `see($problem)->causesThe($subject)->to($outcome, $extras)`:
 
 - `causesThe(string $subject)` — what the error affected (default `'app'`).
-- `extras(array $extras)` — structured debug context attached to the report
-  (sanitized: string/int/float/bool only, truncated, ≤20 keys, private attributes
-  stripped). Chainable in any order *before* `to()`.
 - `to(string $outcome, ?array $extras = null)` — **terminal**; builds the event
   and fire-and-forgets the report. Idempotent (a second `to()` is a no-op). The
-  default outcome is `'hit an error'`. Pass `$extras` inline here to fold them in
-  as a final `->extras(...)` — so there is no ordering to remember:
+  default outcome is `'hit an error'`. `$extras` is structured debug context
+  attached to the report (sanitized: string/int/float/bool only, truncated, ≤20
+  keys, private attributes stripped).
+
+### Where extras go in the chain
+
+`causesThe($subject)` and `to($outcome)` are two halves of one sentence and must
+stay adjacent, so fold the extras into the terminal:
 
 ```php
+// PREFERRED — the consequence reads as one sentence:
 see($e)->causesThe('checkout')->to('use cached prices', ['order_id' => $id]);
 ```
 
-A stray `->extras(...)` chained **after** `->to(...)` is ignored with a warning
-(the report already shipped) — crucially, it **never throws** into your catch
-block. `->to()` returns the chain so the tail is harmless.
+`->to()` fires the report synchronously, so a stray `->extras(...)` chained
+**after** it is ignored with a warning — crucially it **never throws** into your
+catch block (`->to()` returns the chain so the tail is harmless), but the extras
+are **dropped**:
+
+```php
+// WRONG — extras silently lost:
+see($e)->causesThe('checkout')->to('use cached prices')->extras(['order_id' => $id]);
+
+// WRONG — extras wedged between the subject and the outcome. You read
+// "checkout … order_id … use cached prices" and lose the consequence.
+see($e)->causesThe('checkout')->extras(['order_id' => $id])->to('use cached prices');
+```
+
+`->extras(array $extras)` still exists as a standalone setter, but reach for it
+only when you genuinely cannot pass the context inline. When the context already
+exists *above* the catch, prefer
+[`Shipeasy\addExtras`](#attach-context-from-anywhere-shipeasyaddextras) — it
+keeps the catch site a clean one-liner.
 
 ### Attach context from anywhere: `Shipeasy\addExtras`
 

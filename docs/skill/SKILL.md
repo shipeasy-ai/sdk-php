@@ -93,14 +93,14 @@ use function Shipeasy\see;
 try {
     chargeCard($order);
 } catch (\Throwable $e) {
-    see($e)->causesThe('checkout')->extras(['order_id' => $id])->to('use the backup processor');
-    // extras also fold into the terminal — no ordering to remember:
-    // see($e)->causesThe('checkout')->to('use the backup processor', ['order_id' => $id]);
+    // extras fold into the terminal. NEVER ->causesThe(x)->extras([...])->to(y),
+    // which splits the consequence sentence in half.
+    see($e)->causesThe('checkout')->to('use the backup processor', ['order_id' => $id]);
 }
 ```
 
 A stray `->extras(...)` after `->to(...)` is ignored with a warning — it never
-throws into the catch block. To attach context from anywhere in a request without
+throws into the catch block, but the extras are dropped. To attach context from anywhere in a request without
 threading it into the catch, buffer it with `Shipeasy\addExtras(['order_id' => $id])`;
 every later `see()` in the same request merges it in. **PHP is share-nothing per
 request:** under PHP-FPM the buffer resets per request; under a long-running

@@ -26,18 +26,26 @@ use function Shipeasy\see;
 try {
     charge($order);
 } catch (\Throwable $e) {
-    // ->extras($array)        structured fields attached to the report; call it
-    //                         BEFORE ->to, or pass extras inline as ->to($outcome, $array).
-    //                         (A stray ->extras AFTER ->to is ignored with a warning —
-    //                         it never throws into the catch block.)
-    see($e)->causesThe('checkout')->extras(['order_id' => $oid])->to('use cached prices');
-
-    // equivalent — extras folded into the terminal, no ordering to remember:
+    // ->to($outcome, $array)  PREFERRED: fold the extras into the terminal. The
+    //                         consequence sentence stays whole and there is no
+    //                         ordering to remember.
     see($e)->causesThe('checkout')->to('use cached prices', ['order_id' => $oid]);
+
+    // ->to fires synchronously here, so a trailing ->extras AFTER ->to is
+    // ignored with a warning (it never throws into the catch block) — the
+    // extras are DROPPED. Use the inline form above, or addExtras() below.
+    // see($e)->causesThe('checkout')->to('use cached prices')->extras(['order_id' => $oid]);
+
+    // NEVER: extras wedged between the subject and the outcome — it splits the
+    // consequence sentence in half and is hard to read.
+    // see($e)->causesThe('checkout')->extras(['order_id' => $oid])->to('use cached prices');
 }
 ```
 
 ### Attach context from anywhere with `Shipeasy\addExtras(...)`
+
+Prefer this over the inline form whenever the context already exists *above*
+the catch — it keeps the catch site a clean one-liner.
 
 ```php
 use function Shipeasy\addExtras;
