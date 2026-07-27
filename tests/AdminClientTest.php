@@ -33,14 +33,36 @@ final class AdminClientTest extends TestCase
     public function testExposesResourceGroups(): void
     {
         $admin = new AdminClient('sdk_admin_test', 'proj_123');
-        // The four groups of the pruned admin surface. Exhaustive on purpose: a
-        // keep-set change that adds or drops a group must move this list too.
+        // The three groups of the lean admin surface. Exhaustive on purpose: a
+        // change to the SDK spec that adds or drops a group must move this list too.
         $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\FlagsApi::class, $admin->flags());
         $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\KillswitchApi::class, $admin->killswitch());
         $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\OpsApi::class, $admin->ops());
-        $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\CommentsApi::class, $admin->comments());
+        $this->assertFalse(method_exists($admin, 'comments'));
         // Lazily constructed but cached: same instance on repeat access.
         $this->assertSame($admin->flags(), $admin->flags());
+    }
+
+    public function testCarriesTheSevenContractOperations(): void
+    {
+        $admin = new AdminClient('sdk_admin_test', 'proj_123');
+        $this->assertTrue(method_exists($admin->ops(), 'createPublicBug'));
+        $this->assertTrue(method_exists($admin->ops(), 'createPublicFeatureRequest'));
+        $this->assertTrue(method_exists($admin->killswitch(), 'toggleKillswitch'));
+        foreach (['getGateWhitelist', 'setGateWhitelist', 'addToGateWhitelist', 'removeFromGateWhitelist'] as $op) {
+            $this->assertTrue(method_exists($admin->flags(), $op), $op);
+        }
+    }
+
+    public function testClientKeyWiresThePublicIntakeScheme(): void
+    {
+        // The two public ticket ops authenticate with a CLIENT key (X-SDK-Key)
+        // on the edge worker, not the admin bearer.
+        $plain = new AdminClient('sdk_admin_test');
+        $this->assertNull($plain->configuration()->getApiKey('clientSdkKey'));
+
+        $scoped = new AdminClient('sdk_admin_test', null, 'https://shipeasy.ai', 'sdk_client_test');
+        $this->assertSame('sdk_client_test', $scoped->configuration()->getApiKey('clientSdkKey'));
     }
 
     public function testDefaultHostIsProduction(): void

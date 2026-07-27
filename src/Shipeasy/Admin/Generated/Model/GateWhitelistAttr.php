@@ -1,6 +1,6 @@
 <?php
 /**
- * Env
+ * GateWhitelistAttr
  *
  * PHP version 8.1
  *
@@ -30,24 +30,22 @@ namespace Shipeasy\Admin\Generated\Model;
 use \Shipeasy\Admin\Generated\ObjectSerializer;
 
 /**
- * Env Class Doc Comment
+ * GateWhitelistAttr Class Doc Comment
  *
  * @category Class
- * @description Target environment. One of the project&#39;s configured envs (&#x60;dev&#x60;, &#x60;staging&#x60;, &#x60;prod&#x60;).
+ * @description Which identity attribute the whitelist matches on. &#x60;email&#x60; compares the caller&#39;s &#x60;email&#x60;; &#x60;user_id&#x60; compares the caller&#39;s &#x60;userID&#x60;. A whitelist matches on exactly one of the two at a time.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class Env
+class GateWhitelistAttr
 {
     /**
      * Possible values of this enum
      */
-    public const DEV = 'dev';
+    public const EMAIL = 'email';
 
-    public const STAGING = 'staging';
-
-    public const PROD = 'prod';
+    public const USER_ID = 'user_id';
 
     /**
      * Gets allowable values of the enum
@@ -56,9 +54,8 @@ class Env
     public static function getAllowableEnumValues()
     {
         return [
-            self::DEV,
-            self::STAGING,
-            self::PROD
+            self::EMAIL,
+            self::USER_ID
         ];
     }
 }
