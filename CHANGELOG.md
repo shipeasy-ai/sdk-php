@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.22.0 — 2026-07-27
 
 ### BREAKING: the optional Admin API client is now seven purpose-built operations
 
@@ -43,6 +43,22 @@ the client key with the fourth `AdminClient` argument and it is sent as `X-SDK-K
 A monorepo pre-commit hook now blocks any commit that changes the admin spec
 while this vendored copy is stale, so the two can no longer silently drift — the
 condition that had let the vendored spec fall 41 operations behind.
+
+### Docs: where `see()` extras go in the chain
+
+`causesThe($subject)` and `->to($outcome)` are two halves of one sentence, so
+the docs no longer teach `causesThe(x)->extras([...])->to(y)` — wedging the
+debug payload between the subject and the outcome splits the consequence in half
+and is hard to read. That shape is now a documented hard ban.
+
+`->to()` fires synchronously here, so a trailing `->extras()` after `->to()` is
+still warned-and-ignored (it never throws into the catch block) and its extras
+are dropped. Pass them inline as `->to($outcome, $extras)`, or buffer them
+earlier with `Shipeasy\addExtras` when the context already exists above the
+catch. Docs, snippet and skill updated to match.
+
+Also corrects `Engine::VERSION`, which still read `0.20.0` after the 0.21.0
+release — it is sent as `sdk_version` on every `see()` event.
 
 ## 0.21.0 — 2026-07-26
 
