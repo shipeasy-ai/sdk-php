@@ -6,23 +6,10 @@ namespace Shipeasy\Admin;
 
 use GuzzleHttp\Client as GuzzleClient;
 use Shipeasy\Admin\Generated\Configuration;
-use Shipeasy\Admin\Generated\Api\AlertsApi;
-use Shipeasy\Admin\Generated\Api\APIKeysApi;
-use Shipeasy\Admin\Generated\Api\AttributesApi;
-use Shipeasy\Admin\Generated\Api\ConfigsApi;
-use Shipeasy\Admin\Generated\Api\ConnectorsApi;
-use Shipeasy\Admin\Generated\Api\DraftsApi;
-use Shipeasy\Admin\Generated\Api\ErrorsApi;
-use Shipeasy\Admin\Generated\Api\EventsApi;
-use Shipeasy\Admin\Generated\Api\ExperimentsApi;
+use Shipeasy\Admin\Generated\Api\CommentsApi;
 use Shipeasy\Admin\Generated\Api\FlagsApi;
-use Shipeasy\Admin\Generated\Api\KeysApi;
 use Shipeasy\Admin\Generated\Api\KillswitchApi;
-use Shipeasy\Admin\Generated\Api\MetricsApi;
 use Shipeasy\Admin\Generated\Api\OpsApi;
-use Shipeasy\Admin\Generated\Api\ProfilesApi;
-use Shipeasy\Admin\Generated\Api\ProjectsApi;
-use Shipeasy\Admin\Generated\Api\UniversesApi;
 
 /**
  * The {@see AdminClient} entry point for the OPTIONAL Admin API client.
@@ -89,39 +76,9 @@ final class AdminClient
         return $this->api(FlagsApi::class);
     }
 
-    public function configs(): ConfigsApi
-    {
-        return $this->api(ConfigsApi::class);
-    }
-
     public function killswitch(): KillswitchApi
     {
         return $this->api(KillswitchApi::class);
-    }
-
-    public function experiments(): ExperimentsApi
-    {
-        return $this->api(ExperimentsApi::class);
-    }
-
-    public function universes(): UniversesApi
-    {
-        return $this->api(UniversesApi::class);
-    }
-
-    public function attributes(): AttributesApi
-    {
-        return $this->api(AttributesApi::class);
-    }
-
-    public function metrics(): MetricsApi
-    {
-        return $this->api(MetricsApi::class);
-    }
-
-    public function events(): EventsApi
-    {
-        return $this->api(EventsApi::class);
     }
 
     public function ops(): OpsApi
@@ -129,44 +86,9 @@ final class AdminClient
         return $this->api(OpsApi::class);
     }
 
-    public function alerts(): AlertsApi
+    public function comments(): CommentsApi
     {
-        return $this->api(AlertsApi::class);
-    }
-
-    public function projects(): ProjectsApi
-    {
-        return $this->api(ProjectsApi::class);
-    }
-
-    public function profiles(): ProfilesApi
-    {
-        return $this->api(ProfilesApi::class);
-    }
-
-    public function keys(): KeysApi
-    {
-        return $this->api(KeysApi::class);
-    }
-
-    public function drafts(): DraftsApi
-    {
-        return $this->api(DraftsApi::class);
-    }
-
-    public function errors(): ErrorsApi
-    {
-        return $this->api(ErrorsApi::class);
-    }
-
-    public function connectors(): ConnectorsApi
-    {
-        return $this->api(ConnectorsApi::class);
-    }
-
-    public function apiKeys(): APIKeysApi
-    {
-        return $this->api(APIKeysApi::class);
+        return $this->api(CommentsApi::class);
     }
 
     /**

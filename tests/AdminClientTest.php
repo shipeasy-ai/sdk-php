@@ -33,10 +33,12 @@ final class AdminClientTest extends TestCase
     public function testExposesResourceGroups(): void
     {
         $admin = new AdminClient('sdk_admin_test', 'proj_123');
+        // The four groups of the pruned admin surface. Exhaustive on purpose: a
+        // keep-set change that adds or drops a group must move this list too.
         $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\FlagsApi::class, $admin->flags());
-        $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\ExperimentsApi::class, $admin->experiments());
-        $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\ConnectorsApi::class, $admin->connectors());
-        $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\ErrorsApi::class, $admin->errors());
+        $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\KillswitchApi::class, $admin->killswitch());
+        $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\OpsApi::class, $admin->ops());
+        $this->assertInstanceOf(\Shipeasy\Admin\Generated\Api\CommentsApi::class, $admin->comments());
         // Lazily constructed but cached: same instance on repeat access.
         $this->assertSame($admin->flags(), $admin->flags());
     }
