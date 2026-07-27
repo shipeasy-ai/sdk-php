@@ -16,7 +16,8 @@ $head = bootstrapScriptTag(
         )
       . i18nScriptTag();                  // optional: ($clientKey, $profile, $opts)
 
-// Devtools overlay (Shift+Alt+S or ?se=1) — render it for your own team only.
+// Devtools overlay (Shift+Alt+S or ?se=1) — opens only for a signed-in
+// Shipeasy session, so gating it on staff/env is optional.
 // optional: ($projectId, ['clientKey' => ..., 'baseUrl' => ..., 'defer' => true])
 $head .= devtoolsScriptTag();
 ```
