@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * CreatePublicBugRequest Class Doc Comment
  *
  * @category Class
- * @description Body for &#x60;POST /ops/bug&#x60;. The same bug fields as &#x60;CreateBugRequest&#x60;, minus the &#x60;type&#x60; discriminator — the path already says what is being filed.
+ * @description Body for &#x60;POST /ops/bug&#x60;. The same bug fields as &#x60;CreateBugRequest&#x60;, minus the &#x60;type&#x60; discriminator — the path already says what is being filed, plus the public intake&#39;s own &#x60;dedupKey&#x60;.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -72,6 +72,7 @@ class CreatePublicBugRequest implements ModelInterface, ArrayAccess, \JsonSerial
         'user_agent' => 'string',
         'viewport' => 'string',
         'context' => 'array<string,mixed>',
+        'dedup_key' => 'string',
         'notify' => '\Shipeasy\Admin\Generated\Model\NotificationTarget'
     ];
 
@@ -97,6 +98,7 @@ class CreatePublicBugRequest implements ModelInterface, ArrayAccess, \JsonSerial
         'user_agent' => null,
         'viewport' => null,
         'context' => null,
+        'dedup_key' => null,
         'notify' => null
     ];
 
@@ -120,6 +122,7 @@ class CreatePublicBugRequest implements ModelInterface, ArrayAccess, \JsonSerial
         'user_agent' => true,
         'viewport' => true,
         'context' => true,
+        'dedup_key' => false,
         'notify' => true
     ];
 
@@ -223,6 +226,7 @@ class CreatePublicBugRequest implements ModelInterface, ArrayAccess, \JsonSerial
         'user_agent' => 'userAgent',
         'viewport' => 'viewport',
         'context' => 'context',
+        'dedup_key' => 'dedupKey',
         'notify' => 'notify'
     ];
 
@@ -246,6 +250,7 @@ class CreatePublicBugRequest implements ModelInterface, ArrayAccess, \JsonSerial
         'user_agent' => 'setUserAgent',
         'viewport' => 'setViewport',
         'context' => 'setContext',
+        'dedup_key' => 'setDedupKey',
         'notify' => 'setNotify'
     ];
 
@@ -269,6 +274,7 @@ class CreatePublicBugRequest implements ModelInterface, ArrayAccess, \JsonSerial
         'user_agent' => 'getUserAgent',
         'viewport' => 'getViewport',
         'context' => 'getContext',
+        'dedup_key' => 'getDedupKey',
         'notify' => 'getNotify'
     ];
 
@@ -343,6 +349,7 @@ class CreatePublicBugRequest implements ModelInterface, ArrayAccess, \JsonSerial
         $this->setIfExists('user_agent', $data ?? [], null);
         $this->setIfExists('viewport', $data ?? [], null);
         $this->setIfExists('context', $data ?? [], null);
+        $this->setIfExists('dedup_key', $data ?? [], null);
         $this->setIfExists('notify', $data ?? [], null);
     }
 
@@ -406,6 +413,10 @@ class CreatePublicBugRequest implements ModelInterface, ArrayAccess, \JsonSerial
 
         if (!is_null($this->container['viewport']) && (mb_strlen($this->container['viewport']) > 40)) {
             $invalidProperties[] = "invalid value for 'viewport', the character length must be smaller than or equal to 40.";
+        }
+
+        if (!is_null($this->container['dedup_key']) && (mb_strlen($this->container['dedup_key']) > 200)) {
+            $invalidProperties[] = "invalid value for 'dedup_key', the character length must be smaller than or equal to 200.";
         }
 
         return $invalidProperties;
@@ -876,6 +887,37 @@ class CreatePublicBugRequest implements ModelInterface, ArrayAccess, \JsonSerial
             }
         }
         $this->container['context'] = $context;
+
+        return $this;
+    }
+
+    /**
+     * Gets dedup_key
+     *
+     * @return string|null
+     */
+    public function getDedupKey()
+    {
+        return $this->container['dedup_key'];
+    }
+
+    /**
+     * Sets dedup_key
+     *
+     * @param string|null $dedup_key Caller-chosen dedupe identity for this report, stored on the ticket. A repeat submission carrying the same key does NOT file a second ticket: the open ticket already holding that key is refreshed from this payload (title and the report fields overwritten, a \"re-triggered\" comment appended) and returned with `deduped: true` and `updated: true`. Triage state a human owns — status, priority, assignee, tags — is left untouched, and a `resolved`/`wont_fix` ticket no longer holds the key, so a failure that comes back after being closed files a fresh ticket. Omit it to fall back to the derived (title + `context.step`) dedupe, whose repeats return the existing ticket unchanged.
+     *
+     * @return self
+     */
+    public function setDedupKey($dedup_key)
+    {
+        if (is_null($dedup_key)) {
+            throw new \InvalidArgumentException('non-nullable dedup_key cannot be null');
+        }
+        if ((mb_strlen($dedup_key) > 200)) {
+            throw new \InvalidArgumentException('invalid length for $dedup_key when calling CreatePublicBugRequest., must be smaller than or equal to 200.');
+        }
+
+        $this->container['dedup_key'] = $dedup_key;
 
         return $this;
     }

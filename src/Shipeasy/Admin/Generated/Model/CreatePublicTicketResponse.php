@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * CreatePublicTicketResponse Class Doc Comment
  *
  * @category Class
- * @description Response for the public ticket intake. A fresh file returns &#x60;201&#x60; with &#x60;id&#x60; + &#x60;number&#x60;; a repeat of a report already tracked by an open ticket returns &#x60;200&#x60; with that ticket&#39;s &#x60;number&#x60; and &#x60;deduped: true&#x60;.
+ * @description Response for the public ticket intake. A fresh file returns &#x60;201&#x60; with &#x60;id&#x60; + &#x60;number&#x60;; a repeat of a report already tracked by an open ticket returns &#x60;200&#x60; with that ticket&#39;s &#x60;number&#x60; and &#x60;deduped: true&#x60; — plus &#x60;updated: true&#x60; when a &#x60;dedupKey&#x60; re-triggered it and its fields were refreshed.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -60,7 +60,8 @@ class CreatePublicTicketResponse implements ModelInterface, ArrayAccess, \JsonSe
     protected static $openAPITypes = [
         'id' => 'string',
         'number' => 'int',
-        'deduped' => 'bool'
+        'deduped' => 'bool',
+        'updated' => 'bool'
     ];
 
     /**
@@ -73,7 +74,8 @@ class CreatePublicTicketResponse implements ModelInterface, ArrayAccess, \JsonSe
     protected static $openAPIFormats = [
         'id' => null,
         'number' => null,
-        'deduped' => null
+        'deduped' => null,
+        'updated' => null
     ];
 
     /**
@@ -84,7 +86,8 @@ class CreatePublicTicketResponse implements ModelInterface, ArrayAccess, \JsonSe
     protected static array $openAPINullables = [
         'id' => false,
         'number' => false,
-        'deduped' => false
+        'deduped' => false,
+        'updated' => false
     ];
 
     /**
@@ -175,7 +178,8 @@ class CreatePublicTicketResponse implements ModelInterface, ArrayAccess, \JsonSe
     protected static $attributeMap = [
         'id' => 'id',
         'number' => 'number',
-        'deduped' => 'deduped'
+        'deduped' => 'deduped',
+        'updated' => 'updated'
     ];
 
     /**
@@ -186,7 +190,8 @@ class CreatePublicTicketResponse implements ModelInterface, ArrayAccess, \JsonSe
     protected static $setters = [
         'id' => 'setId',
         'number' => 'setNumber',
-        'deduped' => 'setDeduped'
+        'deduped' => 'setDeduped',
+        'updated' => 'setUpdated'
     ];
 
     /**
@@ -197,7 +202,8 @@ class CreatePublicTicketResponse implements ModelInterface, ArrayAccess, \JsonSe
     protected static $getters = [
         'id' => 'getId',
         'number' => 'getNumber',
-        'deduped' => 'getDeduped'
+        'deduped' => 'getDeduped',
+        'updated' => 'getUpdated'
     ];
 
     /**
@@ -260,6 +266,7 @@ class CreatePublicTicketResponse implements ModelInterface, ArrayAccess, \JsonSe
         $this->setIfExists('id', $data ?? [], null);
         $this->setIfExists('number', $data ?? [], null);
         $this->setIfExists('deduped', $data ?? [], null);
+        $this->setIfExists('updated', $data ?? [], null);
     }
 
     /**
@@ -384,6 +391,33 @@ class CreatePublicTicketResponse implements ModelInterface, ArrayAccess, \JsonSe
             throw new \InvalidArgumentException('non-nullable deduped cannot be null');
         }
         $this->container['deduped'] = $deduped;
+
+        return $this;
+    }
+
+    /**
+     * Gets updated
+     *
+     * @return bool|null
+     */
+    public function getUpdated()
+    {
+        return $this->container['updated'];
+    }
+
+    /**
+     * Sets updated
+     *
+     * @param bool|null $updated `true` when the deduped ticket was REFRESHED from this payload and got a \"re-triggered\" comment — only ever set alongside `deduped` on a submission that carried a `dedupKey`. Absent when the existing ticket was returned untouched.
+     *
+     * @return self
+     */
+    public function setUpdated($updated)
+    {
+        if (is_null($updated)) {
+            throw new \InvalidArgumentException('non-nullable updated cannot be null');
+        }
+        $this->container['updated'] = $updated;
 
         return $this;
     }

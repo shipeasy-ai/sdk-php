@@ -35,7 +35,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * CreatePublicFeatureRequestRequest Class Doc Comment
  *
  * @category Class
- * @description Body for &#x60;POST /ops/feature-request&#x60;. The same feature-request fields as &#x60;CreateFeatureRequestRequest&#x60;, minus the &#x60;type&#x60; discriminator — the path already says what is being filed.
+ * @description Body for &#x60;POST /ops/feature-request&#x60;. The same feature-request fields as &#x60;CreateFeatureRequestRequest&#x60;, minus the &#x60;type&#x60; discriminator — the path already says what is being filed, plus the public intake&#39;s own &#x60;dedupKey&#x60;.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -70,6 +70,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
         'page_url' => 'string',
         'user_agent' => 'string',
         'context' => 'array<string,mixed>',
+        'dedup_key' => 'string',
         'notify' => '\Shipeasy\Admin\Generated\Model\NotificationTarget'
     ];
 
@@ -93,6 +94,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
         'page_url' => 'uri',
         'user_agent' => null,
         'context' => null,
+        'dedup_key' => null,
         'notify' => null
     ];
 
@@ -114,6 +116,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
         'page_url' => true,
         'user_agent' => true,
         'context' => true,
+        'dedup_key' => false,
         'notify' => true
     ];
 
@@ -215,6 +218,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
         'page_url' => 'pageUrl',
         'user_agent' => 'userAgent',
         'context' => 'context',
+        'dedup_key' => 'dedupKey',
         'notify' => 'notify'
     ];
 
@@ -236,6 +240,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
         'page_url' => 'setPageUrl',
         'user_agent' => 'setUserAgent',
         'context' => 'setContext',
+        'dedup_key' => 'setDedupKey',
         'notify' => 'setNotify'
     ];
 
@@ -257,6 +262,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
         'page_url' => 'getPageUrl',
         'user_agent' => 'getUserAgent',
         'context' => 'getContext',
+        'dedup_key' => 'getDedupKey',
         'notify' => 'getNotify'
     ];
 
@@ -329,6 +335,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
         $this->setIfExists('page_url', $data ?? [], null);
         $this->setIfExists('user_agent', $data ?? [], null);
         $this->setIfExists('context', $data ?? [], null);
+        $this->setIfExists('dedup_key', $data ?? [], null);
         $this->setIfExists('notify', $data ?? [], null);
     }
 
@@ -384,6 +391,10 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
 
         if (!is_null($this->container['user_agent']) && (mb_strlen($this->container['user_agent']) > 500)) {
             $invalidProperties[] = "invalid value for 'user_agent', the character length must be smaller than or equal to 500.";
+        }
+
+        if (!is_null($this->container['dedup_key']) && (mb_strlen($this->container['dedup_key']) > 200)) {
+            $invalidProperties[] = "invalid value for 'dedup_key', the character length must be smaller than or equal to 200.";
         }
 
         return $invalidProperties;
@@ -785,6 +796,37 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
             }
         }
         $this->container['context'] = $context;
+
+        return $this;
+    }
+
+    /**
+     * Gets dedup_key
+     *
+     * @return string|null
+     */
+    public function getDedupKey()
+    {
+        return $this->container['dedup_key'];
+    }
+
+    /**
+     * Sets dedup_key
+     *
+     * @param string|null $dedup_key Caller-chosen dedupe identity for this request, stored on the ticket. Behaves exactly as on `POST /ops/bug`: a repeat carrying the same key refreshes the open ticket already holding it (fields overwritten, a \"re-triggered\" comment appended) and returns `deduped: true` with `updated: true`, instead of filing a second one.
+     *
+     * @return self
+     */
+    public function setDedupKey($dedup_key)
+    {
+        if (is_null($dedup_key)) {
+            throw new \InvalidArgumentException('non-nullable dedup_key cannot be null');
+        }
+        if ((mb_strlen($dedup_key) > 200)) {
+            throw new \InvalidArgumentException('invalid length for $dedup_key when calling CreatePublicFeatureRequestRequest., must be smaller than or equal to 200.');
+        }
+
+        $this->container['dedup_key'] = $dedup_key;
 
         return $this;
     }
