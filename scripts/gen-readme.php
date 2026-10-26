@@ -205,7 +205,7 @@ the [Testing](BLOBX/docs/pages/testing.md) page.
 ## License
 
 See [LICENSE](BLOBX/LICENSE). Evaluation is tested against the cross-language
-MurmurHash3 vectors in `experiment-platform/04-evaluation.md`.
+MurmurHash3 vectors in [Rollouts & bucketing](https://docs.shipeasy.ai/flags/gates/rollouts).
 
 MD;
 
