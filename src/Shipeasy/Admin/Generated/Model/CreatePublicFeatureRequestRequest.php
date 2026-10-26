@@ -389,6 +389,10 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
             $invalidProperties[] = "invalid value for 'use_case', the character length must be smaller than or equal to 8000.";
         }
 
+        if (!is_null($this->container['tags']) && (count($this->container['tags']) > 50)) {
+            $invalidProperties[] = "invalid value for 'tags', number of items must be less than or equal to 50.";
+        }
+
         if (!is_null($this->container['user_agent']) && (mb_strlen($this->container['user_agent']) > 500)) {
             $invalidProperties[] = "invalid value for 'user_agent', the character length must be smaller than or equal to 500.";
         }
@@ -646,7 +650,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
     /**
      * Sets tags
      *
-     * @param string[]|null $tags Tag names to attach at creation (get-or-created by name, deduped case-insensitively).
+     * @param string[]|null $tags Tag names to label the item with, e.g. `[\"ios\", \"checkout\"]`. Each name is matched case-insensitively against the project's existing tags and reuses that tag (keeping its stored casing) when one matches; a name with no match creates a new project tag. Here the tags only label the ticket: the project's tag rules (owner/status/agent routing) are not applied to a public report while it awaits approval.
      *
      * @return self
      */
@@ -654,6 +658,10 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
     {
         if (is_null($tags)) {
             throw new \InvalidArgumentException('non-nullable tags cannot be null');
+        }
+
+        if ((count($tags) > 50)) {
+            throw new \InvalidArgumentException('invalid value for $tags when calling CreatePublicFeatureRequestRequest., number of items must be less than or equal to 50.');
         }
         $this->container['tags'] = $tags;
 

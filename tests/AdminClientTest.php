@@ -65,6 +65,24 @@ final class AdminClientTest extends TestCase
         $this->assertSame('sdk_client_test', $scoped->configuration()->getApiKey('clientSdkKey'));
     }
 
+    public function testPublicTicketCarriesTagNames(): void
+    {
+        // Tags go out as plain names; the server matches each case-insensitively
+        // against the project's existing tags and creates the ones it lacks.
+        $bug = new \Shipeasy\Admin\Generated\Model\CreatePublicBugRequest([
+            'title' => 'Checkout 500',
+            'tags' => ['ios', 'Checkout'],
+        ]);
+        $this->assertSame(['ios', 'Checkout'], json_decode((string) $bug, true)['tags']);
+        $this->assertTrue($bug->valid());
+
+        $tooMany = new \Shipeasy\Admin\Generated\Model\CreatePublicBugRequest([
+            'title' => 'x',
+            'tags' => array_map(fn ($i) => "t$i", range(1, 51)),
+        ]);
+        $this->assertFalse($tooMany->valid());
+    }
+
     public function testDefaultHostIsProduction(): void
     {
         $admin = new AdminClient('sdk_admin_test');
