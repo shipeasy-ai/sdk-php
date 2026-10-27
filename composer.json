@@ -3,6 +3,12 @@
     "description": "Shipeasy server SDK for PHP \u2014 flags, configs, experiments, metrics.",
     "type": "library",
     "license": "MIT",
+    "homepage": "https://shipeasy.ai",
+    "support": {
+        "docs": "https://docs.shipeasy.ai",
+        "source": "https://github.com/shipeasy-ai/sdk-php",
+        "issues": "https://github.com/shipeasy-ai/sdk-php/issues"
+    },
     "version": "0.23.0",
     "require": {
         "php": ">=8.1",

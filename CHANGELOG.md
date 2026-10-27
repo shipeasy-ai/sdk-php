@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Package metadata: `composer.json` gains `homepage` (`https://shipeasy.ai`)
+  and `support` links (docs, source, issues) — Packagist showed none.
+
 ## 0.23.0 — 2026-10-26
 
 ### Public tickets accept `tags`
