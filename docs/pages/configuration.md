@@ -47,7 +47,7 @@ configure(
 | `isNetworkEnabled` | env-derived | Master switch for **all** outbound requests. `null` ⇒ on in production, off everywhere else. See [Environment-derived egress defaults](#environment-derived-egress-defaults). |
 | `disableTelemetry` | env-derived | Opt out of the usage-telemetry beacon. `null` ⇒ on in production, off everywhere else (and always off when `isNetworkEnabled` is false). |
 | `telemetryUrl` | (built-in) | Override the telemetry endpoint. |
-| `privateAttributes` | `[]` | Attribute names stripped from outbound event payloads (LD/Statsig `privateAttributes`). See [Advanced](advanced.md). |
+| `privateAttributes` | `[]` | Attribute names stripped from outbound event payloads (`privateAttributes`). See [Advanced](advanced.md). |
 | `stickyStore` | `null` | A `Shipeasy\StickyBucketStore` for durable experiment bucketing. See [Advanced](advanced.md). |
 | `logLevel` | `'warn'` | The SDK's own diagnostic verbosity: `'silent'`, `'error'`, `'warn'`, `'info'`, `'debug'`. See below. |
 | `disableInternalErrorReporting` | `false` | Opt out of internal SDK-error self-reporting. See below. |
