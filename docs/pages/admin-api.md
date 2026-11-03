@@ -5,16 +5,17 @@ The base SDK *evaluates* flags, configs, and experiments
 **Admin API client** is a separate, optional surface for *administering* a small,
 deliberate slice of those resources from server code.
 
-It is **intentionally lean** — three capabilities, seven operations, not the
+It is **intentionally lean** — four capabilities, eight operations, not the
 whole admin API:
 
 | Capability           | Operations                                                                               |
 | -------------------- | ---------------------------------------------------------------------------------------- |
+| List the ops queue   | `listOpsItems` |
 | File a public ticket (client key) | `createPublicBug`, `createPublicFeatureRequest`                                           |
 | Toggle a kill switch | `toggleKillswitch`                                                                        |
 | Manage a whitelist   | `getGateWhitelist`, `setGateWhitelist`, `addToGateWhitelist`, `removeFromGateWhitelist`   |
 
-Everything else in the admin API — listing, generic CRUD, experiments, metrics,
+Everything else in the admin API — generic CRUD, experiments, metrics,
 events, configs, i18n, projects, connectors, keys — is deliberately **not** here.
 Reach for the Shipeasy CLI or MCP for those; they speak the complete spec.
 Keeping the vendored contract small is what keeps the generated client small.
@@ -56,7 +57,7 @@ optional on the constructor — individual operations also accept an explicit
 Two dedicated endpoints, so there is no discriminator to set and no fields from
 the other kind in the request. Both accept just a `title`.
 
-These two are the **public** intake, and they differ from the other five
+These two are the **public** intake, and they differ from the other six
 operations in three ways worth knowing before you call them:
 
 - They authenticate with a **client** key (`sdk_client_…`) carrying the
@@ -95,6 +96,34 @@ $admin->ops()->createPublicFeatureRequest(new CreatePublicFeatureRequestRequest(
     'title' => 'Dark mode',
     'use_case' => 'Reduce eye strain at night',
 ]));
+```
+
+## List the ops queue
+
+``listOpsItems`` reads the project's tickets (bugs, feature requests, errors, alerts) in
+work order — highest priority first, oldest first within a priority. Filters
+combine with AND and are applied before paging; walk the queue with `limit` and
+`offset`.
+
+- `reporter` — only items filed by one email (case-insensitive, exact). Items with
+  no reporter never match, and while it is set `status=all` also returns
+  `pending_approval` items, so a reporter sees the ticket they just filed.
+- `closed_since` — items still being worked are always returned; `resolved` and
+  `wont_fix` items only when they closed at or after this time.
+- Every item carries `closed_at` (ISO-8601, null while open), so you can tell when
+  a ticket closed without reading `updated_at`.
+
+```php
+$items = $admin->ops()->listOpsItems(
+    status: 'all',
+    reporter: 'jane@clinic.com',
+    closed_since: new DateTime('2026-10-27T00:00:00Z'),
+    limit: 50,
+);
+foreach ($items as $i) {
+    echo '#', $i->getNumber(), ' ', $i->getStatus(), ' ', $i->getTitle(),
+        ' (closed: ', var_export($i->getClosedAt(), true), ")\n";
+}
 ```
 
 ## Toggle a kill switch
