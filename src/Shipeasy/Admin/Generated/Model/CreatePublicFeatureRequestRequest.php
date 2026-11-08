@@ -70,6 +70,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
         'page_url' => 'string',
         'user_agent' => 'string',
         'context' => 'array<string,mixed>',
+        'user' => 'array<string,mixed>',
         'dedup_key' => 'string',
         'notify' => '\Shipeasy\Admin\Generated\Model\NotificationTarget'
     ];
@@ -94,6 +95,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
         'page_url' => 'uri',
         'user_agent' => null,
         'context' => null,
+        'user' => null,
         'dedup_key' => null,
         'notify' => null
     ];
@@ -116,6 +118,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
         'page_url' => true,
         'user_agent' => true,
         'context' => true,
+        'user' => true,
         'dedup_key' => false,
         'notify' => true
     ];
@@ -218,6 +221,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
         'page_url' => 'pageUrl',
         'user_agent' => 'userAgent',
         'context' => 'context',
+        'user' => 'user',
         'dedup_key' => 'dedupKey',
         'notify' => 'notify'
     ];
@@ -240,6 +244,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
         'page_url' => 'setPageUrl',
         'user_agent' => 'setUserAgent',
         'context' => 'setContext',
+        'user' => 'setUser',
         'dedup_key' => 'setDedupKey',
         'notify' => 'setNotify'
     ];
@@ -262,6 +267,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
         'page_url' => 'getPageUrl',
         'user_agent' => 'getUserAgent',
         'context' => 'getContext',
+        'user' => 'getUser',
         'dedup_key' => 'getDedupKey',
         'notify' => 'getNotify'
     ];
@@ -335,6 +341,7 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
         $this->setIfExists('page_url', $data ?? [], null);
         $this->setIfExists('user_agent', $data ?? [], null);
         $this->setIfExists('context', $data ?? [], null);
+        $this->setIfExists('user', $data ?? [], null);
         $this->setIfExists('dedup_key', $data ?? [], null);
         $this->setIfExists('notify', $data ?? [], null);
     }
@@ -395,6 +402,10 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
 
         if (!is_null($this->container['user_agent']) && (mb_strlen($this->container['user_agent']) > 500)) {
             $invalidProperties[] = "invalid value for 'user_agent', the character length must be smaller than or equal to 500.";
+        }
+
+        if (!is_null($this->container['user']) && (count($this->container['user']) > 50)) {
+            $invalidProperties[] = "invalid value for 'user', number of items must be less than or equal to 50.";
         }
 
         if (!is_null($this->container['dedup_key']) && (mb_strlen($this->container['dedup_key']) > 200)) {
@@ -804,6 +815,44 @@ class CreatePublicFeatureRequestRequest implements ModelInterface, ArrayAccess, 
             }
         }
         $this->container['context'] = $context;
+
+        return $this;
+    }
+
+    /**
+     * Gets user
+     *
+     * @return array<string,mixed>|null
+     */
+    public function getUser()
+    {
+        return $this->container['user'];
+    }
+
+    /**
+     * Sets user
+     *
+     * @param array<string,mixed>|null $user The reporter's SDK identity — the same user attribute object your app passes to the Shipeasy SDK to evaluate flags (`user_id`, `anonymous_id`, `email`, plus any targeting attributes). When present, Shipeasy evaluates every feature flag, kill switch and running experiment for this user at filing time and stores the result on the ticket as `context.reporter`, so triage (and any agent working the ticket) sees exactly which features the reporter had on. The browser and React Native devtools attach the identified user automatically. Omit it (or send `null`) to file without a feature snapshot.
+     *
+     * @return self
+     */
+    public function setUser($user)
+    {
+        if (is_null($user)) {
+            array_push($this->openAPINullablesSetToNull, 'user');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('user', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+
+        if (!is_null($user) && (count($user) > 50)) {
+            throw new \InvalidArgumentException('invalid value for $user when calling CreatePublicFeatureRequestRequest., number of items must be less than or equal to 50.');
+        }
+        $this->container['user'] = $user;
 
         return $this;
     }

@@ -62,6 +62,7 @@ class OpsItemContext implements ModelInterface, ArrayAccess, \JsonSerializable
         'error' => '\Shipeasy\Admin\Generated\Model\OpsErrorContext',
         'alert' => '\Shipeasy\Admin\Generated\Model\OpsAlertContext',
         'measure_plan' => '\Shipeasy\Admin\Generated\Model\OpsMeasurePlanContext',
+        'reporter' => '\Shipeasy\Admin\Generated\Model\OpsReporterContext',
         'error_chart' => '\Shipeasy\Admin\Generated\Model\OpsItemContextErrorChart'
     ];
 
@@ -77,6 +78,7 @@ class OpsItemContext implements ModelInterface, ArrayAccess, \JsonSerializable
         'error' => null,
         'alert' => null,
         'measure_plan' => null,
+        'reporter' => null,
         'error_chart' => null
     ];
 
@@ -90,6 +92,7 @@ class OpsItemContext implements ModelInterface, ArrayAccess, \JsonSerializable
         'error' => false,
         'alert' => false,
         'measure_plan' => false,
+        'reporter' => false,
         'error_chart' => false
     ];
 
@@ -183,6 +186,7 @@ class OpsItemContext implements ModelInterface, ArrayAccess, \JsonSerializable
         'error' => 'error',
         'alert' => 'alert',
         'measure_plan' => 'measurePlan',
+        'reporter' => 'reporter',
         'error_chart' => 'errorChart'
     ];
 
@@ -196,6 +200,7 @@ class OpsItemContext implements ModelInterface, ArrayAccess, \JsonSerializable
         'error' => 'setError',
         'alert' => 'setAlert',
         'measure_plan' => 'setMeasurePlan',
+        'reporter' => 'setReporter',
         'error_chart' => 'setErrorChart'
     ];
 
@@ -209,6 +214,7 @@ class OpsItemContext implements ModelInterface, ArrayAccess, \JsonSerializable
         'error' => 'getError',
         'alert' => 'getAlert',
         'measure_plan' => 'getMeasurePlan',
+        'reporter' => 'getReporter',
         'error_chart' => 'getErrorChart'
     ];
 
@@ -273,6 +279,7 @@ class OpsItemContext implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('error', $data ?? [], null);
         $this->setIfExists('alert', $data ?? [], null);
         $this->setIfExists('measure_plan', $data ?? [], null);
+        $this->setIfExists('reporter', $data ?? [], null);
         $this->setIfExists('error_chart', $data ?? [], null);
     }
 
@@ -422,6 +429,33 @@ class OpsItemContext implements ModelInterface, ArrayAccess, \JsonSerializable
             throw new \InvalidArgumentException('non-nullable measure_plan cannot be null');
         }
         $this->container['measure_plan'] = $measure_plan;
+
+        return $this;
+    }
+
+    /**
+     * Gets reporter
+     *
+     * @return \Shipeasy\Admin\Generated\Model\OpsReporterContext|null
+     */
+    public function getReporter()
+    {
+        return $this->container['reporter'];
+    }
+
+    /**
+     * Sets reporter
+     *
+     * @param \Shipeasy\Admin\Generated\Model\OpsReporterContext|null $reporter reporter
+     *
+     * @return self
+     */
+    public function setReporter($reporter)
+    {
+        if (is_null($reporter)) {
+            throw new \InvalidArgumentException('non-nullable reporter cannot be null');
+        }
+        $this->container['reporter'] = $reporter;
 
         return $this;
     }
