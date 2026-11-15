@@ -300,6 +300,13 @@ class OpsAlertContext implements ModelInterface, ArrayAccess, \JsonSerializable
     public const SOURCE_EXPERIMENT_SRM = 'experiment_srm';
     public const SOURCE_EXPERIMENT_PEEK = 'experiment_peek';
     public const SOURCE_GUARDRAIL = 'guardrail';
+    public const SOURCE_GCP_MONITORING = 'gcp_monitoring';
+    public const SOURCE_PROMETHEUS_ALERTMANAGER = 'prometheus_alertmanager';
+    public const SOURCE_GRAFANA_ALERTING = 'grafana_alerting';
+    public const SOURCE_AWS_CLOUDWATCH = 'aws_cloudwatch';
+    public const SOURCE_AZURE_MONITOR = 'azure_monitor';
+    public const SOURCE_DATADOG_MONITORS = 'datadog_monitors';
+    public const SOURCE_GENERIC_WEBHOOK = 'generic_webhook';
     public const SEVERITY_DANGER = 'danger';
     public const SEVERITY_WARN = 'warn';
     public const SEVERITY_INFO = 'info';
@@ -320,6 +327,13 @@ class OpsAlertContext implements ModelInterface, ArrayAccess, \JsonSerializable
             self::SOURCE_EXPERIMENT_SRM,
             self::SOURCE_EXPERIMENT_PEEK,
             self::SOURCE_GUARDRAIL,
+            self::SOURCE_GCP_MONITORING,
+            self::SOURCE_PROMETHEUS_ALERTMANAGER,
+            self::SOURCE_GRAFANA_ALERTING,
+            self::SOURCE_AWS_CLOUDWATCH,
+            self::SOURCE_AZURE_MONITOR,
+            self::SOURCE_DATADOG_MONITORS,
+            self::SOURCE_GENERIC_WEBHOOK,
         ];
     }
 
@@ -468,7 +482,7 @@ class OpsAlertContext implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets source
      *
-     * @param string $source What kind of condition opened this alert instance.
+     * @param string $source What kind of condition opened this alert instance. `gcp_monitoring`, `prometheus_alertmanager`, `grafana_alerting`, `aws_cloudwatch`, `azure_monitor`, `datadog_monitors` and `generic_webhook` are incidents delivered from outside monitoring through the project's inbound alert endpoint for that provider; the ticket's `context.alert.external` carries the incident (policy, condition, upstream severity, console `url`, resource labels, `occurrences`, open incident ids).
      *
      * @return self
      */
