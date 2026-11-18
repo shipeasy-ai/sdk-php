@@ -33,7 +33,7 @@ use \Shipeasy\Admin\Generated\ObjectSerializer;
  * OpsItemStatus Class Doc Comment
  *
  * @category Class
- * @description Lifecycle status of a queue item. The working flow is &#x60;open&#x60; → &#x60;in_progress&#x60; → &#x60;ready_for_qa&#x60; → &#x60;resolved&#x60; (or &#x60;wont_fix&#x60;, terminal from any earlier stage). &#x60;blocked&#x60; marks an item that can&#39;t progress until an external dependency clears — a working state a human sets and clears. &#x60;ready_for_qa&#x60; is what a developer sets once a fix lands; &#x60;resolved&#x60; is the QA sign-off, normally flipped in the dashboard after verification — set it directly from code only when the fix has been verified end-to-end. &#x60;investigating_by_ai&#x60; is a system-owned display state — set when the AI agent (Jarvis) picks an item up to investigate, never chosen by a human — so it is shown but not offered as a manual choice. &#x60;pending_approval&#x60; is the one human-gated holding state: it parks an item OUT of the work queue until a human promotes it to &#x60;open&#x60; in the dashboard, so &#x60;GET /api/admin/ops&#x60; excludes it under &#x60;status&#x3D;all&#x60;/default and returns it only when requested as an exact &#x60;status&#x60;. It covers untriaged inbound that must never be auto-implemented — connector requests filed from a customer&#39;s connectors panel, and questions funnelled in from the \&quot;Stuck in onboarding?\&quot; assistant — where approving means flipping the status to &#x60;open&#x60;. Two earlier values were removed in favour of this single gate: &#x60;triage&#x60; (the onboarding-help bucket, now &#x60;pending_approval&#x60;) and &#x60;triaged&#x60; (a redundant \&quot;looked at but not started\&quot; step, now plain &#x60;open&#x60;).
+ * @description Lifecycle status of a queue item. The working flow is &#x60;open&#x60; → &#x60;in_progress&#x60; → &#x60;ready_for_qa&#x60; → &#x60;resolved&#x60; (or &#x60;wont_fix&#x60;, terminal from any earlier stage). &#x60;blocked&#x60; marks an item that can&#39;t progress until an external dependency clears — a working state a human sets and clears. &#x60;ready_for_qa&#x60; is what a developer sets once a fix lands; &#x60;resolved&#x60; is the QA sign-off, normally flipped in the dashboard after verification — set it directly from code only when the fix has been verified end-to-end. &#x60;investigating_by_ai&#x60; is a system-owned display state — set when the AI agent (Jarvis) picks an item up to investigate, never chosen by a human — so it is shown but not offered as a manual choice. &#x60;pending_approval&#x60; is the one human-gated holding state: it parks an item OUT of the work queue until a human promotes it to &#x60;open&#x60; in the dashboard, so &#x60;GET /api/admin/ops&#x60; excludes it under &#x60;status&#x3D;all&#x60;/default and returns it only when requested as an exact &#x60;status&#x60;. It covers untriaged inbound that must never be auto-implemented — connector requests filed from a customer&#39;s connectors panel, and questions funnelled in from the \&quot;Stuck in onboarding?\&quot; assistant — where approving means flipping the status to &#x60;open&#x60;. Two earlier values were removed in favour of this single gate: &#x60;triage&#x60; (the onboarding-help bucket, now &#x60;pending_approval&#x60;) and &#x60;triaged&#x60; (a redundant \&quot;looked at but not started\&quot; step, now plain &#x60;open&#x60;). &#x60;backlog&#x60; is the team&#39;s \&quot;accepted, not now\&quot; shelf: an item someone decided is worth keeping but is not scheduled. Like &#x60;pending_approval&#x60; it is held OUT of the work queue — excluded from &#x60;unresolved&#x60; and &#x60;all&#x60;, never auto-launched to an agent, returned only when requested as the exact status — and it lives on the dashboard&#39;s Backlog page instead of the ops board. Promoting an item means flipping it to &#x60;open&#x60; (or delegating it to an agent); anyone, person or agent, may shelve an item by setting &#x60;backlog&#x60;. Not to be confused with the &#x60;backlog&#x60; value of &#x60;OpsInvestigationState&#x60;, which means \&quot;no automation has touched it\&quot;.
  * @package  Shipeasy\Admin\Generated
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -59,6 +59,8 @@ class OpsItemStatus
 
     public const WONT_FIX = 'wont_fix';
 
+    public const BACKLOG = 'backlog';
+
     /**
      * Gets allowable values of the enum
      * @return string[]
@@ -73,7 +75,8 @@ class OpsItemStatus
             self::BLOCKED,
             self::READY_FOR_QA,
             self::RESOLVED,
-            self::WONT_FIX
+            self::WONT_FIX,
+            self::BACKLOG
         ];
     }
 }
