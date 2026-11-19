@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.26.0 — 2026-11-19
+
+### see() reports carry the browser's request correlation token
+
+Every `see()` now reads the `X-SE-Correlation` header the browser SDK sends on
+every same-origin request (`$_SERVER['HTTP_X_SE_CORRELATION']`) and carries it
+on the error event as `correlation_id`. Shipeasy joins on it to record the
+server exception as the cause of the browser error it produced. Before this no
+PHP report carried the token, so a client error was never linked to the server
+exception behind it. Malformed tokens (not 8–64 of `[A-Za-z0-9-]`) are dropped,
+never sent. (shipeasy #704)
+
 ## 0.25.0 — 2026-11-08
 
 ### Public tickets carry the reporter's identity (`user`)

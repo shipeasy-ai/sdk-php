@@ -29,6 +29,7 @@ final class SeeTest extends TestCase
         // The ambient buffer is process-wide (static) — reset it so cases don't
         // bleed into each other, mirroring the per-request reset in real apps.
         clearExtras();
+        unset($_SERVER['HTTP_X_SE_CORRELATION']);
         parent::tearDown();
     }
 
@@ -321,5 +322,59 @@ final class SeeTest extends TestCase
         $c->see(new \RuntimeException('x'))->causesThe('checkout')->to('use cached prices');
         $ev = $this->events($c)[0];
         $this->assertArrayNotHasKey('extras', $ev);
+    }
+
+    // ---- Part 3: browser correlation token (shipeasy #704) -------------------
+
+    public function testCorrelationHeaderIsCarriedAsCorrelationId(): void
+    {
+        $c = $this->capturingClient();
+        $_SERVER['HTTP_X_SE_CORRELATION'] = 'req-3f9a2c7e-41b0';
+        $c->see(new \RuntimeException('x'))->causesThe('checkout')->to('use cached prices');
+        $ev = $this->events($c)[0];
+        $this->assertSame('req-3f9a2c7e-41b0', $ev['correlation_id']);
+    }
+
+    public function testCorrelationIdOmittedWhenHeaderAbsent(): void
+    {
+        $c = $this->capturingClient();
+        unset($_SERVER['HTTP_X_SE_CORRELATION']);
+        $c->see(new \RuntimeException('x'))->causesThe('checkout')->to('use cached prices');
+        $ev = $this->events($c)[0];
+        $this->assertArrayNotHasKey('correlation_id', $ev);
+    }
+
+    /** @return array<string, array{mixed}> */
+    public static function malformedCorrelationTokens(): array
+    {
+        return [
+            'too short' => ['abc123'],
+            'too long' => [str_repeat('a', 65)],
+            'bad chars' => ['abc def ghi'],
+            'injection' => ['abcdefgh"}<script>'],
+            'underscore' => ['abc_defgh'],
+            'empty' => [''],
+            'non-string' => [['abcdefgh1']],
+        ];
+    }
+
+    /** @dataProvider malformedCorrelationTokens */
+    public function testMalformedCorrelationTokenIsDropped(mixed $token): void
+    {
+        $c = $this->capturingClient();
+        $_SERVER['HTTP_X_SE_CORRELATION'] = $token;
+        $c->see(new \RuntimeException('x'))->causesThe('checkout')->to('use cached prices');
+        $ev = $this->events($c)[0];
+        $this->assertArrayNotHasKey('correlation_id', $ev);
+    }
+
+    public function testBuildEventEmitsCorrelationIdOnlyWhenValid(): void
+    {
+        $ok = See::buildEvent(new \RuntimeException('x'), 's', 'o', null, 'server', '1', null, 'abcd1234');
+        $this->assertSame('abcd1234', $ok['correlation_id']);
+        $bad = See::buildEvent(new \RuntimeException('x'), 's', 'o', null, 'server', '1', null, 'no');
+        $this->assertArrayNotHasKey('correlation_id', $bad);
+        $none = See::buildEvent(new \RuntimeException('x'), 's', 'o', null, 'server', '1', null);
+        $this->assertArrayNotHasKey('correlation_id', $none);
     }
 }

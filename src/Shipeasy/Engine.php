@@ -25,7 +25,7 @@ class Engine
      * This is the single runtime source of truth — keep it in sync with the
      * `version` field in composer.json (composer exposes no runtime constant).
      */
-    public const VERSION = '0.25.0';
+    public const VERSION = '0.26.0';
 
     private string $apiKey;
     private string $baseUrl;
@@ -1132,7 +1132,8 @@ class Engine
                 $safeExtras,
                 'server',
                 self::VERSION,
-                $this->env
+                $this->env,
+                SeeContext::correlationId()
             );
             if (!$this->seeLimiter->shouldSend($ev)) {
                 return;

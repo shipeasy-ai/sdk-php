@@ -107,6 +107,10 @@ request:** under PHP-FPM the buffer resets per request; under a long-running
 runtime (Swoole / RoadRunner / workers) call `Shipeasy\clearExtras()` at request
 end.
 
+see() also reads the browser SDK's `X-SE-Correlation` request header (from
+`$_SERVER`), so every see() in that request carries `correlation_id` and Shipeasy
+links the browser's error to this server exception — no code needed.
+
 `Shipeasy\controlFlowException($e)->because('expected')` marks an exception as
 expected (reports nothing). `Shipeasy\seeViolation('name')->...->to(...)` reports a
 non-exception. Reference:
