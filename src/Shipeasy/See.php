@@ -67,6 +67,11 @@ final class See
     /**
      * Build the type:"error" event accepted by POST /collect.
      *
+     * $correlationId is the browser SDK's per-request `X-SE-Correlation` token
+     * (see {@see SeeContext::correlationId()}); it is emitted as
+     * `correlation_id` only when it passes {@see SeeContext::cleanCorrelation()},
+     * so a malformed value is dropped, never sent.
+     *
      * @param Violation|\Throwable|mixed $problem
      * @param array<string, mixed>|null $extras
      * @return array<string, mixed>
@@ -78,7 +83,8 @@ final class See
         ?array $extras,
         string $side,
         string $sdkVersion,
-        ?string $env
+        ?string $env,
+        ?string $correlationId = null
     ): array {
         $stack = null;
         if ($problem instanceof Violation) {
@@ -128,6 +134,10 @@ final class See
         }
         if ($env !== null && $env !== '') {
             $ev['env'] = $env;
+        }
+        $corr = SeeContext::cleanCorrelation($correlationId);
+        if ($corr !== null) {
+            $ev['correlation_id'] = $corr;
         }
         return $ev;
     }

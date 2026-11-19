@@ -94,6 +94,18 @@ per request automatically — nothing to clean up. Under a **long-running runtim
 requests, so you MUST call `Shipeasy\clearExtras()` at request end so context
 never leaks into the next request.
 
+### Linking a browser error to the server exception behind it
+
+The browser SDK (`@shipeasy/sdk/client`) sends a per-request token on the
+`X-SE-Correlation` header of every same-origin request. Every `see()` fired
+while serving that request reads it (from `$_SERVER['HTTP_X_SE_CORRELATION']`)
+and carries it as `correlation_id`. Shipeasy joins the browser's report and this
+server report on that token and records the server exception as the browser
+error's cause, so the two are triaged as one issue instead of two. Nothing to
+call — it works in plain PHP, Laravel, Symfony or any framework that populates
+`$_SERVER` per request. A malformed token (anything but 8–64 letters, digits or
+`-`) is dropped, never sent.
+
 ## Report a non-exception violation
 
 ```php
