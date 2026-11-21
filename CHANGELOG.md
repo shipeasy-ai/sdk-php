@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.28.0 — 2026-11-21
+
+### Overrides reach APIs on sibling subdomains: `X-Shipeasy-Overrides` header fallback
+
+Wherever the request's `Cookie` is read for `se_ov` / `se_ov_dev`, the
+`X-Shipeasy-Overrides` header (cookie syntax, sent by the browser SDK's
+`getOverrideHeaders()`) is now read too — automatically from
+`$_SERVER['HTTP_X_SHIPEASY_OVERRIDES']` under PHP-FPM, and via the new optional
+third argument of `Shipeasy\withRequestOverrides($cookie, $fn, $overridesHeader)`.
+Per cookie name the `Cookie` header wins; the header only fills in when absent.
+Same verification and `devOverrides` non-production guards apply (the dev cookie is
+never parsed when the guard is off). (shipeasy #714)
+
 ## 0.27.0 — 2026-11-21
 
 ### Server reads honour the signed DevTools override cookie (`se_ov`)

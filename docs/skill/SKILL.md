@@ -79,6 +79,12 @@ Dev only: `configure($key, null, ['devOverrides' => true])` also honours the uns
 the process is non-production (`SHIPEASY_ENV`, then `APP_ENV`); never active in
 production. Precedence: programmatic > `se_ov` > `se_ov_dev` > normal.
 
+Frontend and API on different subdomains: the browser scopes the cookies to the
+registrable domain; for token-auth APIs the browser sends `X-Shipeasy-Overrides`
+(cookie syntax). FPM reads `$_SERVER['HTTP_X_SHIPEASY_OVERRIDES']` automatically;
+elsewhere pass it as the 3rd arg: `withRequestOverrides($cookie, $fn, $overridesHeader)`.
+The Cookie header wins per name; same verification and guards apply.
+
 ## Experiments + track (Client-only, end to end)
 
 Experiments are read by **universe** (a mutual-exclusion pool — the unit lands in

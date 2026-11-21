@@ -309,4 +309,54 @@ final class OverrideCookieTest extends TestCase
             $this->assertFalse(withRequestOverrides($hdr, fn () => $c->getFlag('old_nav')));
         });
     }
+
+    public function testHeaderOnlySignedCookieApplies(): void
+    {
+        $this->engine();
+        $c = new Client(['user_id' => 'u1']);
+        $this->assertTrue(withRequestOverrides(null, fn () => $c->getFlag('lobby_hold'), 'se_ov=' . self::COOKIE));
+        $this->assertTrue(withRequestOverrides('a=1', fn () => $c->getFlag('lobby_hold'), 'se_ov=' . self::COOKIE));
+        $this->assertFalse($c->getFlag('lobby_hold'));
+        $_SERVER['HTTP_X_SHIPEASY_OVERRIDES'] = 'se_ov=' . self::COOKIE;
+        try {
+            $this->assertTrue($c->getFlag('lobby_hold'));
+        } finally {
+            unset($_SERVER['HTTP_X_SHIPEASY_OVERRIDES']);
+        }
+    }
+
+    public function testHeaderDevCookieOnlyUnderGuards(): void
+    {
+        $hdr = 'se_ov_dev=' . self::DEV;
+        $this->withEnv('development', function () use ($hdr): void {
+            $this->devEngine(true);
+            $c = new Client(['user_id' => 'u1']);
+            $this->assertTrue(withRequestOverrides(null, fn () => $c->getFlag('lobby_hold'), $hdr));
+        });
+        $this->withEnv('development', function () use ($hdr): void {
+            $this->devEngine(false);
+            $c = new Client(['user_id' => 'u1']);
+            $this->assertFalse(withRequestOverrides(null, fn () => $c->getFlag('lobby_hold'), $hdr));
+        });
+        $this->withEnv('production', function () use ($hdr): void {
+            $e = new Engine('k', null, 'prod', true, null, [], null, 'silent', true, false);
+            $e->setDevOverrides(true);
+            $c = new Client(['user_id' => 'u1']);
+            $this->assertSame('none', withRequestOverrides(null, fn () => $c->getConfig('banner', 'none'), $hdr));
+        });
+    }
+
+    public function testCookieBeatsHeaderForSameName(): void
+    {
+        $this->engine();
+        $c = new Client(['user_id' => 'u1']);
+        $cookie = $this->signed(['gates' => ['lobby_hold' => false]]);
+        $this->assertFalse(withRequestOverrides('se_ov=' . $cookie, fn () => $c->getFlag('lobby_hold'), 'se_ov=' . self::COOKIE));
+        // header fills in a name the Cookie header lacks (dev cookie here)
+        $this->withEnv('development', function () use ($cookie): void {
+            $this->devEngine(true, true);
+            $c = new Client(['user_id' => 'u1']);
+            $this->assertFalse(withRequestOverrides('se_ov=' . $cookie, fn () => $c->getFlag('old_nav'), 'se_ov_dev=' . self::DEV));
+        });
+    }
 }
