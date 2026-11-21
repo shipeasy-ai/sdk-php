@@ -11,5 +11,6 @@ $response = Shipeasy\withRequestOverrides(
         $client = new Client($currentUser);   // construct once per callsite
         return $client->getFlag('{{FLAG_KEY}}');
     },
+    $request->headers->get('X-Shipeasy-Overrides'),   // optional: header fallback for sibling-subdomain / token-auth APIs
 );
 ```

@@ -170,6 +170,32 @@ programmatic `overrideFlag()` etc. > signed `se_ov` > `se_ov_dev` > normal
 evaluation (the signed cookie wins per name on conflicts); reads report
 `FlagDetail::OVERRIDE`.
 
+### Frontend and API on different subdomains
+
+When the frontend is `app.example.com` and the API is `api.example.com`, the
+browser SDK scopes the override cookies to the registrable domain automatically
+(or to `overrideCookieDomain` when you set it), so the API sees them on its own
+`Cookie` header and nothing changes server-side. For token-auth or cross-origin
+APIs that do not receive cookies, send the `X-Shipeasy-Overrides` header from the
+browser (`headers: { ...getOverrideHeaders() }` from `@shipeasy/sdk/client`) and
+allow it in the API's CORS `Access-Control-Allow-Headers`. Its value is cookie
+syntax (`se_ov=...; se_ov_dev=...`). Under PHP-FPM
+`$_SERVER['HTTP_X_SHIPEASY_OVERRIDES']` is read automatically; elsewhere pass it
+as the third argument:
+
+```php
+Shipeasy\withRequestOverrides(
+    $request->headers->get('Cookie'),
+    fn () => $next($request),
+    $request->headers->get('X-Shipeasy-Overrides'),
+);
+```
+
+For each cookie name the `Cookie` header wins and the header only fills in when
+the cookie is absent. The same verification applies: the signed cookie must
+verify, and the dev cookie is not even parsed unless `devOverrides` is on in a
+non-production process.
+
 ## Change listeners
 
 `Shipeasy\onChange()` registers a callback fired whenever the SDK refreshes with a

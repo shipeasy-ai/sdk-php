@@ -150,13 +150,18 @@ function clearOverrides(): void
  * return Shipeasy\withRequestOverrides($request->headers->get('Cookie'), fn () => $next($request));
  * ```
  *
+ * Pass the request's `X-Shipeasy-Overrides` header as $overridesHeader for APIs on
+ * a sibling subdomain / token-auth APIs: it carries the same cookies in
+ * Cookie-header syntax and fills in per cookie name when the `Cookie` header lacks
+ * it. Under PHP-FPM `$_SERVER['HTTP_X_SHIPEASY_OVERRIDES']` is read automatically.
+ *
  * @template T
  * @param callable(): T $fn
  * @return T
  */
-function withRequestOverrides(?string $cookieHeader, callable $fn): mixed
+function withRequestOverrides(?string $cookieHeader, callable $fn, ?string $overridesHeader = null): mixed
 {
-    return RequestOverrides::run($cookieHeader, $fn);
+    return RequestOverrides::run($cookieHeader, $fn, $overridesHeader);
 }
 
 /**

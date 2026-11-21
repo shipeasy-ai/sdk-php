@@ -86,6 +86,7 @@ final class OverrideCookieTest extends TestCase
         $this->assertSame(self::COOKIE, OverrideCookie::extract('a=1; se_ov=' . self::COOKIE . '; b=2'));
         $this->assertSame('x.y', OverrideCookie::extract('se_ov=' . rawurlencode('x.y')));
         $this->assertNull(OverrideCookie::extract('a=1; b=2'));
+        $this->assertNull(OverrideCookie::extract('theme=a.b'));
         $this->assertNull(OverrideCookie::extract(null));
         $this->assertNull(OverrideCookie::extract(''));
     }
@@ -308,5 +309,62 @@ final class OverrideCookieTest extends TestCase
             // dev-only name still applies alongside the signed cookie
             $this->assertFalse(withRequestOverrides($hdr, fn () => $c->getFlag('old_nav')));
         });
+    }
+
+    public function testHeaderOnlySignedCookieApplies(): void
+    {
+        $this->engine();
+        $c = new Client(['user_id' => 'u1']);
+        $this->assertTrue(withRequestOverrides(null, fn () => $c->getFlag('lobby_hold'), 'se_ov=' . self::COOKIE));
+        $this->assertTrue(withRequestOverrides('a=1', fn () => $c->getFlag('lobby_hold'), 'se_ov=' . self::COOKIE));
+        $this->assertFalse($c->getFlag('lobby_hold'));
+        $_SERVER['HTTP_X_SHIPEASY_OVERRIDES'] = 'se_ov=' . self::COOKIE;
+        try {
+            $this->assertTrue($c->getFlag('lobby_hold'));
+        } finally {
+            unset($_SERVER['HTTP_X_SHIPEASY_OVERRIDES']);
+        }
+    }
+
+    public function testHeaderDevCookieOnlyUnderGuards(): void
+    {
+        $hdr = 'se_ov_dev=' . self::DEV;
+        $this->withEnv('development', function () use ($hdr): void {
+            $this->devEngine(true);
+            $c = new Client(['user_id' => 'u1']);
+            $this->assertTrue(withRequestOverrides(null, fn () => $c->getFlag('lobby_hold'), $hdr));
+        });
+        $this->withEnv('development', function () use ($hdr): void {
+            $this->devEngine(false);
+            $c = new Client(['user_id' => 'u1']);
+            $this->assertFalse(withRequestOverrides(null, fn () => $c->getFlag('lobby_hold'), $hdr));
+        });
+        $this->withEnv('production', function () use ($hdr): void {
+            $e = new Engine('k', null, 'prod', true, null, [], null, 'silent', true, false);
+            $e->setDevOverrides(true);
+            $c = new Client(['user_id' => 'u1']);
+            $this->assertSame('none', withRequestOverrides(null, fn () => $c->getConfig('banner', 'none'), $hdr));
+        });
+    }
+
+    public function testCookieBeatsHeaderForSameName(): void
+    {
+        $this->engine();
+        $c = new Client(['user_id' => 'u1']);
+        $cookie = $this->signed(['gates' => ['lobby_hold' => false]]);
+        $this->assertFalse(withRequestOverrides('se_ov=' . $cookie, fn () => $c->getFlag('lobby_hold'), 'se_ov=' . self::COOKIE));
+        // header fills in a name the Cookie header lacks (dev cookie here)
+        $this->withEnv('development', function () use ($cookie): void {
+            $this->devEngine(true, true);
+            $c = new Client(['user_id' => 'u1']);
+            $this->assertFalse(withRequestOverrides('se_ov=' . $cookie, fn () => $c->getFlag('old_nav'), 'se_ov_dev=' . self::DEV));
+        });
+    }
+
+    public function testUnrelatedDottedCookieDoesNotBlockHeaderFallback(): void
+    {
+        $this->engine();
+        $c = new Client(['user_id' => 'u1']);
+        $this->assertTrue(withRequestOverrides('theme=a.b', fn () => $c->getFlag('lobby_hold'), 'se_ov=' . self::COOKIE));
     }
 }

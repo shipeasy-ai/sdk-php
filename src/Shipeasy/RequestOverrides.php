@@ -22,7 +22,7 @@ namespace Shipeasy;
  */
 final class RequestOverrides
 {
-    /** @var array{raw: ?string, header: ?string}|null Active explicit scope, or null. */
+    /** @var array{cookie: ?string, header: ?string}|null Active explicit scope, or null. */
     private static ?array $scope = null;
 
     /** @var array<string, array|null> memo: engine-id|key|raw => verified map */
@@ -30,14 +30,16 @@ final class RequestOverrides
 
     /**
      * Run $fn with $cookieHeader (a `Cookie:` header or bare `se_ov` value)
-     * scoped as the current request's overrides. Always clears afterwards
+     * scoped as the current request's overrides, with $overridesHeader the optional
+     * `X-Shipeasy-Overrides` value (cookie syntax; fills in per cookie name only
+     * when the Cookie header lacks it). Always clears afterwards
      * (restoring any outer scope). A null header scopes "no overrides" and
      * suppresses the `$_COOKIE` auto-pickup inside $fn.
      */
-    public static function run(?string $cookieHeader, callable $fn): mixed
+    public static function run(?string $cookieHeader, callable $fn, ?string $overridesHeader = null): mixed
     {
         $prev = self::$scope;
-        self::$scope = ['raw' => OverrideCookie::extract($cookieHeader), 'header' => $cookieHeader];
+        self::$scope = ['cookie' => $cookieHeader, 'header' => $overridesHeader];
         try {
             return $fn();
         } finally {
@@ -57,11 +59,7 @@ final class RequestOverrides
             $dev = null;
             // Zero work unless the opt-in is on AND the process is non-production.
             if ($engine->devOverridesActive()) {
-                $devRaw = self::$scope !== null
-                    ? OverrideCookie::extractNamed(self::$scope['header'], OverrideCookie::DEV_COOKIE_NAME)
-                    : (isset($_COOKIE[OverrideCookie::DEV_COOKIE_NAME]) && is_string($_COOKIE[OverrideCookie::DEV_COOKIE_NAME])
-                        ? $_COOKIE[OverrideCookie::DEV_COOKIE_NAME]
-                        : null);
+                $devRaw = self::raw(OverrideCookie::DEV_COOKIE_NAME);
                 $dev = $devRaw === null ? null : OverrideCookie::decodeDev($devRaw);
             }
             if ($dev === null) {
@@ -82,14 +80,33 @@ final class RequestOverrides
         }
     }
 
+    /**
+     * Raw value of cookie $name for this request: the Cookie header (or
+     * `$_COOKIE`) wins, the `X-Shipeasy-Overrides` header fills in when absent.
+     */
+    private static function raw(string $name): ?string
+    {
+        if (self::$scope !== null) {
+            $v = $name === OverrideCookie::COOKIE_NAME
+                ? OverrideCookie::extract(self::$scope['cookie'])
+                : OverrideCookie::extractNamed(self::$scope['cookie'], $name);
+            return $v ?? OverrideCookie::extractNamed(self::$scope['header'], $name);
+        }
+        $v = isset($_COOKIE[$name]) && is_string($_COOKIE[$name]) ? $_COOKIE[$name] : null;
+        if ($name === OverrideCookie::COOKIE_NAME) {
+            $v = OverrideCookie::extract($v);
+        }
+        if ($v !== null) {
+            return $v;
+        }
+        $h = $_SERVER['HTTP_X_SHIPEASY_OVERRIDES'] ?? null;
+        return is_string($h) ? OverrideCookie::extractNamed($h, $name) : null;
+    }
+
     /** @return array{gates: array<string,bool>, configs: array<string,mixed>, exps: array<string,string>, exp: int}|null */
     private static function signed(Engine $engine): ?array
     {
-        $raw = self::$scope !== null
-            ? self::$scope['raw']
-            : OverrideCookie::extract(isset($_COOKIE[OverrideCookie::COOKIE_NAME]) && is_string($_COOKIE[OverrideCookie::COOKIE_NAME])
-                ? $_COOKIE[OverrideCookie::COOKIE_NAME]
-                : null);
+        $raw = self::raw(OverrideCookie::COOKIE_NAME);
         if ($raw === null) {
             return null;
         }

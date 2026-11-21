@@ -121,7 +121,7 @@ final class OverrideCookie
         if ($input === null || $input === '') {
             return null;
         }
-        if (!str_contains($input, ';') && !str_contains($input, 'se_ov=')) {
+        if (!str_contains($input, ';') && !str_contains($input, '=')) {
             return str_contains($input, '.') ? $input : null;
         }
         foreach (explode(';', $input) as $part) {
