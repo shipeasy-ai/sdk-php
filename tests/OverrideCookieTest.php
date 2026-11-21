@@ -86,6 +86,7 @@ final class OverrideCookieTest extends TestCase
         $this->assertSame(self::COOKIE, OverrideCookie::extract('a=1; se_ov=' . self::COOKIE . '; b=2'));
         $this->assertSame('x.y', OverrideCookie::extract('se_ov=' . rawurlencode('x.y')));
         $this->assertNull(OverrideCookie::extract('a=1; b=2'));
+        $this->assertNull(OverrideCookie::extract('theme=a.b'));
         $this->assertNull(OverrideCookie::extract(null));
         $this->assertNull(OverrideCookie::extract(''));
     }
@@ -358,5 +359,12 @@ final class OverrideCookieTest extends TestCase
             $c = new Client(['user_id' => 'u1']);
             $this->assertFalse(withRequestOverrides('se_ov=' . $cookie, fn () => $c->getFlag('old_nav'), 'se_ov_dev=' . self::DEV));
         });
+    }
+
+    public function testUnrelatedDottedCookieDoesNotBlockHeaderFallback(): void
+    {
+        $this->engine();
+        $c = new Client(['user_id' => 'u1']);
+        $this->assertTrue(withRequestOverrides('theme=a.b', fn () => $c->getFlag('lobby_hold'), 'se_ov=' . self::COOKIE));
     }
 }
