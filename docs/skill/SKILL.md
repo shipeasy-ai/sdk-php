@@ -65,6 +65,15 @@ Run `php artisan shipeasy:install` (add `--i18n` for the client key), publish
 Blade directives in your layout `<head>`. Reference:
 <https://shipeasy-ai.github.io/sdk-php/pages/installation.md>
 
+## DevTools overrides on the server
+
+Signed-in DevTools overrides (incl. `?se_gate_x=true`) are mirrored into a signed
+`se_ov` cookie. Under PHP-FPM, `new Client($user)` reads honour it automatically.
+Elsewhere, wrap the request: `Shipeasy\withRequestOverrides($request->headers->get('Cookie'), fn () => $next($request))`.
+Precedence: `overrideFlag()` etc. > cookie > normal; flags report `FlagDetail::OVERRIDE`.
+Fail closed (needs the served override key, valid unexpired signature); unsigned
+`?se_gate_` params are client-only.
+
 ## Experiments + track (Client-only, end to end)
 
 Experiments are read by **universe** (a mutual-exclusion pool — the unit lands in

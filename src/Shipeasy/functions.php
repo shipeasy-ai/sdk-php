@@ -132,6 +132,31 @@ function clearOverrides(): void
 }
 
 /**
+ * Scope the signed DevTools override cookie (`se_ov`) around $fn so every
+ * `Client` read inside it honours the overrides a signed-in DevTools user set
+ * (including `?se_gate_x=true` mirrored into the cookie). Pass the request's raw
+ * `Cookie` header (or the bare `se_ov` value); it is verified once, against the
+ * project key Shipeasy serves with the flags (fail closed — missing key, bad
+ * signature or expiry means no overrides). Precedence: programmatic
+ * `overrideFlag()` etc. > signed cookie > normal evaluation. Always clears the
+ * scope afterwards. Under PHP-FPM you do not need this: `$_COOKIE['se_ov']` is
+ * picked up automatically. Use it from Laravel/Symfony/PSR-15 middleware or a
+ * Swoole/RoadRunner request handler.
+ *
+ * ```php
+ * return Shipeasy\withRequestOverrides($request->headers->get('Cookie'), fn () => $next($request));
+ * ```
+ *
+ * @template T
+ * @param callable(): T $fn
+ * @return T
+ */
+function withRequestOverrides(?string $cookieHeader, callable $fn): mixed
+{
+    return RequestOverrides::run($cookieHeader, $fn);
+}
+
+/**
  * Register a change listener on the configured global engine. Returns an
  * unsubscribe callable. (PHP is request-scoped and has no background poll, so
  * this fires only if a long-running runtime calls the engine's refresh on a

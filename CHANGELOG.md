@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.27.0 — 2026-11-21
+
+### Server reads honour the signed DevTools override cookie (`se_ov`)
+
+A signed-in DevTools user's overrides (including `?se_gate_x=true`, which the
+overlay mirrors into the signed `se_ov` cookie) now apply to server-side
+`Client` reads: gates (`FlagDetail::OVERRIDE`), kill switches, configs and
+experiment groups. Under PHP-FPM `$_COOKIE['se_ov']` is picked up automatically
+after `configure()`; elsewhere wrap the request in the new
+`Shipeasy\withRequestOverrides($cookieHeader, $fn)`. Verified once per request
+with HMAC-SHA256 (`hash_equals`) against the `overrideKey` Shipeasy serves with
+the flags; fail closed (no key, bad signature, wrong key id, expired = no
+overrides). Precedence: `overrideFlag()` etc. > signed cookie > normal. (shipeasy #714)
+
 ## 0.26.0 — 2026-11-19
 
 ### see() reports carry the browser's request correlation token

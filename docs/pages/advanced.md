@@ -119,6 +119,39 @@ configureForOffline(['snapshot' => ['flags' => $flagsBody, 'experiments' => $exp
 (new Client(['user_id' => 'u1']))->getFlag('new_checkout');   // evaluated, no network
 ```
 
+## DevTools overrides on server reads
+
+When a signed-in teammate uses the DevTools overlay to force a gate, config or
+experiment group (including `?se_gate_checkout=true` in the URL), the overlay
+mirrors it into a signed `se_ov` cookie that rides every same-origin request.
+Server reads through `new Client($user)` honour it for that request only:
+
+- **PHP-FPM** — nothing to do. After `configure()`, the first read picks up
+  `$_COOKIE['se_ov']`.
+- **Laravel / Symfony / PSR-15 / Swoole / RoadRunner** — wrap the request in
+  `Shipeasy\withRequestOverrides()`, passing the raw `Cookie` header:
+
+```php
+// Laravel middleware
+public function handle($request, \Closure $next)
+{
+    return Shipeasy\withRequestOverrides($request->headers->get('Cookie'), fn () => $next($request));
+}
+```
+
+Precedence: programmatic `overrideFlag()` etc. > signed cookie > normal
+evaluation. `getFlag` / `getFlagDetail` return the forced value with reason
+`FlagDetail::OVERRIDE`; `getKillswitch($name)` honours the same gate override
+(a per-key `$switchKey` read is left alone); `getConfig` returns the forced
+value; `universe()->assign()` forces the experiment group.
+
+It is **fail closed**: the cookie is verified once per request against the
+project override key Shipeasy serves with your flags (an HMAC-SHA256 signature,
+checked with `hash_equals`). No key served, a bad signature, a wrong key id or an
+expired cookie means no overrides. A bare unsigned `?se_gate_` URL parameter
+reaches the browser SDK only — by design it never changes server-side reads.
+Outside a request scope with no cookie, behaviour is unchanged.
+
 ## Change listeners
 
 `Shipeasy\onChange()` registers a callback fired whenever the SDK refreshes with a

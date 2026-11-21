@@ -309,3 +309,7 @@ $enabled = $client->getFlag('new_checkout');
 
 For Swoole / RoadRunner / queue workers, configure once at worker boot and
 refresh the blob on a schedule to keep it fresh across requests.
+
+To let signed-in DevTools overrides reach server reads, wrap each request in
+`Shipeasy\withRequestOverrides($cookieHeader, $handler)` (automatic under
+PHP-FPM) — see [Advanced](advanced.md).

@@ -54,6 +54,7 @@ all backed by the same configured SDK, so you never construct anything heavy:
 
 - `Shipeasy\configure()` / `configureForTesting()` / `configureForOffline()` — setup.
 - `Shipeasy\overrideFlag()` / `overrideConfig()` / `overrideExperiment()` / `clearOverrides()` — test overrides.
+- `Shipeasy\withRequestOverrides()` — scope the signed DevTools `se_ov` cookie around a request so server reads honour it (automatic under PHP-FPM; see [Advanced](advanced.md)).
 - `Shipeasy\see()` / `seeViolation()` / `controlFlowException()` — error reporting.
 - `Shipeasy\bootstrapScriptTag()` / `i18nScriptTag()` / `devtoolsScriptTag()` — SSR script tags (every argument optional; defaults from `configure()`).
 - `Shipeasy\onChange()` — change listener (long-running runtimes only).
