@@ -39,7 +39,7 @@ const VERSION = Engine::VERSION;
  * @param callable|null $attributes (yourUser) -> attributeMap; default identity.
  * @param array<string, mixed> $opts Extra Engine options (baseUrl, env,
  *        isNetworkEnabled, disableTelemetry, telemetryUrl, privateAttributes,
- *        stickyStore, logLevel, disableInternalErrorReporting). `logLevel` is one
+ *        stickyStore, logLevel, disableInternalErrorReporting, devOverrides). `logLevel` is one
  *        of 'silent'|'error'|'warn'|'info'|'debug' (default 'warn') and sets the
  *        SDK's own diagnostic verbosity. `disableInternalErrorReporting` opts
  *        out of the internal self-monitoring channel (SDK-internal errors shipped
@@ -50,6 +50,9 @@ const VERSION = Engine::VERSION;
  *        `projectId` and `cdnBaseUrl` are the defaults the SSR tag helpers
  *        ({@see i18nScriptTag()}, {@see bootstrapScriptTag()},
  *        {@see devtoolsScriptTag()}) use when the callsite passes no argument.
+ *        `devOverrides` (default false) opts in to the unsigned dev-only
+ *        `se_ov_dev` URL-override cookie — honoured only in a non-production
+ *        process (SHIPEASY_ENV, then APP_ENV); ignored with one warning in prod.
  */
 function configure(string $apiKey, ?callable $attributes = null, array $opts = []): Engine
 {

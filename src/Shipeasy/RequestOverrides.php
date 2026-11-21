@@ -22,7 +22,7 @@ namespace Shipeasy;
  */
 final class RequestOverrides
 {
-    /** @var array{raw: ?string}|null Active explicit scope, or null. */
+    /** @var array{raw: ?string, header: ?string}|null Active explicit scope, or null. */
     private static ?array $scope = null;
 
     /** @var array<string, array|null> memo: engine-id|key|raw => verified map */
@@ -37,7 +37,7 @@ final class RequestOverrides
     public static function run(?string $cookieHeader, callable $fn): mixed
     {
         $prev = self::$scope;
-        self::$scope = ['raw' => OverrideCookie::extract($cookieHeader)];
+        self::$scope = ['raw' => OverrideCookie::extract($cookieHeader), 'header' => $cookieHeader];
         try {
             return $fn();
         } finally {
@@ -53,31 +53,60 @@ final class RequestOverrides
     public static function current(Engine $engine): ?array
     {
         try {
-            $raw = self::$scope !== null
-                ? self::$scope['raw']
-                : OverrideCookie::extract(isset($_COOKIE[OverrideCookie::COOKIE_NAME]) && is_string($_COOKIE[OverrideCookie::COOKIE_NAME])
-                    ? $_COOKIE[OverrideCookie::COOKIE_NAME]
-                    : null);
-            if ($raw === null) {
-                return null;
+            $signed = self::signed($engine);
+            $dev = null;
+            // Zero work unless the opt-in is on AND the process is non-production.
+            if ($engine->devOverridesActive()) {
+                $devRaw = self::$scope !== null
+                    ? OverrideCookie::extractNamed(self::$scope['header'], OverrideCookie::DEV_COOKIE_NAME)
+                    : (isset($_COOKIE[OverrideCookie::DEV_COOKIE_NAME]) && is_string($_COOKIE[OverrideCookie::DEV_COOKIE_NAME])
+                        ? $_COOKIE[OverrideCookie::DEV_COOKIE_NAME]
+                        : null);
+                $dev = $devRaw === null ? null : OverrideCookie::decodeDev($devRaw);
             }
-            $k = $engine->overrideKeyInfo();
-            if ($k === null) {
-                return null; // no key served -> never trust (not memoized: the blob may still load)
+            if ($dev === null) {
+                return $signed;
             }
-            $memoKey = spl_object_id($engine) . '|' . $k[1] . '|' . $k[0] . '|' . $raw;
-            if (!array_key_exists($memoKey, self::$memo)) {
-                if (count(self::$memo) > 32) {
-                    self::$memo = [];
-                }
-                self::$memo[$memoKey] = OverrideCookie::verify($raw, $k[0], $k[1]);
+            if ($signed === null) {
+                return $dev + ['exp' => PHP_INT_MAX];
             }
-            $ov = self::$memo[$memoKey];
-            // Re-check expiry on memo hits (long-running workers).
-            return $ov !== null && $ov['exp'] > time() ? $ov : null;
+            // Per-name: the signed cookie wins on conflicts.
+            return [
+                'gates' => array_replace($dev['gates'], $signed['gates']),
+                'configs' => array_replace($dev['configs'], $signed['configs']),
+                'exps' => array_replace($dev['exps'], $signed['exps']),
+                'exp' => $signed['exp'],
+            ];
         } catch (\Throwable $e) {
             return null;
         }
+    }
+
+    /** @return array{gates: array<string,bool>, configs: array<string,mixed>, exps: array<string,string>, exp: int}|null */
+    private static function signed(Engine $engine): ?array
+    {
+        $raw = self::$scope !== null
+            ? self::$scope['raw']
+            : OverrideCookie::extract(isset($_COOKIE[OverrideCookie::COOKIE_NAME]) && is_string($_COOKIE[OverrideCookie::COOKIE_NAME])
+                ? $_COOKIE[OverrideCookie::COOKIE_NAME]
+                : null);
+        if ($raw === null) {
+            return null;
+        }
+        $k = $engine->overrideKeyInfo();
+        if ($k === null) {
+            return null; // no key served -> never trust (not memoized: the blob may still load)
+        }
+        $memoKey = spl_object_id($engine) . '|' . $k[1] . '|' . $k[0] . '|' . $raw;
+        if (!array_key_exists($memoKey, self::$memo)) {
+            if (count(self::$memo) > 32) {
+                self::$memo = [];
+            }
+            self::$memo[$memoKey] = OverrideCookie::verify($raw, $k[0], $k[1]);
+        }
+        $ov = self::$memo[$memoKey];
+        // Re-check expiry on memo hits (long-running workers).
+        return $ov !== null && $ov['exp'] > time() ? $ov : null;
     }
 
     /** Clear scope + memo (tests). */

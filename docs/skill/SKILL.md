@@ -74,6 +74,11 @@ Precedence: `overrideFlag()` etc. > cookie > normal; flags report `FlagDetail::O
 Fail closed (needs the served override key, valid unexpired signature); unsigned
 `?se_gate_` params are client-only.
 
+Dev only: `configure($key, null, ['devOverrides' => true])` also honours the unsigned
+`se_ov_dev` cookie (URL `?se_gate_x=true` without DevTools sign-in), but only when
+the process is non-production (`SHIPEASY_ENV`, then `APP_ENV`); never active in
+production. Precedence: programmatic > `se_ov` > `se_ov_dev` > normal.
+
 ## Experiments + track (Client-only, end to end)
 
 Experiments are read by **universe** (a mutual-exclusion pool — the unit lands in

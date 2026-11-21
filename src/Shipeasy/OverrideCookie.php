@@ -23,6 +23,8 @@ namespace Shipeasy;
 final class OverrideCookie
 {
     public const COOKIE_NAME = 'se_ov';
+    /** Unsigned, dev-only URL-override cookie (opt-in `devOverrides`, never in production). */
+    public const DEV_COOKIE_NAME = 'se_ov_dev';
     public const FORMAT_VERSION = 1;
 
     /** base64url (no padding) of raw bytes. */
@@ -132,5 +134,47 @@ final class OverrideCookie
             }
         }
         return null;
+    }
+
+    /**
+     * Pull a named cookie out of a full `Cookie:` header (URL-decoded), or null.
+     * Unlike {@see extract()} a bare value is never accepted.
+     */
+    public static function extractNamed(?string $header, string $name): ?string
+    {
+        if ($header === null || $header === '' || !str_contains($header, $name . '=')) {
+            return null;
+        }
+        foreach (explode(';', $header) as $part) {
+            $eq = strpos($part, '=');
+            if ($eq !== false && trim(substr($part, 0, $eq)) === $name) {
+                return rawurldecode(trim(substr($part, $eq + 1)));
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Decode an unsigned `se_ov_dev` value: base64url(JSON
+     * `{"gates":{},"configs":{},"exps":{}}`). Null when malformed — never throws.
+     *
+     * @return array{gates: array<string,bool>, configs: array<string,mixed>, exps: array<string,string>}|null
+     */
+    public static function decodeDev(string $value): ?array
+    {
+        try {
+            $json = self::b64uDecode($value);
+            $ov = $json === null ? null : json_decode($json, true);
+            if (!is_array($ov)) {
+                return null;
+            }
+            return [
+                'gates' => is_array($ov['gates'] ?? null) ? $ov['gates'] : [],
+                'configs' => is_array($ov['configs'] ?? null) ? $ov['configs'] : [],
+                'exps' => is_array($ov['exps'] ?? null) ? $ov['exps'] : [],
+            ];
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 }

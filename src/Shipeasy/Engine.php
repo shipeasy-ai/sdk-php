@@ -46,6 +46,9 @@ class Engine
      * normal (keyed) engine running outside production. See {@see Env}.
      */
     private bool $offline = false;
+    /** Opt-in: honour the unsigned dev-only `se_ov_dev` cookie (non-production only). */
+    private bool $devOverrides = false;
+    private ?bool $devOverridesActive = null;
     private Telemetry $telemetry;
 
     /**
@@ -273,6 +276,7 @@ class Engine
         // SSR tag defaults (clientKey / profile / projectId / cdnBaseUrl) so the
         // tag helpers can be called with no arguments.
         $engine->applyTagOptions($opts);
+        $engine->setDevOverrides((bool) ($opts['devOverrides'] ?? false));
         self::setDefaultIfAbsent($engine);
         self::$attributesTransform = $attributes;
 
@@ -299,6 +303,7 @@ class Engine
     private static function installGlobal(Engine $engine, array $opts): Engine
     {
         $engine->applyTagOptions($opts);
+        $engine->setDevOverrides((bool) ($opts['devOverrides'] ?? false));
         foreach (($opts['flags'] ?? []) as $name => $value) {
             $engine->overrideFlag((string) $name, (bool) $value);
         }
@@ -516,6 +521,35 @@ class Engine
         $k = $this->flagsBlob['overrideKey'] ?? null;
         $id = $this->flagsBlob['overrideKeyId'] ?? null;
         return is_string($k) && $k !== '' && is_string($id) && $id !== '' ? [$k, $id] : null;
+    }
+
+    /** Opt in/out of the dev-only `se_ov_dev` cookie (`devOverrides` configure option). */
+    public function setDevOverrides(bool $on): void
+    {
+        $this->devOverrides = $on;
+        $this->devOverridesActive = null;
+    }
+
+    /**
+     * True only when `devOverrides` is on AND the process is non-production
+     * (test/offline-snapshot mode counts as non-production). When on in a
+     * production process it is ignored with ONE warning.
+     *
+     * @internal
+     */
+    public function devOverridesActive(): bool
+    {
+        if ($this->devOverridesActive !== null) {
+            return $this->devOverridesActive;
+        }
+        if (!$this->devOverrides) {
+            return $this->devOverridesActive = false;
+        }
+        if (!$this->localMode && Env::isProductionEnv($this->env)) {
+            Logger::warn("devOverrides is enabled but this is a production process — ignoring the se_ov_dev cookie");
+            return $this->devOverridesActive = false;
+        }
+        return $this->devOverridesActive = true;
     }
 
     /** Drop all flag/config/experiment overrides. */

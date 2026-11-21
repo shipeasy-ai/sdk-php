@@ -212,4 +212,101 @@ final class OverrideCookieTest extends TestCase
         $body = OverrideCookie::b64uEncode(json_encode($payload));
         return $body . '.' . OverrideCookie::b64uEncode(hash_hmac('sha256', $body, $ks, true));
     }
+
+    private const DEV = 'eyJnYXRlcyI6eyJsb2JieV9ob2xkIjp0cnVlLCJvbGRfbmF2IjpmYWxzZX0sImNvbmZpZ3MiOnsiYmFubmVyIjp7InRleHQiOiJoaSJ9fSwiZXhwcyI6eyJjaGVja291dF9leHAiOiJ0cmVhdG1lbnQifX0';
+
+    private function withEnv(string $env, callable $fn): void
+    {
+        $prev = getenv('SHIPEASY_ENV');
+        putenv("SHIPEASY_ENV=$env");
+        $_ENV['SHIPEASY_ENV'] = $env;
+        $_SERVER['SHIPEASY_ENV'] = $env;
+        try {
+            $fn();
+        } finally {
+            putenv('SHIPEASY_ENV=' . ($prev === false ? 'production' : $prev));
+            $_ENV['SHIPEASY_ENV'] = $_SERVER['SHIPEASY_ENV'] = $prev === false ? 'production' : $prev;
+        }
+    }
+
+    private function devEngine(bool $on, bool $withKey = false): Engine
+    {
+        $e = $this->engine($withKey);
+        $e->setDevOverrides($on);
+        return $e;
+    }
+
+    public function testDevCookieDecodesVector(): void
+    {
+        $ov = OverrideCookie::decodeDev(self::DEV);
+        $this->assertSame(['lobby_hold' => true, 'old_nav' => false], $ov['gates']);
+        $this->assertSame(['banner' => ['text' => 'hi']], $ov['configs']);
+        $this->assertSame(['checkout_exp' => 'treatment'], $ov['exps']);
+        $this->assertNull(OverrideCookie::decodeDev('!!!'));
+        $this->assertNull(OverrideCookie::decodeDev(OverrideCookie::b64uEncode('"str"')));
+    }
+
+    public function testDevCookieIgnoredWhenOptionOff(): void
+    {
+        $this->withEnv('development', function (): void {
+            $this->devEngine(false);
+            $c = new Client(['user_id' => 'u1']);
+            $this->assertFalse(withRequestOverrides('se_ov_dev=' . self::DEV, fn () => $c->getFlag('lobby_hold')));
+        });
+    }
+
+    public function testDevCookieIgnoredInProduction(): void
+    {
+        $this->withEnv('production', function (): void {
+            // A real (non-snapshot) engine, so it is not in test/local mode.
+            $e = new Engine('k', null, 'prod', true, null, [], null, 'silent', true, false);
+            $e->overrideFlag('x', false);
+            $e->setDevOverrides(true);
+            $this->assertFalse($e->devOverridesActive());
+            $c = new Client(['user_id' => 'u1']);
+            $this->assertSame('none', withRequestOverrides('se_ov_dev=' . self::DEV, fn () => $c->getConfig('banner', 'none')));
+            $_COOKIE['se_ov_dev'] = self::DEV;
+            $this->assertSame('none', $c->getConfig('banner', 'none'));
+            unset($_COOKIE['se_ov_dev']);
+        });
+    }
+
+    public function testDevCookieHonoredInNonProdWithOption(): void
+    {
+        $this->withEnv('development', function (): void {
+            $this->devEngine(true);
+            $c = new Client(['user_id' => 'u1']);
+            $d = withRequestOverrides('a=1; se_ov_dev=' . rawurlencode(self::DEV), fn () => $c->getFlagDetail('lobby_hold'));
+            $this->assertTrue($d->value);
+            $this->assertSame(FlagDetail::OVERRIDE, $d->reason);
+            $this->assertSame(['text' => 'hi'], withRequestOverrides('se_ov_dev=' . self::DEV, fn () => $c->getConfig('banner')));
+            $this->assertFalse($c->getFlag('lobby_hold'));
+            $_COOKIE['se_ov_dev'] = self::DEV;
+            $this->assertTrue($c->getFlag('lobby_hold'));
+            unset($_COOKIE['se_ov_dev']);
+        });
+    }
+
+    public function testConfigureForTestingCountsAsNonProd(): void
+    {
+        $this->withEnv('production', function (): void {
+            \Shipeasy\configureForTesting(['devOverrides' => true]);
+            $c = new Client(['user_id' => 'u1']);
+            $this->assertTrue(withRequestOverrides('se_ov_dev=' . self::DEV, fn () => $c->getFlag('lobby_hold')));
+        });
+    }
+
+    public function testSignedBeatsDevOnSameName(): void
+    {
+        $this->withEnv('development', function (): void {
+            $this->devEngine(true, true);
+            $c = new Client(['user_id' => 'u1']);
+            // dev says lobby_hold=true / old_nav=false; signed says lobby_hold=false
+            $signed = $this->signed(['gates' => ['lobby_hold' => false]]);
+            $hdr = 'se_ov=' . $signed . '; se_ov_dev=' . self::DEV;
+            $this->assertFalse(withRequestOverrides($hdr, fn () => $c->getFlag('lobby_hold')));
+            // dev-only name still applies alongside the signed cookie
+            $this->assertFalse(withRequestOverrides($hdr, fn () => $c->getFlag('old_nav')));
+        });
+    }
 }

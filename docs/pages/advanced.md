@@ -152,6 +152,24 @@ expired cookie means no overrides. A bare unsigned `?se_gate_` URL parameter
 reaches the browser SDK only — by design it never changes server-side reads.
 Outside a request scope with no cookie, behaviour is unchanged.
 
+### Dev-only `se_ov_dev` (no DevTools sign-in)
+
+On a local/dev/test stack you can let `?se_gate_x=true` reach server reads
+without signing in to DevTools. The browser SDK mirrors the URL overrides into an
+unsigned `se_ov_dev` cookie (non-production builds only), and the server honours
+it only when **both** guards hold:
+
+1. you opted in: `configure($key, null, ['devOverrides' => true])`; and
+2. the process is non-production (`SHIPEASY_ENV`, then `APP_ENV`; unset means
+   production). `configureForTesting()` counts as non-production.
+
+With the option on in a production process it is ignored and logged once, and the
+cookie is never even read: it is **never active in production**. It uses the same
+`withRequestOverrides()` scope (or `$_COOKIE` under PHP-FPM). Precedence:
+programmatic `overrideFlag()` etc. > signed `se_ov` > `se_ov_dev` > normal
+evaluation (the signed cookie wins per name on conflicts); reads report
+`FlagDetail::OVERRIDE`.
+
 ## Change listeners
 
 `Shipeasy\onChange()` registers a callback fired whenever the SDK refreshes with a
