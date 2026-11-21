@@ -44,7 +44,7 @@ $d->reason;   // e.g. FlagDetail::RULE_MATCH
 
 | Reason | Meaning |
 | --- | --- |
-| `FlagDetail::OVERRIDE` | A local `Shipeasy\overrideFlag()` supplied the value. |
+| `FlagDetail::OVERRIDE` | A local `Shipeasy\overrideFlag()`, or a signed DevTools `se_ov` cookie override (see [Advanced](advanced.md)), supplied the value. |
 | `FlagDetail::CLIENT_NOT_READY` | The SDK never initialized (no blob fetched). |
 | `FlagDetail::FLAG_NOT_FOUND` | The gate is not in the fetched blob. |
 | `FlagDetail::OFF` | The gate exists but is disabled. |

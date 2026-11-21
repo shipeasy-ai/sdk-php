@@ -39,7 +39,7 @@ const VERSION = Engine::VERSION;
  * @param callable|null $attributes (yourUser) -> attributeMap; default identity.
  * @param array<string, mixed> $opts Extra Engine options (baseUrl, env,
  *        isNetworkEnabled, disableTelemetry, telemetryUrl, privateAttributes,
- *        stickyStore, logLevel, disableInternalErrorReporting). `logLevel` is one
+ *        stickyStore, logLevel, disableInternalErrorReporting, devOverrides). `logLevel` is one
  *        of 'silent'|'error'|'warn'|'info'|'debug' (default 'warn') and sets the
  *        SDK's own diagnostic verbosity. `disableInternalErrorReporting` opts
  *        out of the internal self-monitoring channel (SDK-internal errors shipped
@@ -50,6 +50,9 @@ const VERSION = Engine::VERSION;
  *        `projectId` and `cdnBaseUrl` are the defaults the SSR tag helpers
  *        ({@see i18nScriptTag()}, {@see bootstrapScriptTag()},
  *        {@see devtoolsScriptTag()}) use when the callsite passes no argument.
+ *        `devOverrides` (default false) opts in to the unsigned dev-only
+ *        `se_ov_dev` URL-override cookie — honoured only in a non-production
+ *        process (SHIPEASY_ENV, then APP_ENV); ignored with one warning in prod.
  */
 function configure(string $apiKey, ?callable $attributes = null, array $opts = []): Engine
 {
@@ -129,6 +132,31 @@ function overrideExperiment(string $name, string $group, mixed $params): void
 function clearOverrides(): void
 {
     _requireGlobal('clearOverrides')->clearOverrides();
+}
+
+/**
+ * Scope the signed DevTools override cookie (`se_ov`) around $fn so every
+ * `Client` read inside it honours the overrides a signed-in DevTools user set
+ * (including `?se_gate_x=true` mirrored into the cookie). Pass the request's raw
+ * `Cookie` header (or the bare `se_ov` value); it is verified once, against the
+ * project key Shipeasy serves with the flags (fail closed — missing key, bad
+ * signature or expiry means no overrides). Precedence: programmatic
+ * `overrideFlag()` etc. > signed cookie > normal evaluation. Always clears the
+ * scope afterwards. Under PHP-FPM you do not need this: `$_COOKIE['se_ov']` is
+ * picked up automatically. Use it from Laravel/Symfony/PSR-15 middleware or a
+ * Swoole/RoadRunner request handler.
+ *
+ * ```php
+ * return Shipeasy\withRequestOverrides($request->headers->get('Cookie'), fn () => $next($request));
+ * ```
+ *
+ * @template T
+ * @param callable(): T $fn
+ * @return T
+ */
+function withRequestOverrides(?string $cookieHeader, callable $fn): mixed
+{
+    return RequestOverrides::run($cookieHeader, $fn);
 }
 
 /**

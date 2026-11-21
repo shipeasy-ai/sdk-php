@@ -31,7 +31,8 @@
       "flags": "snippets/release/flags.md",
       "configs": "snippets/release/configs.md",
       "killswitches": "snippets/release/killswitches.md",
-      "experiments": "snippets/release/experiments.md"
+      "experiments": "snippets/release/experiments.md",
+      "overrides": "snippets/release/overrides.md"
     },
     "metrics": {
       "track": "snippets/metrics/track.md"

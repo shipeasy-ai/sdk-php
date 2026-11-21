@@ -91,6 +91,7 @@ $enabled = $client->getFlag('new_checkout');
 | `isNetworkEnabled` | env-derived | Master switch for **all** outbound requests. `null` ⇒ on in production, off everywhere else. See [Configuration](configuration.md). |
 | `disableTelemetry` | env-derived | Opt out of the usage-telemetry beacon. `null` ⇒ on in production, off everywhere else. |
 | `telemetryUrl` | (built-in) | Override the telemetry endpoint. |
+| `devOverrides` | `false` | Honour the unsigned dev-only `se_ov_dev` URL-override cookie. Non-production processes only; ignored (one warning) in production. See [Advanced](advanced.md). |
 | `privateAttributes` | `[]` | Attribute names stripped from outbound event payloads (`privateAttributes`). See [Advanced](advanced.md). |
 | `stickyStore` | `null` | A `Shipeasy\StickyBucketStore` for durable experiment bucketing. See [Advanced](advanced.md). |
 | `logLevel` | `'warn'` | SDK diagnostic verbosity: `'silent'`, `'error'`, `'warn'`, `'info'`, `'debug'`. Runtime reads are fail-safe (never throw) and log at this level. See [Configuration](configuration.md). |
@@ -309,3 +310,7 @@ $enabled = $client->getFlag('new_checkout');
 
 For Swoole / RoadRunner / queue workers, configure once at worker boot and
 refresh the blob on a schedule to keep it fresh across requests.
+
+To let signed-in DevTools overrides reach server reads, wrap each request in
+`Shipeasy\withRequestOverrides($cookieHeader, $handler)` (automatic under
+PHP-FPM) — see [Advanced](advanced.md).

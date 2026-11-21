@@ -25,7 +25,7 @@ class Engine
      * This is the single runtime source of truth — keep it in sync with the
      * `version` field in composer.json (composer exposes no runtime constant).
      */
-    public const VERSION = '0.26.0';
+    public const VERSION = '0.27.0';
 
     private string $apiKey;
     private string $baseUrl;
@@ -46,6 +46,9 @@ class Engine
      * normal (keyed) engine running outside production. See {@see Env}.
      */
     private bool $offline = false;
+    /** Opt-in: honour the unsigned dev-only `se_ov_dev` cookie (non-production only). */
+    private bool $devOverrides = false;
+    private ?bool $devOverridesActive = null;
     private Telemetry $telemetry;
 
     /**
@@ -273,6 +276,7 @@ class Engine
         // SSR tag defaults (clientKey / profile / projectId / cdnBaseUrl) so the
         // tag helpers can be called with no arguments.
         $engine->applyTagOptions($opts);
+        $engine->setDevOverrides((bool) ($opts['devOverrides'] ?? false));
         self::setDefaultIfAbsent($engine);
         self::$attributesTransform = $attributes;
 
@@ -299,6 +303,7 @@ class Engine
     private static function installGlobal(Engine $engine, array $opts): Engine
     {
         $engine->applyTagOptions($opts);
+        $engine->setDevOverrides((bool) ($opts['devOverrides'] ?? false));
         foreach (($opts['flags'] ?? []) as $name => $value) {
             $engine->overrideFlag((string) $name, (bool) $value);
         }
@@ -503,6 +508,50 @@ class Engine
         $this->experimentOverrides[$name] = ['group' => $group, 'params' => $params];
     }
 
+    /**
+     * The project's override verify key + key id from the last /sdk/flags
+     * response (`overrideKey`, `overrideKeyId`), or null when the platform did
+     * not serve them (overrides are then never trusted).
+     *
+     * @internal
+     * @return array{0: string, 1: string}|null [encodedKey, keyId]
+     */
+    public function overrideKeyInfo(): ?array
+    {
+        $k = $this->flagsBlob['overrideKey'] ?? null;
+        $id = $this->flagsBlob['overrideKeyId'] ?? null;
+        return is_string($k) && $k !== '' && is_string($id) && $id !== '' ? [$k, $id] : null;
+    }
+
+    /** Opt in/out of the dev-only `se_ov_dev` cookie (`devOverrides` configure option). */
+    public function setDevOverrides(bool $on): void
+    {
+        $this->devOverrides = $on;
+        $this->devOverridesActive = null;
+    }
+
+    /**
+     * True only when `devOverrides` is on AND the process is non-production
+     * (test/offline-snapshot mode counts as non-production). When on in a
+     * production process it is ignored with ONE warning.
+     *
+     * @internal
+     */
+    public function devOverridesActive(): bool
+    {
+        if ($this->devOverridesActive !== null) {
+            return $this->devOverridesActive;
+        }
+        if (!$this->devOverrides) {
+            return $this->devOverridesActive = false;
+        }
+        if (!$this->localMode && Env::isProductionEnv($this->env)) {
+            Logger::warn("devOverrides is enabled but this is a production process — ignoring the se_ov_dev cookie");
+            return $this->devOverridesActive = false;
+        }
+        return $this->devOverridesActive = true;
+    }
+
     /** Drop all flag/config/experiment overrides. */
     public function clearOverrides(): void
     {
@@ -591,6 +640,11 @@ class Engine
             if (array_key_exists($name, $this->flagOverrides)) {
                 return new FlagDetail($this->flagOverrides[$name], FlagDetail::OVERRIDE);
             }
+            // 1b. Signed DevTools cookie override (request-scoped), below programmatic.
+            $ov = RequestOverrides::current($this);
+            if ($ov !== null && array_key_exists($name, $ov['gates']) && is_bool($ov['gates'][$name])) {
+                return new FlagDetail($ov['gates'][$name], FlagDetail::OVERRIDE);
+            }
 
             $this->telemetry->emit('gate', $name);
 
@@ -654,6 +708,10 @@ class Engine
             if (array_key_exists($name, $this->configOverrides)) {
                 return $this->configOverrides[$name];
             }
+            $ov = RequestOverrides::current($this);
+            if ($ov !== null && array_key_exists($name, $ov['configs'])) {
+                return $ov['configs'][$name];
+            }
             $this->telemetry->emit('config', $name);
             if (!isset($this->flagsBlob['configs'][$name]) || !array_key_exists('value', $this->flagsBlob['configs'][$name])) {
                 return $default;
@@ -680,6 +738,13 @@ class Engine
     public function getKillswitch(string $name, ?string $switchKey = null): bool
     {
         try {
+            if ($switchKey === null) {
+                // Signed DevTools override: gates cover kill switches (whole-switch read only).
+                $ov = RequestOverrides::current($this);
+                if ($ov !== null && array_key_exists($name, $ov['gates']) && is_bool($ov['gates'][$name])) {
+                    return $ov['gates'][$name];
+                }
+            }
             if (!$this->initialized) {
                 return false;
             }
@@ -717,6 +782,24 @@ class Engine
                 is_array($universe) ? ($universe['param_schema'] ?? null) : null
             );
             return new ExperimentResult(true, $o['group'], Eval_::mergeParams($paramDefaults, $o['params']));
+        }
+        // Signed DevTools cookie override: force the group, params from the blob's variant.
+        $ov = RequestOverrides::current($this);
+        if ($ov !== null && isset($ov['exps'][$name]) && is_string($ov['exps'][$name])) {
+            $group = $ov['exps'][$name];
+            $universeName = is_array($exp) ? ($exp['universe'] ?? null) : null;
+            $universe = is_string($universeName) ? ($this->expsBlob['universes'][$universeName] ?? null) : null;
+            $paramDefaults = Eval_::paramDefaultsFromSchema(
+                is_array($universe) ? ($universe['param_schema'] ?? null) : null
+            );
+            $variantParams = null;
+            foreach ((is_array($exp) ? ($exp['groups'] ?? []) : []) as $g) {
+                if (is_array($g) && (string) ($g['name'] ?? '') === $group) {
+                    $variantParams = $g['params'] ?? null;
+                    break;
+                }
+            }
+            return new ExperimentResult(true, $group, Eval_::mergeParams($paramDefaults, $variantParams));
         }
         return Eval_::evalExperiment(
             $exp,
